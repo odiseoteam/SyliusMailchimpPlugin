@@ -1,0 +1,7 @@
+parameters:
+    odiseo.mailchimp_plugin.mailchimp.class: Odiseo\SyliusMailchimpPlugin\Service\Mailchimp
+
+services:
+    odiseo.mailchimp_plugin.mailchimp:
+        class: "%odiseo.mailchimp_plugin.mailchimp.class%"
+        arguments: ["%odiseo.mailchimp_plugin.mailchimp.apikey%", "%odiseo.mailchimp_plugin.mailchimp.listid%"]
