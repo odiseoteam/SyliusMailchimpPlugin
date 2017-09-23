@@ -1,7 +1,7 @@
 {
-    "name": "sylius/plugin-skeleton",
+    "name": "odiseoteam/sylius-mailchimp-plugin",
     "type": "sylius-plugin",
-    "description": "Acme example plugin for Sylius.",
+    "description": "Plugin for Sylius to add Mailchimp ecommerce features",
     "license": "MIT",
     "require": {
         "php": "^7.1",
