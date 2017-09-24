@@ -9,7 +9,7 @@ parameters:
 services:
     odiseo.mailchimp_plugin.listener.ecommerce_cart:
         class: "%odiseo.mailchimp_plugin.listener.ecommerce_cart.class%"
-        arguments:  ["@odiseo.mailchimp_plugin.mailchimp", "@sylius.context.channel"]
+        arguments:  ["@odiseo.mailchimp_plugin.mailchimp", "@sylius.context.channel", "@router"]
 
     odiseo.mailchimp_plugin.listener.ecommerce_order:
         class: "%odiseo.mailchimp_plugin.listener.ecommerce_order.class%"

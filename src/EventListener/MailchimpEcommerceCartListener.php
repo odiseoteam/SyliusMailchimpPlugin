@@ -6,6 +6,7 @@ use Odiseo\SyliusMailchimpPlugin\Mailchimp\MailchimpInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Channel\Context\CachedPerRequestChannelContext;
 use Sylius\Component\Core\Model\OrderInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class MailchimpEcommerceCartListener
 {
@@ -19,14 +20,19 @@ class MailchimpEcommerceCartListener
      */
     protected $channelContext;
 
+    /** @var  RouterInterface */
+    protected $router;
+
     /**
      * @param MailchimpInterface $mailchimp
      * @param CachedPerRequestChannelContext $channelContext
+     * @param RouterInterface $router
      */
-    public function __construct(MailchimpInterface $mailchimp, CachedPerRequestChannelContext $channelContext)
+    public function __construct(MailchimpInterface $mailchimp, CachedPerRequestChannelContext $channelContext, RouterInterface $router)
     {
         $this->mailchimp = $mailchimp;
         $this->channelContext = $channelContext;
+        $this->router = $router;
     }
 
     /**
@@ -39,6 +45,8 @@ class MailchimpEcommerceCartListener
             $storeId = $channel->getCode();
 
             $cartId = $order->getId();
+
+            $routeName = $this->router->generate('brandsof_checkout_start', array('checkout' => $cartId), true);
 
             $lines = [];
             $items = $order->getItems();
@@ -57,6 +65,7 @@ class MailchimpEcommerceCartListener
             if (isset($response['id'])) {
                 $data = [
                     'order_total' => $order->getTotal(),
+                    'checkout_url' => $routeName,
                     'lines' => $lines
                 ];
 
@@ -79,6 +88,7 @@ class MailchimpEcommerceCartListener
                     ],
                     'currency_code' => 'USD',
                     'order_total' => $order->getTotal(),
+                    'checkout_url' => $routeName,
                     'lines' => $lines,
                 ];
 
