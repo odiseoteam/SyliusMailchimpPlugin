@@ -2,7 +2,7 @@
 
 namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
-use Odiseo\SyliusMailchimpPlugin\Service\MailchimpService;
+use Odiseo\SyliusMailchimpPlugin\Mailchimp\MailchimpInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Sylius\Component\Core\Model\CustomerInterface;
@@ -10,16 +10,16 @@ use Sylius\Component\Core\Model\CustomerInterface;
 class CustomerNewsletterSubscriber implements EventSubscriber
 {
     /**
-     * @var MailchimpService
+     * @var MailchimpInterface
      */
-    protected $mailchimpService;
+    protected $mailchimp;
 
     /**
-     * @param MailchimpService $mailchimpService
+     * @param MailchimpInterface $mailchimp
      */
-    public function __construct(MailchimpService $mailchimpService)
+    public function __construct(MailchimpInterface $mailchimp)
     {
-        $this->mailchimpService = $mailchimpService;
+        $this->mailchimp = $mailchimp;
     }
 
     public function getSubscribedEvents()
@@ -37,7 +37,7 @@ class CustomerNewsletterSubscriber implements EventSubscriber
     {
         if ($customer->isSubscribedToNewsletter())
         {
-            $this->mailchimpService->addUserToList(null, $customer->getEmail(), $customer->getFirstName(), $customer->getLastName());
+            $this->mailchimp->addUserToList($customer);
         }
     }
 

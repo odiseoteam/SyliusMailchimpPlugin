@@ -2,20 +2,20 @@
 
 namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
-use Odiseo\SyliusMailchimpPlugin\Service\MailchimpService;
+use Odiseo\SyliusMailchimpPlugin\Mailchimp\MailchimpInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Model\ChannelAwareInterface;
-use Sylius\Component\Core\Model\Customer;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\ShopUserInterface;
 
 class MailchimpEcommerceCustomerSubscriber implements EventSubscriber
 {
     /**
-     *@var MailchimpService
+     *@var MailchimpInterface
      */
-    protected $mailchimpService;
+    protected $mailchimp;
 
     /**
      *@var ChannelContextInterface
@@ -23,15 +23,18 @@ class MailchimpEcommerceCustomerSubscriber implements EventSubscriber
     protected $channelContext;
 
     /**
-     * @param MailchimpService $mailchimpService
+     * @param MailchimpInterface $mailchimp
      * @param ChannelContextInterface $channelContext
      */
-    public function __construct(MailchimpService $mailchimpService, ChannelContextInterface $channelContext)
+    public function __construct(MailchimpInterface $mailchimp, ChannelContextInterface $channelContext)
     {
-        $this->mailchimpService = $mailchimpService;
+        $this->mailchimp = $mailchimp;
         $this->channelContext = $channelContext;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getSubscribedEvents()
     {
         return array(
@@ -41,67 +44,51 @@ class MailchimpEcommerceCustomerSubscriber implements EventSubscriber
         );
     }
 
+    /**
+     * @param LifecycleEventArgs $args
+     */
     public function postPersist(LifecycleEventArgs $args)
     {
-        $this->registerCustomer($args);
-    }
+        $customer = $args->getEntity();
 
-    public function postUpdate(LifecycleEventArgs $args)
-    {
-        $this->registerCustomer($args);
-    }
-
-    public function postRemove(LifecycleEventArgs $args)
-    {
-        $this->deleteCustomer($args);
-    }
-
-    public function registerCustomer(LifecycleEventArgs $args)
-    {
-        try{
-            $customer = $args->getEntity();
-
-            if ($customer instanceof Customer) {
-                $customerId = $customer->getId();
-
-                /** *@var ShopUserInterface $user */
-                $user = $customer->getUser();
-                if ($user instanceof ChannelAwareInterface) {
-                    $channel = $user->getChannel();
-                    if ($channel) {
-                        $storeId = $channel->getCode();
-
-                        $response = $this->mailchimpService->getCustomer($storeId, $customerId);
-                        if (isset($response['id'])) {
-                            $data = [
-                                'first_name' => $customer->getFirstName()?:'-',
-                                'last_name' => $customer->getLastName()?:'-'
-                            ];
-
-                            $this->mailchimpService->updateCustomer($storeId, $customerId, $data);
-                        } else {
-                            $data = [
-                                'id' => (string)$customerId,
-                                'email_address' => $customer->getEmail(),
-                                'opt_in_status' => false,
-                                'first_name' => $customer->getFirstName()?:'-',
-                                'last_name' => $customer->getLastName()?:'-'
-                            ];
-
-                            $this->mailchimpService->addCustomer($storeId, $data);
-                        }
-                    }
-                }
-            }
-        }catch (\Exception $e) {
+        if($customer instanceof CustomerInterface)
+        {
+            $this->registerCustomer($customer);
         }
     }
 
-    public function deleteCustomer(LifecycleEventArgs $args)
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function postUpdate(LifecycleEventArgs $args)
     {
         $customer = $args->getEntity();
-        
-        if ($customer instanceof Customer) {
+
+        if($customer instanceof CustomerInterface)
+        {
+            $this->registerCustomer($customer);
+        }
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function postRemove(LifecycleEventArgs $args)
+    {
+        $customer = $args->getEntity();
+
+        if($customer instanceof CustomerInterface)
+        {
+            $this->deleteCustomer($customer);
+        }
+    }
+
+    /**
+     * @param CustomerInterface $customer
+     */
+    public function registerCustomer(CustomerInterface $customer)
+    {
+        try{
             $customerId = $customer->getId();
 
             /** *@var ShopUserInterface $user */
@@ -111,10 +98,49 @@ class MailchimpEcommerceCustomerSubscriber implements EventSubscriber
                 if ($channel) {
                     $storeId = $channel->getCode();
 
-                    $this->mailchimpService->getCustomer($storeId, $customerId);
+                    $response = $this->mailchimp->getCustomer($storeId, $customerId);
                     if (isset($response['id'])) {
-                        $this->mailchimpService->removeCustomer($storeId, $customerId);
+                        $data = [
+                            'first_name' => $customer->getFirstName()?:'-',
+                            'last_name' => $customer->getLastName()?:'-'
+                        ];
+
+                        $this->mailchimp->updateCustomer($storeId, $customerId, $data);
+                    } else {
+                        $data = [
+                            'id' => (string)$customerId,
+                            'email_address' => $customer->getEmail(),
+                            'opt_in_status' => false,
+                            'first_name' => $customer->getFirstName()?:'-',
+                            'last_name' => $customer->getLastName()?:'-'
+                        ];
+
+                        $this->mailchimp->addCustomer($storeId, $data);
                     }
+                }
+            }
+        }catch (\Exception $e) {}
+    }
+
+    /**
+     * @param CustomerInterface $customer
+     */
+    public function deleteCustomer(CustomerInterface $customer)
+    {
+        $customerId = $customer->getId();
+
+        /** *@var ShopUserInterface $user */
+        $user = $customer->getUser();
+        if ($user instanceof ChannelAwareInterface) {
+            $channel = $user->getChannel();
+
+            if ($channel) {
+                $storeId = $channel->getCode();
+
+                $this->mailchimp->getCustomer($storeId, $customerId);
+
+                if (isset($response['id'])) {
+                    $this->mailchimp->removeCustomer($storeId, $customerId);
                 }
             }
         }

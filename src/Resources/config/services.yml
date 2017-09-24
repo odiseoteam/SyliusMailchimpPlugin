@@ -1,7 +1,22 @@
 parameters:
-    odiseo.mailchimp_plugin.mailchimp.class: Odiseo\SyliusMailchimpPlugin\Service\Mailchimp
+    odiseo.mailchimp_plugin.mailchimp.class: Odiseo\SyliusMailchimpPlugin\Mailchimp\Mailchimp
+    odiseo.mailchimp_plugin.add_customers.command.class: Odiseo\SyliusMailchimpPlugin\Command\MailchimpEcommerceAddCustomersCommand
+    odiseo.mailchimp_plugin.add_products.command.class: Odiseo\SyliusMailchimpPlugin\Command\MailchimpEcommerceAddProductsCommand
 
 services:
     odiseo.mailchimp_plugin.mailchimp:
         class: "%odiseo.mailchimp_plugin.mailchimp.class%"
-        arguments: ["%odiseo.mailchimp_plugin.mailchimp.apikey%", "%odiseo.mailchimp_plugin.mailchimp.listid%"]
+        arguments: ["%odiseo.mailchimp_plugin.mailchimp_apikey%", "%odiseo.mailchimp_plugin.mailchimp_default_listid%"]
+
+    # Commands
+    odiseo.mailchimp_plugin.add_customers.command:
+        class: "%odiseo.mailchimp_plugin.add_customers.command.class%"
+        arguments: ["@odiseo.mailchimp_plugin.mailchimp", "@sylius.channel.context", "@sylius.customer.repository"]
+
+    odiseo.mailchimp_plugin.add_products.command:
+        class: "%odiseo.mailchimp_plugin.add_products.command.class%"
+        arguments: ["@odiseo.mailchimp_plugin.mailchimp", "@sylius.product.repository"]
+
+    odiseo.mailchimp_plugin.create_store.command:
+        class: "%odiseo.mailchimp_plugin.create_store.command.class%"
+        arguments: ["@odiseo.mailchimp_plugin.mailchimp", "@sylius.channel.context"]

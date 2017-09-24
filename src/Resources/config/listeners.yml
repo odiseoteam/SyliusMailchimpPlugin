@@ -1,40 +1,40 @@
 parameters:
-    odiseo.mailchimp_plugin.listener.mailchimp_ecommerce.cart.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceCartListener
-    odiseo.mailchimp_plugin.listener.mailchimp_ecommerce.order.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceOrderListener
+    odiseo.mailchimp_plugin.listener.ecommerce_cart.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceCartListener
+    odiseo.mailchimp_plugin.listener.ecommerce_order.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceOrderListener
     odiseo.mailchimp_plugin.subscriber.customer_newsletter.class: Odiseo\SyliusMailchimpPlugin\EventListener\CustomerNewsletterSubscriber
-    odiseo.mailchimp_plugin.subscriber.mailchimp_ecommerce.store.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceStoreSubscriber
-    odiseo.mailchimp_plugin.subscriber.mailchimp_ecommerce.customer.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceCustomerSubscriber
-    odiseo.mailchimp_plugin.subscriber.mailchimp_ecommerce.product.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceProductSubscriber
+    odiseo.mailchimp_plugin.subscriber.ecommerce_store.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceStoreSubscriber
+    odiseo.mailchimp_plugin.subscriber.ecommerce_customer.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceCustomerSubscriber
+    odiseo.mailchimp_plugin.subscriber.ecommerce_product.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceProductSubscriber
 
 services:
-    odiseo.mailchimp_plugin.listener.mailchimp_ecommerce.cart:
-        class: "%odiseo.mailchimp_plugin.listener.mailchimp_ecommerce.cart.class%"
-        arguments:  ["@odiseo.mailchimp_plugin.service.mailchimp", "@sylius.context.channel", "@sylius.context.cart"]
+    odiseo.mailchimp_plugin.listener.ecommerce_cart:
+        class: "%odiseo.mailchimp_plugin.listener.ecommerce_cart.class%"
+        arguments:  ["@odiseo.mailchimp_plugin.mailchimp", "@sylius.context.channel"]
 
-    odiseo.mailchimp_plugin.listener.mailchimp_ecommerce.order:
-        class: "%odiseo.mailchimp_plugin.listener.mailchimp_ecommerce.order.class%"
-        arguments:  ["@odiseo.mailchimp_plugin.service.mailchimp", "@sylius.context.channel"]
+    odiseo.mailchimp_plugin.listener.ecommerce_order:
+        class: "%odiseo.mailchimp_plugin.listener.ecommerce_order.class%"
+        arguments:  ["@odiseo.mailchimp_plugin.mailchimp", "@sylius.context.channel"]
 
     odiseo.mailchimp_plugin.subscriber.customer_newsletter:
-        class: "%odiseo.mailchimp_plugin.listener.customer_newsletter.class%"
-        arguments: ["@odiseo.mailchimp_plugin.service.mailchimp"]
+        class: "%odiseo.mailchimp_plugin.subscriber.customer_newsletter.class%"
+        arguments: ["@odiseo.mailchimp_plugin.mailchimp"]
         tags:
              - { name: doctrine.event_subscriber }
 
-    odiseo.mailchimp_plugin.subscriber.mailchimp_ecommerce.store:
-        class: "%odiseo.mailchimp_plugin.subscriber.mailchimp_ecommerce.store.class%"
-        arguments:  ["@odiseo.mailchimp_plugin.service.mailchimp"]
+    odiseo.mailchimp_plugin.subscriber.ecommerce_store:
+        class: "%odiseo.mailchimp_plugin.subscriber.ecommerce_store.class%"
+        arguments:  ["@odiseo.mailchimp_plugin.mailchimp"]
         tags:
             - { name: doctrine.event_subscriber }
 
-    odiseo.mailchimp_plugin.subscriber.mailchimp_ecommerce.customer:
-        class: "%odiseo.mailchimp_plugin.subscriber.mailchimp_ecommerce.customer.class%"
-        arguments:  ["@odiseo.mailchimp_plugin.service.mailchimp", "@sylius.context.channel"]
+    odiseo.mailchimp_plugin.subscriber.ecommerce_customer:
+        class: "%odiseo.mailchimp_plugin.subscriber.ecommerce_customer.class%"
+        arguments:  ["@odiseo.mailchimp_plugin.mailchimp", "@sylius.context.channel"]
         tags:
             - { name: doctrine.event_subscriber }
 
-    odiseo.mailchimp_plugin.mailchimp_plugin.subscriber.mailchimp_ecommerce.product:
-        class: "%odiseo.mailchimp_plugin.subscriber.mailchimp_ecommerce.product.class%"
-        arguments:  ["@client.service.mailchimp"]
+    odiseo.mailchimp_plugin.subscriber.ecommerce_product:
+        class: "%odiseo.mailchimp_plugin.subscriber.ecommerce_product.class%"
+        arguments:  ["@odiseo.mailchimp_plugin.mailchimp"]
         tags:
             - { name: doctrine.event_subscriber }

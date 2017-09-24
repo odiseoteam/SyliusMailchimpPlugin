@@ -2,7 +2,7 @@
 
 namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
-use Odiseo\SyliusMailchimpPlugin\Service\MailchimpService;
+use Odiseo\SyliusMailchimpPlugin\Mailchimp\MailchimpInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Channel\Context\CachedPerRequestChannelContext;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -10,9 +10,9 @@ use Sylius\Component\Core\Model\OrderInterface;
 class MailchimpEcommerceCartListener
 {
     /**
-     *@var MailchimpService
+     *@var MailchimpInterface
      */
-    protected $mailchimpService;
+    protected $mailchimp;
 
     /**
      *@var CachedPerRequestChannelContext $channelContext
@@ -20,12 +20,12 @@ class MailchimpEcommerceCartListener
     protected $channelContext;
 
     /**
-     * @param MailChimpService $mailchimpService
+     * @param MailchimpInterface $mailchimp
      * @param CachedPerRequestChannelContext $channelContext
      */
-    public function __construct(MailChimpService $mailchimpService, CachedPerRequestChannelContext $channelContext)
+    public function __construct(MailchimpInterface $mailchimp, CachedPerRequestChannelContext $channelContext)
     {
-        $this->mailchimpService = $mailchimpService;
+        $this->mailchimp = $mailchimp;
         $this->channelContext = $channelContext;
     }
 
@@ -35,8 +35,8 @@ class MailchimpEcommerceCartListener
     public function registerCart(OrderInterface $order)
     {
         try {
-            $store = $this->channelContext->getChannel();
-            $storeId = $store->getCode();
+            $channel = $this->channelContext->getChannel();
+            $storeId = $channel->getCode();
 
             $cartId = $order->getId();
 
@@ -52,15 +52,15 @@ class MailchimpEcommerceCartListener
                 ];
             }
 
-            $response = $this->mailchimpService->getCart($storeId, $cartId);
+            $response = $this->mailchimp->getCart($storeId, $cartId);
 
             if (isset($response['id'])) {
-                $data = array(
+                $data = [
                     'order_total' => $order->getTotal(),
                     'lines' => $lines
-                );
+                ];
 
-                $this->mailchimpService->updateCart($storeId, $cartId, $data);
+                $this->mailchimp->updateCart($storeId, $cartId, $data);
             } else
             {
                 /** @var CustomerInterface $customer */
@@ -68,21 +68,21 @@ class MailchimpEcommerceCartListener
                     return;
                 }
 
-                $data = array(
+                $data = [
                     'id' => (string)$cartId,
-                    'customer' => array(
+                    'customer' => [
                         'id' => (string)$customer->getId(),
                         'email_address' => $customer->getEmail(),
                         'opt_in_status' => false,
                         'first_name' => $customer->getFirstName()?:'-',
                         'last_name' => $customer->getLastName()?:'-'
-                    ),
+                    ],
                     'currency_code' => 'USD',
                     'order_total' => $order->getTotal(),
-                    'lines' => $lines
-                );
+                    'lines' => $lines,
+                ];
 
-                $this->mailchimpService->addCart($storeId, $data);
+                $this->mailchimp->addCart($storeId, $data);
             }
         } catch (\Exception $e)
         {}

@@ -2,7 +2,7 @@
 
 namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
-use Odiseo\SyliusMailchimpPlugin\Service\MailchimpService;
+use Odiseo\SyliusMailchimpPlugin\Mailchimp\MailchimpInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -10,87 +10,113 @@ use Sylius\Component\Core\Model\ChannelInterface;
 class MailchimpEcommerceStoreSubscriber implements EventSubscriber
 {
     /**
-     *@var MailchimpService
+     *@var MailchimpInterface
      */
-    protected $mailchimpService;
+    protected $mailchimp;
 
     /**
-     * @param MailchimpService $mailchimpService
+     * @param MailchimpInterface $mailchimp
      */
-    public function __construct(MailchimpService $mailchimpService)
+    public function __construct(MailchimpInterface $mailchimp)
     {
-        $this->mailchimpService = $mailchimpService;
+        $this->mailchimp = $mailchimp;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             'postPersist',
             'postUpdate',
-            'postRemove'
-        );
+            'postRemove',
+        ];
     }
 
+    /**
+     * @param LifecycleEventArgs $args
+     */
     public function postPersist(LifecycleEventArgs $args)
     {
-        $this->registerStore($args);
+        $channel = $args->getEntity();
+
+        if($channel instanceof ChannelInterface)
+        {
+            $this->registerStore($channel);
+        }
     }
 
+    /**
+     * @param LifecycleEventArgs $args
+     */
     public function postUpdate(LifecycleEventArgs $args)
     {
-        $this->registerStore($args);
+        $channel = $args->getEntity();
+
+        if($channel instanceof ChannelInterface)
+        {
+            $this->registerStore($channel);
+        }
     }
 
+    /**
+     * @param LifecycleEventArgs $args
+     */
     public function postRemove(LifecycleEventArgs $args)
     {
-        $this->deleteStore($args);
+        $channel = $args->getEntity();
+
+        if($channel instanceof ChannelInterface)
+        {
+            $this->deleteStore($channel);
+        }
     }
 
-    public function registerStore(LifecycleEventArgs $args)
+    /**
+     * @param ChannelInterface $channel
+     */
+    public function registerStore(ChannelInterface $channel)
     {
         try{
-            $channel = $args->getEntity();
+            $storeId = $channel->getCode();
 
-            if ($channel instanceof ChannelInterface) {
-                $storeId = $channel->getCode();
+            $response = $this->mailchimp->getStore($storeId);
 
-                $response = $this->mailchimpService->getStore($storeId);
-                if (isset($response['id'])) {
+            if (isset($response['id'])) {
+                $data = [
+                    'name' => $channel->getName(),
+                    'currency_code' => $channel->getBaseCurrency()->getCode()
+                ];
+
+                $this->mailchimp->updateStore($storeId, $data);
+            } else {
+                $listId = $this->mailchimp->getDefaultListId();
+
+                if ($listId) {
                     $data = [
+                        'id' => $storeId,
+                        'list_id' => $listId,
                         'name' => $channel->getName(),
                         'currency_code' => $channel->getBaseCurrency()->getCode()
                     ];
 
-                    $this->mailchimpService->updateStore($storeId, $data);
-                } else {
-                    $listId = $channel->getListId();
-                    if ($listId) {
-                        $data = [
-                            'id' => $storeId,
-                            'list_id' => $listId,
-                            'name' => $channel->getName(),
-                            'currency_code' => $channel->getBaseCurrency()->getCode()
-                        ];
-
-                        $this->mailchimpService->addStore($data);
-                    }
+                    $this->mailchimp->addStore($data);
                 }
             }
-        }catch (\Exception $e) {
-        }
+        }catch (\Exception $e) {}
     }
 
-    public function deleteStore(LifecycleEventArgs $args)
+    /**
+     * @param ChannelInterface $channel
+     */
+    public function deleteStore(ChannelInterface $channel)
     {
-        $entity = $args->getEntity();
-        
-        if ($entity instanceof ChannelInterface) {
-            $storeId = $entity->getCode();
+        $storeId = $channel->getCode();
 
-            $response = $this->mailchimpService->getStore($storeId);
-            if (isset($response['id'])) {
-                $this->mailchimpService->removeStore($storeId);
-            }
+        $response = $this->mailchimp->getStore($storeId);
+        if (isset($response['id'])) {
+            $this->mailchimp->removeStore($storeId);
         }
     }
 }

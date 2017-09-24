@@ -2,7 +2,7 @@
 
 namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
-use Odiseo\SyliusMailchimpPlugin\Service\MailchimpService;
+use Odiseo\SyliusMailchimpPlugin\Mailchimp\MailchimpInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Sylius\Component\Core\Model\ProductInterface;
@@ -11,112 +11,121 @@ use Sylius\Component\Core\Model\ProductVariant;
 class MailchimpEcommerceProductSubscriber implements EventSubscriber
 {
     /**
-     *@var MailchimpService
+     *@var MailchimpInterface
      */
-    protected $mailchimpService;
+    protected $mailchimp;
 
     /**
-     * @param MailchimpService $mailchimpService
+     * @param MailchimpInterface $mailchimp
      */
-    public function __construct(MailchimpService $mailchimpService)
+    public function __construct(MailchimpInterface $mailchimp)
     {
-        $this->mailchimpService = $mailchimpService;
+        $this->mailchimp = $mailchimp;
     }
 
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             'postPersist',
             'postUpdate',
             'postRemove'
-        );
+        ];
     }
 
+    /**
+     * @param LifecycleEventArgs $args
+     */
     public function postPersist(LifecycleEventArgs $args)
-    {
-        $this->registerProduct($args);
-    }
-
-    public function postUpdate(LifecycleEventArgs $args)
-    {
-        $this->registerProduct($args);
-    }
-
-    public function postRemove(LifecycleEventArgs $args)
-    {
-        $this->deleteProduct($args);
-    }
-
-    public function registerProduct(LifecycleEventArgs $args)
-    {
-        try {
-            $product = $args->getEntity();
-
-            if ($product instanceof ProductInterface) {
-                $productId = $product->getId();
-
-                $variants = array();
-                $productVariants = $product->getVariants();
-
-                if (count($productVariants) > 0) {
-                    /** @var ProductVariant $productVariant */
-                    foreach ($productVariants as $productVariant) {
-                        $variants[] = array(
-                            'id' => (string)$productVariant->getId(),
-                            'title' => $productVariant->getName() ? $productVariant->getName() : $product->getName()
-                        );
-                    }
-                } else {
-                    $variants[] = array(
-                        'id' => (string)$product->getId(),
-                        'title' => $product->getName(),
-                    );
-                }
-
-                foreach ($product->getChannels() as $channel)
-                {
-                    $storeId = $channel->getCode();
-                    $response = $this->mailchimpService->getProduct($storeId, $productId);
-
-                    if (isset($response['id'])) {
-                        $data = array(
-                            'title' => $product->getName(),
-                            'variants' => $variants
-                        );
-
-                        $this->mailchimpService->updateProduct($storeId, $productId, $data);
-                    } else {
-                        $data = array(
-                            'id' => (string)$productId,
-                            'title' => $product->getName(),
-                            'variants' => $variants
-                        );
-
-                        $this->mailchimpService->addProduct($storeId, $data);
-                    }
-                }
-            }
-        }catch (\Exception $e) {
-        }
-    }
-
-    public function deleteProduct(LifecycleEventArgs $args)
     {
         $product = $args->getEntity();
 
-        if ($product instanceof ProductInterface) {
+        if($product instanceof ProductInterface) {
+            $this->registerProduct($product);
+        }
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function postUpdate(LifecycleEventArgs $args)
+    {
+        $product = $args->getEntity();
+
+        if($product instanceof ProductInterface) {
+            $this->registerProduct($product);
+        }
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function postRemove(LifecycleEventArgs $args)
+    {
+        $product = $args->getEntity();
+
+        if($product instanceof ProductInterface) {
+            $this->deleteProduct($product);
+        }
+    }
+
+    /**
+     * @param ProductInterface $product
+     */
+    public function registerProduct(ProductInterface $product)
+    {
+        try {
             $productId = $product->getId();
+
+            $variants = [];
+            /** @var ProductVariant $productVariant */
+            foreach ($product->getVariants() as $productVariant) {
+                $variants[] = array(
+                    'id' => (string)$productVariant->getId(),
+                    'title' => $productVariant->getName() ? $productVariant->getName() : $product->getName(),
+                );
+            }
 
             foreach ($product->getChannels() as $channel)
             {
                 $storeId = $channel->getCode();
+                $response = $this->mailchimp->getProduct($storeId, $productId);
 
-                $response = $this->mailchimpService->getProduct($storeId, $productId);
+                if (isset($response['id'])) {
+                    $data = [
+                        'title' => $product->getName(),
+                        'variants' => $variants,
+                    ];
 
-                if (isset($response['id']))
-                {
-                    $this->mailchimpService->removeProduct($storeId, $productId);
+                    $this->mailchimp->updateProduct($storeId, $productId, $data);
+                } else {
+                    $data = [
+                        'id' => (string)$productId,
+                        'title' => $product->getName(),
+                        'variants' => $variants,
+                    ];
+
+                    $this->mailchimp->addProduct($storeId, $data);
                 }
+            }
+        }catch (\Exception $e) {}
+    }
+
+    /**
+     * @param ProductInterface $product
+     */
+    public function deleteProduct(ProductInterface $product)
+    {
+        $productId = $product->getId();
+
+        foreach ($product->getChannels() as $channel)
+        {
+            $storeId = $channel->getCode();
+
+            $response = $this->mailchimp->getProduct($storeId, $productId);
+
+            if (isset($response['id']))
+            {
+                $this->mailchimp->removeProduct($storeId, $productId);
             }
         }
     }

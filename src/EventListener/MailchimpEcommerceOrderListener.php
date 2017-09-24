@@ -2,30 +2,30 @@
 
 namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
-use Odiseo\SyliusMailchimpPlugin\Service\MailchimpService;
+use Odiseo\SyliusMailchimpPlugin\Mailchimp\MailchimpInterface;
+use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
-use Sylius\Component\Channel\Context\CachedPerRequestChannelContext;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Resource\Exception\UnexpectedTypeException;
 
 class MailchimpEcommerceOrderListener
 {
     /**
-     *@var MailchimpService
+     *@var MailchimpInterface
      */
-    protected $mailchimpService;
+    protected $mailchimp;
     /**
-     *@var CachedPerRequestChannelContext $channelContext
+     *@var ChannelContextInterface $channelContext
      */
     protected $channelContext;
 
     /**
-     * @param MailchimpService $mailchimpService
-     * @param CachedPerRequestChannelContext $channelContext
+     * @param MailchimpInterface $mailchimp
+     * @param ChannelContextInterface $channelContext
      */
-    public function __construct(MailchimpService $mailchimpService, CachedPerRequestChannelContext $channelContext)
+    public function __construct(MailchimpInterface $mailchimp, ChannelContextInterface $channelContext)
     {
-        $this->mailchimpService = $mailchimpService;
+        $this->mailchimp = $mailchimp;
         $this->channelContext = $channelContext;
     }
 
@@ -41,16 +41,16 @@ class MailchimpEcommerceOrderListener
             $storeId = $store->getCode();
             $orderId = $order->getId();
 
-            $lines = array();
+            $lines = [];
             $items = $order->getItems();
             foreach ($items as $item) {
-                $lines[] = array(
+                $lines[] = [
                     'id' => (string)$item->getId(),
                     'product_id' => (string)$item->getProduct()->getId(),
                     'product_variant_id' => (string)$item->getVariant()->getId(),
                     'quantity' => $item->getQuantity(),
                     'price' => $item->getTotal()
-                );
+                ];
             }
 
             /** @var CustomerInterface $customer */
@@ -58,22 +58,21 @@ class MailchimpEcommerceOrderListener
                 return;
             }
 
-            $data = array(
+            $data = [
                 'id' => (string)$orderId,
-                'customer' => array(
+                'customer' => [
                     'id' => (string)$customer->getId(),
                     'email_address' => $customer->getEmail(),
                     'opt_in_status' => false,
                     'first_name' => $customer->getFirstName()?:'-',
                     'last_name' => $customer->getLastName()?:'-'
-                ),
+                ],
                 'currency_code' => 'USD',
                 'order_total' => $order->getTotal(),
-                'lines' => $lines
-            );
+                'lines' => $lines,
+            ];
 
-            $this->mailchimpService->addOrder($storeId, $data);
-        }catch (\Exception $e) {
-        }
+            $this->mailchimp->addOrder($storeId, $data);
+        }catch (\Exception $e) {}
     }
 }
