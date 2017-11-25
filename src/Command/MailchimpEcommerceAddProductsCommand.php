@@ -10,7 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MailChimpEcommerceAddProductsCommand extends Command
+class MailchimpEcommerceAddProductsCommand extends Command
 {
     /**
      *@var MailchimpInterface
@@ -21,7 +21,7 @@ class MailChimpEcommerceAddProductsCommand extends Command
     protected $productRepository;
 
     /**
-     * MailChimpEcommerceAddProductsCommand constructor.
+     * MailchimpEcommerceAddProductsCommand constructor.
      *
      * @param MailchimpInterface $mailchimp
      * @param ProductRepositoryInterface $productRepository

@@ -9,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MailChimpEcommerceCreateStoreCommand extends ContainerAwareCommand
+class MailchimpEcommerceCreateStoreCommand extends ContainerAwareCommand
 {
     /**
      *@var Mailchimp

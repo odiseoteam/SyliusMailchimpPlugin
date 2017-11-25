@@ -1,10 +1,10 @@
 parameters:
-    odiseo.mailchimp_plugin.listener.ecommerce_cart.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceCartListener
-    odiseo.mailchimp_plugin.listener.ecommerce_order.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceOrderListener
+    odiseo.mailchimp_plugin.listener.ecommerce_cart.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailchimpEcommerceCartListener
+    odiseo.mailchimp_plugin.listener.ecommerce_order.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailchimpEcommerceOrderListener
     odiseo.mailchimp_plugin.subscriber.customer_newsletter.class: Odiseo\SyliusMailchimpPlugin\EventListener\CustomerNewsletterSubscriber
-    odiseo.mailchimp_plugin.subscriber.ecommerce_store.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceStoreSubscriber
-    odiseo.mailchimp_plugin.subscriber.ecommerce_customer.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceCustomerSubscriber
-    odiseo.mailchimp_plugin.subscriber.ecommerce_product.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailChimpEcommerceProductSubscriber
+    odiseo.mailchimp_plugin.subscriber.ecommerce_store.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailchimpEcommerceStoreSubscriber
+    odiseo.mailchimp_plugin.subscriber.ecommerce_customer.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailchimpEcommerceCustomerSubscriber
+    odiseo.mailchimp_plugin.subscriber.ecommerce_product.class: Odiseo\SyliusMailchimpPlugin\EventListener\MailchimpEcommerceProductSubscriber
 
 services:
     odiseo.mailchimp_plugin.listener.ecommerce_cart:
