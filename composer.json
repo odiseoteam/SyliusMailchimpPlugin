@@ -27,8 +27,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Acme\\ExamplePlugin\\": "src/",
-            "Tests\\Acme\\ExamplePlugin\\": "tests/"
+            "Odiseo\\SyliusMailchimpPlugin\\": "src/",
+            "Tests\\Odiseo\\SyliusMailchimpPlugin\\": "tests/"
         }
     },
     "autoload-dev": {
