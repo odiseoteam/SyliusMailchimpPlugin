@@ -7,6 +7,7 @@ parameters:
 services:
     odiseo.mailchimp_plugin.mailchimp:
         class: "%odiseo.mailchimp_plugin.mailchimp.class%"
+        public: true
         arguments: ["%odiseo.mailchimp_plugin.mailchimp_apikey%", "%odiseo.mailchimp_plugin.mailchimp_default_listid%"]
 
     # Commands
