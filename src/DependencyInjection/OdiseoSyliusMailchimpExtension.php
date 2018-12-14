@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Odiseo\SyliusMailchimpPlugin\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
@@ -15,15 +17,14 @@ final class OdiseoSyliusMailchimpExtension extends Extension
     public function load(array $config, ContainerBuilder $container): void
     {
         $config = $this->processConfiguration($this->getConfiguration([], $container), $config);
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
         $configFiles = [
-            'services.yml',
             'listeners.yml',
+            'services.yml'
         ];
 
-        foreach ($configFiles as $configFile)
-        {
+        foreach ($configFiles as $configFile) {
             $loader->load($configFile);
         }
     }

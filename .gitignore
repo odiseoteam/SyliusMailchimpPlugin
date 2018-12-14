@@ -1,10 +1,11 @@
 .idea
-/bin/
-!/bin/.gitkeep
+.DS_Store
 
 /vendor/
 /node_modules/
 /composer.lock
 
 /etc/build/*
-!/etc/build/.gitkeep
+!/etc/build/.gitignore
+
+/tests/Application/yarn.lock

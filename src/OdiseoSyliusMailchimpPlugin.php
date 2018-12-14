@@ -1,11 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Odiseo\SyliusMailchimpPlugin;
 
 use Sylius\Bundle\CoreBundle\Application\SyliusPluginTrait;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Sylius\Bundle\ResourceBundle\AbstractResourceBundle;
+use Sylius\Bundle\ResourceBundle\ResourceBundleInterface;
+use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 
-final class OdiseoSyliusMailchimpPlugin extends Bundle
+final class OdiseoSyliusMailchimpPlugin extends AbstractResourceBundle
 {
     use SyliusPluginTrait;
+
+    protected $mappingFormat = ResourceBundleInterface::MAPPING_YAML;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSupportedDrivers(): array
+    {
+        return [
+            SyliusResourceBundle::DRIVER_DOCTRINE_ORM,
+        ];
+    }
 }
