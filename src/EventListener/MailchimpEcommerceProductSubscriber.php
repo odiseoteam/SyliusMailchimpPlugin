@@ -11,7 +11,7 @@ use Sylius\Component\Core\Model\ProductVariant;
 class MailchimpEcommerceProductSubscriber implements EventSubscriber
 {
     /**
-     *@var MailchimpInterface
+     * @var MailchimpInterface
      */
     protected $mailchimp;
 
@@ -39,7 +39,7 @@ class MailchimpEcommerceProductSubscriber implements EventSubscriber
     {
         $product = $args->getEntity();
 
-        if($product instanceof ProductInterface) {
+        if ($product instanceof ProductInterface) {
             $this->registerProduct($product);
         }
     }
@@ -51,7 +51,7 @@ class MailchimpEcommerceProductSubscriber implements EventSubscriber
     {
         $product = $args->getEntity();
 
-        if($product instanceof ProductInterface) {
+        if ($product instanceof ProductInterface) {
             $this->registerProduct($product);
         }
     }
@@ -63,7 +63,7 @@ class MailchimpEcommerceProductSubscriber implements EventSubscriber
     {
         $product = $args->getEntity();
 
-        if($product instanceof ProductInterface) {
+        if ($product instanceof ProductInterface) {
             $this->deleteProduct($product);
         }
     }
@@ -117,14 +117,12 @@ class MailchimpEcommerceProductSubscriber implements EventSubscriber
     {
         $productId = $product->getId();
 
-        foreach ($product->getChannels() as $channel)
-        {
+        foreach ($product->getChannels() as $channel) {
             $storeId = $channel->getCode();
 
             $response = $this->mailchimp->getProduct($storeId, $productId);
 
-            if (isset($response['id']))
-            {
+            if (isset($response['id'])) {
                 $this->mailchimp->removeProduct($storeId, $productId);
             }
         }

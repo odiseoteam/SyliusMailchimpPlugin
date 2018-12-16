@@ -22,6 +22,9 @@ class CustomerNewsletterSubscriber implements EventSubscriber
         $this->mailchimp = $mailchimp;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getSubscribedEvents()
     {
         return array(
@@ -35,8 +38,7 @@ class CustomerNewsletterSubscriber implements EventSubscriber
      */
     public function addCustomerToList(CustomerInterface $customer)
     {
-        if ($customer->isSubscribedToNewsletter())
-        {
+        if ($customer->isSubscribedToNewsletter()) {
             $this->mailchimp->addUserToList($customer);
         }
     }

@@ -21,8 +21,6 @@ class MailchimpEcommerceAddProductsCommand extends Command
     protected $productRepository;
 
     /**
-     * MailchimpEcommerceAddProductsCommand constructor.
-     *
      * @param MailchimpInterface $mailchimp
      * @param ProductRepositoryInterface $productRepository
      */
@@ -40,8 +38,8 @@ class MailchimpEcommerceAddProductsCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('odiseo:mailchimp:products:add')
-            ->setDescription('Add Products in Store to Mailchimp Ecommerce')
+            ->setName('odiseo:mailchimp:add-products')
+            ->setDescription('Add Products data to Mailchimp Ecommerce')
         ;
     }
 
@@ -58,7 +56,7 @@ class MailchimpEcommerceAddProductsCommand extends Command
      */
     protected function addProducts(OutputInterface $output)
     {
-        $output->writeln('Add products in store to MailChimp...');
+        $output->writeln('Add products in store to Mailchimp...');
 
         try {
             /** @var ProductInterface $product */

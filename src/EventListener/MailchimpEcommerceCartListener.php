@@ -11,16 +11,18 @@ use Symfony\Component\Routing\RouterInterface;
 class MailchimpEcommerceCartListener
 {
     /**
-     *@var MailchimpInterface
+     * @var MailchimpInterface
      */
     protected $mailchimp;
 
     /**
-     *@var CachedPerRequestChannelContext $channelContext
+     * @var CachedPerRequestChannelContext $channelContext
      */
     protected $channelContext;
 
-    /** @var  RouterInterface */
+    /**
+     * @var  RouterInterface
+     */
     protected $router;
 
     /**

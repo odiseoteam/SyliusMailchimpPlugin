@@ -3,5 +3,5 @@
 parameters:
     locale: en_US
 
-#imports:
-#    - { resource: "@OdiseoSyliusMailchimpPlugin/Resources/config/config.yml" }
+imports:
+    - { resource: "@OdiseoSyliusMailchimpPlugin/Resources/config/config.yml" }

@@ -5,24 +5,33 @@ namespace Odiseo\SyliusMailchimpPlugin\Command;
 use Odiseo\SyliusMailchimpPlugin\Mailchimp\Mailchimp;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MailchimpEcommerceCreateStoreCommand extends ContainerAwareCommand
+class MailchimpEcommerceCreateStoreCommand extends Command
 {
     /**
      *@var Mailchimp
      */
     protected $mailchimp;
 
-    /** @var ChannelRepositoryInterface */
+    /**
+     * @var ChannelRepositoryInterface
+     */
     protected $channelRepository;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $listId;
 
-    public function __construct(Mailchimp $mailchimp, ChannelRepositoryInterface $channelRepository, $listId)
+    /**
+     * @param Mailchimp $mailchimp
+     * @param ChannelRepositoryInterface $channelRepository
+     * @param string $listId
+     */
+    public function __construct(Mailchimp $mailchimp, ChannelRepositoryInterface $channelRepository, string $listId)
     {
         parent::__construct();
 
@@ -37,7 +46,7 @@ class MailchimpEcommerceCreateStoreCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('odiseo:mailchimp:stores:create')
+            ->setName('odiseo:mailchimp:create-stores')
             ->setDescription('Register the Stores to Mailchimp Ecommerce')
         ;
     }

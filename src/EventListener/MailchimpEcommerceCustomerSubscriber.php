@@ -51,8 +51,7 @@ class MailchimpEcommerceCustomerSubscriber implements EventSubscriber
     {
         $customer = $args->getEntity();
 
-        if($customer instanceof CustomerInterface)
-        {
+        if($customer instanceof CustomerInterface) {
             $this->registerCustomer($customer);
         }
     }
@@ -64,8 +63,7 @@ class MailchimpEcommerceCustomerSubscriber implements EventSubscriber
     {
         $customer = $args->getEntity();
 
-        if($customer instanceof CustomerInterface)
-        {
+        if($customer instanceof CustomerInterface) {
             $this->registerCustomer($customer);
         }
     }
@@ -77,8 +75,7 @@ class MailchimpEcommerceCustomerSubscriber implements EventSubscriber
     {
         $customer = $args->getEntity();
 
-        if($customer instanceof CustomerInterface)
-        {
+        if($customer instanceof CustomerInterface) {
             $this->deleteCustomer($customer);
         }
     }
@@ -88,7 +85,7 @@ class MailchimpEcommerceCustomerSubscriber implements EventSubscriber
      */
     public function registerCustomer(CustomerInterface $customer)
     {
-        try{
+        try {
             $customerId = $customer->getId();
 
             /** *@var ShopUserInterface $user */

@@ -29,8 +29,6 @@ class MailchimpEcommerceAddCustomersCommand extends Command
     protected $customerRepository;
 
     /**
-     * MailchimpEcommerceAddCustomersCommand constructor.
-     *
      * @param MailchimpInterface $mailchimp
      * @param ChannelContextInterface $channelContext
      * @param CustomerRepositoryInterface $customerRepository
@@ -54,8 +52,8 @@ class MailchimpEcommerceAddCustomersCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('odiseo:mailchimp:customers:add')
-            ->setDescription('Add Customers in Store to Mailchimp Ecommerce')
+            ->setName('odiseo:mailchimp:add-customers')
+            ->setDescription('Add customers data to Mailchimp Ecommerce')
         ;
     }
 

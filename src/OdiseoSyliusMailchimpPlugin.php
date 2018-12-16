@@ -9,6 +9,9 @@ use Sylius\Bundle\ResourceBundle\AbstractResourceBundle;
 use Sylius\Bundle\ResourceBundle\ResourceBundleInterface;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 
+/**
+ * @author Diego D'amico <diego@odiseo.com.ar>
+ */
 final class OdiseoSyliusMailchimpPlugin extends AbstractResourceBundle
 {
     use SyliusPluginTrait;

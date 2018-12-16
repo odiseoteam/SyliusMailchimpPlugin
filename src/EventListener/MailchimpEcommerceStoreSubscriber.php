@@ -10,7 +10,7 @@ use Sylius\Component\Core\Model\ChannelInterface;
 class MailchimpEcommerceStoreSubscriber implements EventSubscriber
 {
     /**
-     *@var MailchimpInterface
+     * @var MailchimpInterface
      */
     protected $mailchimp;
 
@@ -41,8 +41,7 @@ class MailchimpEcommerceStoreSubscriber implements EventSubscriber
     {
         $channel = $args->getEntity();
 
-        if($channel instanceof ChannelInterface)
-        {
+        if($channel instanceof ChannelInterface) {
             $this->registerStore($channel);
         }
     }
@@ -54,8 +53,7 @@ class MailchimpEcommerceStoreSubscriber implements EventSubscriber
     {
         $channel = $args->getEntity();
 
-        if($channel instanceof ChannelInterface)
-        {
+        if($channel instanceof ChannelInterface) {
             $this->registerStore($channel);
         }
     }
@@ -67,8 +65,7 @@ class MailchimpEcommerceStoreSubscriber implements EventSubscriber
     {
         $channel = $args->getEntity();
 
-        if($channel instanceof ChannelInterface)
-        {
+        if($channel instanceof ChannelInterface) {
             $this->deleteStore($channel);
         }
     }
@@ -78,7 +75,7 @@ class MailchimpEcommerceStoreSubscriber implements EventSubscriber
      */
     public function registerStore(ChannelInterface $channel)
     {
-        try{
+        try {
             $storeId = $channel->getCode();
 
             $response = $this->mailchimp->getStore($storeId);
@@ -104,7 +101,7 @@ class MailchimpEcommerceStoreSubscriber implements EventSubscriber
                     $this->mailchimp->addStore($data);
                 }
             }
-        }catch (\Exception $e) {}
+        } catch (\Exception $e) {}
     }
 
     /**

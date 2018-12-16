@@ -7,7 +7,9 @@ use Sylius\Component\Core\Model\CustomerInterface;
 
 class Mailchimp extends BaseMailChimp implements MailchimpInterface
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $defaultListId;
 
     /**
@@ -17,6 +19,7 @@ class Mailchimp extends BaseMailChimp implements MailchimpInterface
     {
         $this->defaultListId = $defaultListId;
     }
+
     /**
      * @inheritdoc
      */

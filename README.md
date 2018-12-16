@@ -1,35 +1,116 @@
-<article class="markdown-body entry-content" itemprop="text"><p><a href="https://odiseo.com.ar/bundles/odiseoapp/images/logoodiseotransparent.png" target="_blank"><img src="https://odiseo.com.ar/bundles/odiseoapp/images/logoodiseotransparent.png" alt="Odiseo" data-canonical-src="https://odiseo.com.ar/bundles/odiseoapp/images/logoodiseotransparent.png" style="margin:0 auto"></a></p>
-<h2><a href="#overview" aria-hidden="true" class="anchor" id="user-content-overview"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Overview</h2>
-<p>This plugin allows you to integrate MailChimp newsletter</p>
-<h2><a href="#support" aria-hidden="true" class="anchor" id="user-content-support"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Support</h2>
-<p>Do you want us to customize this plugin for your specific needs? Write us an email on <a href="mailto:odiseo.team@gmail.com">odiseo.team@gmail.com</a> <g-emoji alias="computer" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4bb.png" ios-version="6.0">💻</g-emoji></p>
-<h2><a href="#installation" aria-hidden="true" class="anchor" id="user-content-installation"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Installation</h2>
-<div class="highlight highlight-source-shell"><pre>$ composer odiseoteam/sylius-mailchimp-plugin
-</pre></div>
-<p>Add plugin dependencies to your AppKernel.php</p>
-<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-k">public</span> <span class="pl-k">function</span> <span class="pl-en">registerBundles</span>()</span>
-<span class="pl-s1">{</span>
-<span class="pl-s1">    <span class="pl-k">return</span> <span class="pl-c1">array_merge</span>(<span class="pl-k">parent</span><span class="pl-k">::</span>registerBundles(), [</span>
-<span class="pl-s1">        <span class="pl-k">...</span></span>
-<span class="pl-s1">        </span>
-<span class="pl-s1">        <span class="pl-k">new</span> <span class="pl-c1">\Odiseo\SyliusMailchimpPlugin\OdiseoSyliusMailchimpPlugin</span>(),</span>
-<span class="pl-s1">    ]);</span>
-<span class="pl-s1">}</span></pre></div>
-<h2><a href="#usage" aria-hidden="true" class="anchor" id="user-content-usage"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Usage</h2>
-<p>Add MailChimp API key and default list ID to your parameters.yml file</p>
-<div class="highlight highlight-source-yaml"><pre><span class="pl-ent">parameters</span>:
-    <span class="pl-s">...</span>
-    
-    <span class="pl-ent">odiseo.mailchimp_plugin.mailchimp_apikey</span>: <span class="pl-s">YOUR_API_KEY</span>
-    <span class="pl-ent">odiseo.mailchimp_plugin.mailchimp_default_listid</span>: <span class="pl-s">DEFAULT_LIST_ID</span></pre></div>
-<div class="markdown-body entry-content"><p>
+<h1 align="center">
+    <a href="https://odiseo.com.ar/" target="_blank" title="Odiseo">
+        <img src="https://github.com/odiseoteam/SyliusMailchimpPlugin/blob/master/logo_odiseo.png" alt="Odiseo" width="300px" />
+    </a>
+    <br />
+    Odiseo Sylius Mailchimp Plugin
+    <br />
+    <a href="https://packagist.org/packages/odiseoteam/sylius-mailchimp-plugin" title="License" target="_blank">
+        <img src="https://img.shields.io/packagist/l/odiseoteam/sylius-mailchimp-plugin.svg" />
+    </a>
+    <a href="https://packagist.org/packages/odiseoteam/sylius-mailchimp-plugin" title="Version" target="_blank">
+        <img src="https://img.shields.io/packagist/v/odiseoteam/sylius-mailchimp-plugin.svg" />
+    </a>
+    <a href="http://travis-ci.org/odiseoteam/SyliusMailchimpPlugin" title="Build status" target="_blank">
+        <img src="https://img.shields.io/travis/odiseoteam/SyliusMailchimpPlugin/master.svg" />
+    </a>
+    <a href="https://scrutinizer-ci.com/g/odiseoteam/SyliusMailchimpPlugin/" title="Scrutinizer" target="_blank">
+        <img src="https://img.shields.io/scrutinizer/g/odiseoteam/SyliusMailchimpPlugin.svg" />
+    </a>
+    <a href="https://packagist.org/packages/odiseoteam/sylius-mailchimp-plugin" title="Total Downloads" target="_blank">
+        <img src="https://poser.pugx.org/odiseoteam/sylius-mailchimp-plugin/downloads" />
+    </a>
+</h1>
+
+## Description
+
+This is a Sylius Plugin that connect your store with Mailchimp to use their ecommerce features: 
+<a href="https://mailchimp.com/en/resources/mailchimp-e-commerce">https://mailchimp.com/en/resources/mailchimp-e-commerce</a>. 
+
+Some of that features are:
+
+* Product blocks: Customizable product blocks provide you with a quick way to promote your best-selling items or 
+showcase seasonal products in your campaign or automation email. Once you connect your store, we’ll automatically pull 
+product images, descriptions, and prices for you.
+
+* Product recommendations: Product recommendations feature analyzes the previous purchase behavior of your customers 
+and automatically suggests products they’re most likely to buy.
+
+* E-commerce automations: Welcome first-time customers, Reward your best customers, Send a product follow-up message, 
+Re-engage lapsed customers.
+
+* Abandoned cart: Allows you to give customers the incentive they need to return to your store, so you can recapture 
+sales and generate more revenue.
+
+* Order notifications: Allow you to design, send, and track all of those notifications you need to send customers—like 
+order confirmations, invoices, shipping confirmations, refund confirmations, and cancellation confirmations—directly 
+through your Mailchimp account.
+
+## Demo
+
+You can see this plugin in action in our Sylius Demo application.
+
+- Frontend: [sylius-demo.odiseo.com.ar](https://sylius-demo.odiseo.com.ar). 
+- Administration: [sylius-demo.odiseo.com.ar/admin](https://sylius-demo.odiseo.com.ar/admin) with `odiseo: odiseo` credentials.
+
+## Installation
+
+1. Run `composer require odiseoteam/sylius-mailchimp-plugin`.
+
+2. Add the plugin to the AppKernel:
+
+```php
+public function registerBundles(): array
+{
+    $bundles = [
+        ...
+        new \Odiseo\SyliusReportPlugin\OdiseoSyliusReportPlugin(),
+    ];
+}
+```
+
+3. Import the configurations on your config.yml:
+ 
+```yml
+    - { resource: "@OdiseoSyliusMailchimpPlugin/Resources/config/config.yml" }
+```
+
+4) Add the enviorment variables:
+
+```yml
+ODISEO_MAILCHIMP_APIKEY=EDITME
+ODISEO_MAILCHIMP_DEFAULT_LISTID=EDITME
+```
+
+## Usage
+
+After installing this plugin the store will be connected to Mailchimp. This mean that Mailchimp will be updated with 
+your realtime data using differents event listeners.
+
+#### Get the mailchimp serivce on your class
+
+```php
 /** @var Mailchimp $mailchimp */
 $mailchimp = $this->get('odiseo.mailchimp_plugin.mailchimp');
-</p></div>
-<h2><a href="#contribution" aria-hidden="true" class="anchor" id="user-content-contribution"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Contribution</h2>
-<p>Learn more about our contribution workflow on <a href="http://docs.sylius.org/en/latest/contributing/" rel="nofollow">http://docs.sylius.org/en/latest/contributing/</a></p>
-</article>
-  </div>
+```
 
+#### Available CLI commands to update mailchimp with your store data.
 
-  </div>
+```bash 
+$ bin/console odiseo:mailchimp:add-customers 
+```
+```bash
+$ bin/console odiseo:mailchimp:add-products
+```
+
+```bash
+$ bin/console odiseo:mailchimp:create-stores
+```
+
+## Test the plugin
+
+You can follow the instructions to test this plugins in the proper documentation page: [Test the plugin](doc/tests.md).
+    
+## Credits
+
+This plugin is maintained by <a href="https://odiseo.com.ar">Odiseo</a>. Want us to help you with this plugin or any Sylius project? Contact us on <a href="mailto:team@odiseo.com.ar">team@odiseo.com.ar</a>.

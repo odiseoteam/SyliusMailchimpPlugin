@@ -11,11 +11,11 @@ use Sylius\Component\Resource\Exception\UnexpectedTypeException;
 class MailchimpEcommerceOrderListener
 {
     /**
-     *@var MailchimpInterface
+     * @var MailchimpInterface
      */
     protected $mailchimp;
     /**
-     *@var ChannelContextInterface $channelContext
+     * @var ChannelContextInterface
      */
     protected $channelContext;
 
