@@ -56,10 +56,5 @@
             "Odiseo\\SyliusMailchimpPlugin\\": "src/",
             "Tests\\Odiseo\\SyliusMailchimpPlugin\\": "tests/"
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.3"
-        }
     }
 }
