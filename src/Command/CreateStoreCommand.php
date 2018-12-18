@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Odiseo\SyliusMailchimpPlugin\Command;
 
-use Odiseo\SyliusMailchimpPlugin\Mailchimp\Mailchimp;
+use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MailchimpEcommerceCreateStoreCommand extends Command
+class CreateStoreCommand extends Command
 {
     /**
-     *@var Mailchimp
+     * @var EcommerceInterface
      */
-    protected $mailchimp;
+    protected $ecommerceApi;
 
     /**
      * @var ChannelRepositoryInterface
@@ -27,15 +29,19 @@ class MailchimpEcommerceCreateStoreCommand extends Command
     protected $listId;
 
     /**
-     * @param Mailchimp $mailchimp
+     * @param EcommerceInterface $ecommerceApi
      * @param ChannelRepositoryInterface $channelRepository
      * @param string $listId
      */
-    public function __construct(Mailchimp $mailchimp, ChannelRepositoryInterface $channelRepository, string $listId)
+    public function __construct(
+        EcommerceInterface $ecommerceApi,
+        ChannelRepositoryInterface $channelRepository,
+        string $listId
+    )
     {
         parent::__construct();
 
-        $this->mailchimp = $mailchimp;
+        $this->ecommerceApi = $ecommerceApi;
         $this->channelRepository = $channelRepository;
         $this->listId = $listId;
     }
@@ -82,7 +88,7 @@ class MailchimpEcommerceCreateStoreCommand extends Command
                     'currency_code' => $channel->getBaseCurrency()->getCode(),
                 ];
 
-                $response = $this->mailchimp->addStore($data);
+                $response = $this->ecommerceApi->addStore($data);
 
                 if (isset($response['id'])) {
                     $output->writeln('Register store '.$response['name'].' completed!');

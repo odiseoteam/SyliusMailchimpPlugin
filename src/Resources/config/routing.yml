@@ -1,0 +1,5 @@
+odiseo_sylius_mailchimp_plugin_newsletter:
+    path: /newsletter
+    methods: ["POST", "PATCH"]
+    defaults:
+        _controller: odiseo_sylius_mailchimp_plugin.controller.action.subscribe_to_newsletter

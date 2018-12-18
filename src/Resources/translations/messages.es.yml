@@ -1,0 +1,6 @@
+odiseo_sylius_mailchimp_plugin:
+    ui:
+        newsletter: Suscripcion
+        your_email_address: Tu direccion de correo...
+        subscribe: Suscribete
+        subscribed_successfully: Suscripcion exitosa

@@ -19,13 +19,6 @@ final class OdiseoSyliusMailchimpExtension extends Extension
         $config = $this->processConfiguration($this->getConfiguration([], $container), $config);
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
-        $configFiles = [
-            'listeners.yml',
-            'services.yml'
-        ];
-
-        foreach ($configFiles as $configFile) {
-            $loader->load($configFile);
-        }
+        $loader->load('services.yml');
     }
 }

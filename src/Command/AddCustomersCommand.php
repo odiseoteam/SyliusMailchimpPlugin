@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Odiseo\SyliusMailchimpPlugin\Command;
 
-use Odiseo\SyliusMailchimpPlugin\Mailchimp\MailchimpInterface;
+use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Model\ChannelAwareInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
@@ -11,37 +13,37 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MailchimpEcommerceAddCustomersCommand extends Command
+class AddCustomersCommand extends Command
 {
     /**
-     *@var MailchimpInterface
+     * @var EcommerceInterface
      */
-    protected $mailchimp;
+    protected $ecommerceApi;
 
     /**
-     *@var ChannelContextInterface
+     * @var ChannelContextInterface
      */
     protected $channelContext;
 
     /**
-     *@var CustomerRepositoryInterface
+     * @var CustomerRepositoryInterface
      */
     protected $customerRepository;
 
     /**
-     * @param MailchimpInterface $mailchimp
+     * @param EcommerceInterface $ecommerceApi
      * @param ChannelContextInterface $channelContext
      * @param CustomerRepositoryInterface $customerRepository
      */
     public function __construct(
-        MailchimpInterface $mailchimp,
+        EcommerceInterface $ecommerceApi,
         ChannelContextInterface $channelContext,
         CustomerRepositoryInterface $customerRepository
     )
     {
         parent::__construct();
 
-        $this->mailchimp = $mailchimp;
+        $this->ecommerceApi = $ecommerceApi;
         $this->channelContext = $channelContext;
         $this->customerRepository = $customerRepository;
     }
@@ -91,7 +93,7 @@ class MailchimpEcommerceAddCustomersCommand extends Command
                             'last_name' => $customer->getLastName()
                         ];
 
-                        $response = $this->mailchimp->addCustomer($storeId, $data);
+                        $response = $this->ecommerceApi->addCustomer($storeId, $data);
 
                         if (isset($response['id'])) {
                             $output->writeln('Register customer ' . $response['email_address'].' to '.$storeId.' completed!');

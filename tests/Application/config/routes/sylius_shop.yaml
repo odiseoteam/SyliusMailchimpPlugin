@@ -12,3 +12,9 @@ sylius_shop_default_locale:
     methods: [GET]
     defaults:
         _controller: sylius.controller.shop.locale_switch:switchAction
+
+odiseo_sylius_mailchimp_plugin:
+    resource: "@OdiseoSyliusMailchimpPlugin/Resources/config/routing.yml"
+    prefix: /{_locale}
+    requirements:
+        _locale: ^[a-z]{2}(?:_[A-Z]{2})?$

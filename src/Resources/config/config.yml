@@ -2,13 +2,13 @@ winzou_state_machine:
     sylius_order_checkout:
         callbacks:
             after:
-                mailchimp_register_cart:
+                register_cart:
                     on: ["address"]
-                    do: ["@odiseo.mailchimp_plugin.listener.ecommerce_cart", "registerCart"]
+                    do: ["@odiseo_sylius_mailchimp_plugin.handler.cart_register_handler", "register"]
                     args: ["object"]
                     priority: 3
-                mailchimp_register_order:
+                register_order:
                     on: ["complete"]
-                    do: ["@odiseo.mailchimp_plugin.listener.ecommerce_order", "registerOrder"]
+                    do: ["@odiseo_sylius_mailchimp_plugin.handler.order_register_handler", "register"]
                     args: ["object"]
                     priority: 3

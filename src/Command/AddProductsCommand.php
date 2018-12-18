@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Odiseo\SyliusMailchimpPlugin\Command;
 
-use Odiseo\SyliusMailchimpPlugin\Mailchimp\MailchimpInterface;
+use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Repository\ProductRepositoryInterface;
@@ -10,25 +12,30 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MailchimpEcommerceAddProductsCommand extends Command
+class AddProductsCommand extends Command
 {
     /**
-     *@var MailchimpInterface
+     * @var EcommerceInterface
      */
-    protected $mailchimp;
+    protected $ecommerceApi;
 
-    /** @var ProductRepositoryInterface */
+    /**
+     * @var ProductRepositoryInterface
+     */
     protected $productRepository;
 
     /**
-     * @param MailchimpInterface $mailchimp
+     * @param EcommerceInterface $ecommerceApi
      * @param ProductRepositoryInterface $productRepository
      */
-    public function __construct(MailchimpInterface $mailchimp, ProductRepositoryInterface $productRepository)
+    public function __construct(
+        EcommerceInterface $ecommerceApi,
+        ProductRepositoryInterface $productRepository
+    )
     {
         parent::__construct();
 
-        $this->mailchimp = $mailchimp;
+        $this->ecommerceApi = $ecommerceApi;
         $this->productRepository = $productRepository;
     }
 
@@ -82,7 +89,7 @@ class MailchimpEcommerceAddProductsCommand extends Command
                         'variants' => $variants
                     );
 
-                    $response = $this->mailchimp->addProduct($storeId, $data);
+                    $response = $this->ecommerceApi->addProduct($storeId, $data);
 
                     if (isset($response['id'])) {
                         $output->writeln('Register product '.$response['title'].' to '.$storeId.' completed!');
