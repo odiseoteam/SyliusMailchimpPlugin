@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Odiseo\SyliusMailchimpPlugin\Handler;
 
 use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
+use Odiseo\SyliusMailchimpPlugin\Model\MailchimpListIdAwareInterface;
+use Odiseo\SyliusMailchimpPlugin\Provider\ListIdProviderInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Webmozart\Assert\Assert;
 
-class StoreRegisterHandler
+final class StoreRegisterHandler implements StoreRegisterHandlerInterface
 {
     /**
      * @var EcommerceInterface
@@ -17,65 +17,91 @@ class StoreRegisterHandler
     private $ecommerceApi;
 
     /**
-     * @var string
+     * @var ListIdProviderInterface
      */
-    private $listId;
+    protected $listIdProvider;
 
     /**
      * @param EcommerceInterface $ecommerceApi
-     * @param string $listId
+     * @param ListIdProviderInterface $listIdProvider
      */
     public function __construct(
         EcommerceInterface $ecommerceApi,
-        string $listId
+        ListIdProviderInterface $listIdProvider
     ) {
         $this->ecommerceApi = $ecommerceApi;
-        $this->listId = $listId;
+        $this->listIdProvider = $listIdProvider;
     }
 
     /**
-     * @param ChannelInterface $channel
+     * @inheritdoc
      */
     public function register(ChannelInterface $channel)
     {
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getStore($storeId);
+        $isNew = !isset($response['id']);
 
-        Assert::keyExists($response, 'status');
+        $localeCode = 'en';
+        $currencyCode = 'USD';
 
-        if ($response['status'] === Response::HTTP_NOT_FOUND) {
-            $data = [
-                'id' => $storeId,
-                'list_id' => $this->listId,
-                'name' => $channel->getName(),
-                'currency_code' => $channel->getBaseCurrency()->getCode()
-            ];
-
-            $this->ecommerceApi->addStore($data);
-        } else {
-            $data = [
-                'name' => $channel->getName(),
-                'currency_code' => $channel->getBaseCurrency()->getCode()
-            ];
-
-            $this->ecommerceApi->updateStore($storeId, $data);
+        if ($defaultLocale = $channel->getDefaultLocale()) {
+            $localeCode = $defaultLocale->getCode();
         }
+
+        if ($baseCurrency = $channel->getBaseCurrency()) {
+            $currencyCode = $baseCurrency->getCode();
+        }
+
+        $data = [
+            'id' => $storeId,
+            'list_id' => $this->getListIdByChannel($channel),
+            'name' => $channel->getName(),
+            'domain' => $channel->getHostname(),
+            'email_address' => $channel->getContactEmail(),
+            'primary_locale' => $localeCode,
+            'currency_code' => $currencyCode,
+        ];
+
+        if ($isNew) {
+            $response = $this->ecommerceApi->addStore($data);
+        } else {
+            $response = $this->ecommerceApi->updateStore($storeId, $data);
+        }
+
+        return $response;
     }
 
     /**
-     * @param ChannelInterface $channel
+     * @inheritdoc
      */
     public function unregister(ChannelInterface $channel)
     {
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getStore($storeId);
+        $isNew = !isset($response['id']);
 
-        Assert::keyExists($response, 'status');
-
-        if ($response['status'] !== Response::HTTP_NOT_FOUND) {
-            $this->ecommerceApi->removeStore($storeId);
+        if (!$isNew) {
+            return $this->ecommerceApi->removeStore($storeId);
         }
+
+        return false;
+    }
+
+    /**
+     * @param ChannelInterface $channel
+     *
+     * @return string
+     */
+    private function getListIdByChannel(ChannelInterface $channel): string
+    {
+        if ($channel instanceof MailchimpListIdAwareInterface) {
+            if ($listId = $channel->getListId())
+                return $listId;
+        }
+
+        return $this->listIdProvider->getListId();
     }
 }

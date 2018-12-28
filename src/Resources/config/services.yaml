@@ -1,4 +1,13 @@
+imports:
+    - { resource: 'services/commands.yaml' }
+
 services:
+    # Providers
+    odiseo_sylius_mailchimp_plugin.default.list_id_provider:
+        class: Odiseo\SyliusMailchimpPlugin\Provider\DefaultListIdProvider
+        arguments:
+            - "%env(ODISEO_MAILCHIMP_DEFAULT_LISTID)%"
+
     # Api
     odiseo_sylius_mailchimp_plugin.ecommerce.api:
         class: Odiseo\SyliusMailchimpPlugin\Api\Ecommerce
@@ -20,32 +29,12 @@ services:
             - "@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription_handler"
             - "@translator"
 
-    # Commands
-    odiseo_sylius_mailchimp_plugin.create_store.command:
-        class: Odiseo\SyliusMailchimpPlugin\Command\CreateStoreCommand
-        arguments:
-            - "@odiseo.mailchimp_plugin.ecommerce.api"
-            - "@sylius.context.channel"
-
-    odiseo_sylius_mailchimp_plugin.add_customers.command:
-        class: Odiseo\SyliusMailchimpPlugin\Command\AddCustomersCommand
-        arguments:
-            - "@odiseo.mailchimp_plugin.ecommerce.api"
-            - "@sylius.context.channel"
-            - "@sylius.repository.customer"
-
-    odiseo_sylius_mailchimp_plugin.add_products.command:
-        class: Odiseo\SyliusMailchimpPlugin\Command\AddProductsCommand
-        arguments:
-            - "@odiseo.mailchimp_plugin.ecommerce.api"
-            - "@sylius.repository.product"
-
     # Handlers
     odiseo_sylius_mailchimp_plugin.handler.store_register_handler:
         class: Odiseo\SyliusMailchimpPlugin\Handler\StoreRegisterHandler
         arguments:
             - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
-            - "%env(ODISEO_MAILCHIMP_DEFAULT_LISTID)%"
+            - "@odiseo_sylius_mailchimp_plugin.default.list_id_provider"
 
     odiseo_sylius_mailchimp_plugin.handler.product_register_handler:
         class: Odiseo\SyliusMailchimpPlugin\Handler\ProductRegisterHandler

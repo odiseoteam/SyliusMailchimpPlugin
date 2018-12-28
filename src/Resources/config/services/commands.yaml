@@ -1,0 +1,22 @@
+services:
+    # Commands
+    odiseo_sylius_mailchimp_plugin.connect_stores.command:
+        class: Odiseo\SyliusMailchimpPlugin\Command\ConnectStoresCommand
+        arguments:
+            - "@sylius.repository.channel"
+            - "@odiseo_sylius_mailchimp_plugin.handler.store_register_handler"
+        tags:
+            - { name: "console.command", command: "odiseo:mailchimp:connect-stores" }
+
+    odiseo_sylius_mailchimp_plugin.add_customers.command:
+        class: Odiseo\SyliusMailchimpPlugin\Command\AddCustomersCommand
+        arguments:
+            - "@odiseo.mailchimp_plugin.ecommerce.api"
+            - "@sylius.context.channel"
+            - "@sylius.repository.customer"
+
+    odiseo_sylius_mailchimp_plugin.add_products.command:
+        class: Odiseo\SyliusMailchimpPlugin\Command\AddProductsCommand
+        arguments:
+            - "@odiseo.mailchimp_plugin.ecommerce.api"
+            - "@sylius.repository.product"

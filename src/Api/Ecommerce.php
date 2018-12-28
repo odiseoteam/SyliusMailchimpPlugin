@@ -11,7 +11,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function addStore(array $data):  array
+    public function addStore(array $data)
     {
         return $this->post('ecommerce/stores', $data);
     }
@@ -19,7 +19,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function getStores():  array
+    public function getStores()
     {
         return $this->get('ecommerce/stores');
     }
@@ -27,7 +27,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function getStore(string $storeId): array
+    public function getStore(string $storeId)
     {
         return $this->get('ecommerce/stores/'.$storeId);
     }
@@ -35,7 +35,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function updateStore(string $storeId, array $data): array
+    public function updateStore(string $storeId, array $data)
     {
         return $this->patch('ecommerce/stores/'.$storeId, $data);
     }
@@ -43,7 +43,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function removeStore(string $storeId): array
+    public function removeStore(string $storeId)
     {
         return $this->delete('ecommerce/stores/'.$storeId);
     }
@@ -51,7 +51,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function addCustomer(string $storeId, array $data): array
+    public function addCustomer(string $storeId, array $data)
     {
         return $this->post('ecommerce/stores/'.$storeId.'/customers', $data);
     }
@@ -59,7 +59,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function getCustomers(string $storeId): array
+    public function getCustomers(string $storeId)
     {
         return $this->get('ecommerce/stores/'.$storeId.'/customers');
     }
@@ -67,7 +67,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function getCustomer(string $storeId, string $customerId): array
+    public function getCustomer(string $storeId, string $customerId)
     {
         return $this->get('ecommerce/stores/'.$storeId.'/customers/'.$customerId);
     }
@@ -75,7 +75,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function updateCustomer(string $storeId, string $customerId, array $data): array
+    public function updateCustomer(string $storeId, string $customerId, array $data)
     {
         return $this->patch('ecommerce/stores/'.$storeId.'/customers/'.$customerId, $data);
     }
@@ -83,7 +83,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function removeCustomer(string $storeId, string $customerId): array
+    public function removeCustomer(string $storeId, string $customerId)
     {
         return $this->delete('ecommerce/stores/'.$storeId.'/customers/'.$customerId);
     }
@@ -91,7 +91,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function addProduct(string $storeId, array $data): array
+    public function addProduct(string $storeId, array $data)
     {
         return $this->post('ecommerce/stores/'.$storeId.'/products', $data);
     }
@@ -99,7 +99,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function getProducts(string $storeId): array
+    public function getProducts(string $storeId)
     {
         return $this->get('ecommerce/stores/'.$storeId.'/products');
     }
@@ -107,7 +107,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function getProduct(string $storeId, string $productId): array
+    public function getProduct(string $storeId, string $productId)
     {
         return $this->get('ecommerce/stores/'.$storeId.'/products/'.$productId);
     }
@@ -115,7 +115,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function updateProduct(string $storeId, string $productId, array $data): array
+    public function updateProduct(string $storeId, string $productId, array $data)
     {
         return $this->patch('ecommerce/stores/'.$storeId.'/products/'.$productId, $data);
     }
@@ -123,7 +123,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function removeProduct(string $storeId, string $productId): array
+    public function removeProduct(string $storeId, string $productId)
     {
         return $this->delete('ecommerce/stores/'.$storeId.'/products/'.$productId);
     }
@@ -131,7 +131,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function addOrder(string $storeId, array $data):  array
+    public function addOrder(string $storeId, array $data)
     {
         return $this->post('ecommerce/stores/'.$storeId.'/orders', $data);
     }
@@ -139,7 +139,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function getOrders():  array
+    public function getOrders()
     {
         return $this->get('ecommerce/orders');
     }
@@ -147,7 +147,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function getOrdersByStore(string $storeId):  array
+    public function getOrdersByStore(string $storeId)
     {
         return $this->get('ecommerce/stores/'.$storeId.'/orders');
     }
@@ -155,7 +155,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function getOrder(string $storeId, string $orderId): array
+    public function getOrder(string $storeId, string $orderId)
     {
         return $this->get('ecommerce/stores/'.$storeId.'/orders/'.$orderId);
     }
@@ -163,7 +163,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function updateOrder(string $storeId, string $orderId, array $data): array
+    public function updateOrder(string $storeId, string $orderId, array $data)
     {
         return $this->patch('ecommerce/stores/'.$storeId.'/orders/'.$orderId, $data);
     }
@@ -171,7 +171,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function removeOrder(string $storeId, string $orderId): array
+    public function removeOrder(string $storeId, string $orderId)
     {
         return $this->delete('ecommerce/stores/'.$storeId.'/orders/'.$orderId);
     }
@@ -179,7 +179,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function addCart(string $storeId, array $data): array
+    public function addCart(string $storeId, array $data)
     {
         return $this->post('ecommerce/stores/'.$storeId.'/carts', $data);
     }
@@ -187,7 +187,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function getCarts(string $storeId): array
+    public function getCarts(string $storeId)
     {
         return $this->get('ecommerce/stores/'.$storeId.'/carts');
     }
@@ -195,7 +195,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function getCart(string $storeId, string $cartId): array
+    public function getCart(string $storeId, string $cartId)
     {
         return $this->get('ecommerce/stores/'.$storeId.'/carts/'.$cartId);
     }
@@ -203,7 +203,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function updateCart(string $storeId, string $cartId, array $data): array
+    public function updateCart(string $storeId, string $cartId, array $data)
     {
         return $this->patch('ecommerce/stores/'.$storeId.'/carts/'.$cartId, $data);
     }
@@ -211,7 +211,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     /**
      * @inheritdoc
      */
-    public function removeCart(string $storeId, string $cartId): array
+    public function removeCart(string $storeId, string $cartId)
     {
         return $this->delete('ecommerce/stores/'.$storeId.'/carts/'.$cartId);
     }

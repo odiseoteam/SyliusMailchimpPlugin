@@ -69,10 +69,10 @@ public function registerBundles(): array
 }
 ```
 
-3. Import the configurations on your config.yml:
+3. Import the configurations on your config.yaml:
  
 ```yml
-    - { resource: "@OdiseoSyliusMailchimpPlugin/Resources/config/config.yml" }
+    - { resource: "@OdiseoSyliusMailchimpPlugin/Resources/config/config.yaml" }
 ```
 
 4) Add the enviorment variables:
@@ -81,6 +81,10 @@ public function registerBundles(): array
 ODISEO_MAILCHIMP_APIKEY=EDITME
 ODISEO_MAILCHIMP_DEFAULT_LISTID=EDITME
 ```
+
+If you want to use different List Id for each Sylius Channel, you need to 
+implement the MailchimpListIdAwareInterface on your Channel entity. If you don't do that
+the default list id will be used.
 
 ## Usage
 
@@ -94,17 +98,18 @@ your realtime data using differents event listeners.
 $mailchimp = $this->get('odiseo.mailchimp_plugin.mailchimp');
 ```
 
-#### Available CLI commands to update mailchimp with your store data.
+#### Available CLI commands to connect mailchimp with your store data.
+
+```bash
+$ bin/console odiseo:mailchimp:connect-stores
+```
 
 ```bash 
-$ bin/console odiseo:mailchimp:add-customers 
-```
-```bash
-$ bin/console odiseo:mailchimp:add-products
+$ bin/console odiseo:mailchimp:add-customers
 ```
 
 ```bash
-$ bin/console odiseo:mailchimp:create-stores
+$ bin/console odiseo:mailchimp:add-products
 ```
 
 ## Test the plugin

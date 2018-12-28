@@ -30,6 +30,9 @@ class AddCustomersCommand extends Command
      */
     protected $customerRepository;
 
+    /** @var SymfonyStyle */
+    private $io;
+
     /**
      * @param EcommerceInterface $ecommerceApi
      * @param ChannelContextInterface $channelContext
@@ -64,6 +67,8 @@ class AddCustomersCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->io = new SymfonyStyle($input, $output);
+
         $this->addCostumers($output);
     }
 
@@ -72,7 +77,7 @@ class AddCustomersCommand extends Command
      */
     protected function addCostumers(OutputInterface $output)
     {
-        $output->writeln('Add customers in store to Mailchimp...');
+        $this->io->title('Adding customers to Mailchimp...');
 
         try {
             /** @var CustomerInterface $customer */
@@ -86,7 +91,7 @@ class AddCustomersCommand extends Command
                         $storeId = $channel->getCode();
 
                         $data = [
-                            'id' => (string)$customer->getId(),
+                            'id' => (string) $customer->getId(),
                             'email_address' => $customer->getEmail(),
                             'opt_in_status' => false,
                             'first_name' => $customer->getFirstName(),
