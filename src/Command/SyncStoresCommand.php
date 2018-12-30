@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class RegisterStoresCommand extends Command
+class SyncStoresCommand extends Command
 {
     /**
      * @var ChannelRepositoryInterface
@@ -51,9 +51,9 @@ class RegisterStoresCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('odiseo:mailchimp:register-stores')
-            ->setDescription('Connect the Sylius stores (channels) to Mailchimp.')
-            ->addOption('purge', 'p', InputOption::VALUE_NONE, 'Unregister all stores before register the new ones.')
+            ->setName('odiseo:mailchimp:sync-stores')
+            ->setDescription('Synchronize the Sylius stores (channels) to Mailchimp.')
+            ->addOption('purge', 'p', InputOption::VALUE_NONE, 'Remove all stores before create the new ones.')
         ;
     }
 
@@ -64,11 +64,14 @@ class RegisterStoresCommand extends Command
     {
         $this->io = new SymfonyStyle($input, $output);
 
-        $this->io->title('Connecting the stores to Mailchimp.');
+        $this->io->title('Synchronizing the stores to Mailchimp');
 
         $this->registerStores($input);
     }
 
+    /**
+     * @param InputInterface $input
+     */
     protected function registerStores(InputInterface $input)
     {
         $withPurge = $input->getOption('purge');
@@ -108,6 +111,6 @@ class RegisterStoresCommand extends Command
             }
         }
 
-        $this->io->success('Stores registered successfully.');
+        $this->io->success('The stores has been synchronized successfully.');
     }
 }

@@ -1,5 +1,6 @@
 imports:
     - { resource: 'services/commands.yaml' }
+    - { resource: 'services/handlers.yaml' }
 
 services:
     # Providers
@@ -26,68 +27,29 @@ services:
         class: Odiseo\SyliusMailchimpPlugin\Controller\Action\SubscribeToNewsletterAction
         public: true
         arguments:
-            - "@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription_handler"
+            - "@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription"
             - "@translator"
-
-    # Handlers
-    odiseo_sylius_mailchimp_plugin.handler.store_register_handler:
-        class: Odiseo\SyliusMailchimpPlugin\Handler\StoreRegisterHandler
-        arguments:
-            - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
-            - "@odiseo_sylius_mailchimp_plugin.default.list_id_provider"
-
-    odiseo_sylius_mailchimp_plugin.handler.product_register_handler:
-        class: Odiseo\SyliusMailchimpPlugin\Handler\ProductRegisterHandler
-        arguments:
-            - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
-
-    odiseo_sylius_mailchimp_plugin.handler.customer_register_handler:
-        class: Odiseo\SyliusMailchimpPlugin\Handler\CustomerRegisterHandler
-        arguments:
-            - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
-
-    odiseo_sylius_mailchimp_plugin.handler.cart_register_handler:
-        class: Odiseo\SyliusMailchimpPlugin\Handler\CartRegisterHandler
-        public: true
-        arguments:
-            - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
-            - "@router"
-
-    odiseo_sylius_mailchimp_plugin.handler.order_register_handler:
-        class: Odiseo\SyliusMailchimpPlugin\Handler\OrderRegisterHandler
-        public: true
-        arguments:
-            - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
-
-    odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription_handler:
-        class: Odiseo\SyliusMailchimpPlugin\Handler\CustomerNewsletterSubscriptionHandler
-        arguments:
-            - "@sylius.repository.customer"
-            - "@sylius.factory.customer"
-            - "@sylius.manager.customer"
-            - "@odiseo_sylius_mailchimp_plugin.lists.api"
-            - "%env(ODISEO_MAILCHIMP_DEFAULT_LISTID)%"
 
     # Listeners
     odiseo_sylius_mailchimp_plugin.subscriber.store_subscriber:
         class: Odiseo\SyliusMailchimpPlugin\EventListener\StoreSubscriber
         arguments:
-            - "@odiseo_sylius_mailchimp_plugin.handler.store_register_handler"
+            - "@odiseo_sylius_mailchimp_plugin.handler.store_register"
         tags:
             - { name: doctrine.event_subscriber }
 
     odiseo_sylius_mailchimp_plugin.subscriber.product_subscriber:
         class: Odiseo\SyliusMailchimpPlugin\EventListener\ProductSubscriber
         arguments:
-            - "@odiseo_sylius_mailchimp_plugin.handler.product_register_handler"
+            - "@odiseo_sylius_mailchimp_plugin.handler.product_register"
         tags:
             - { name: doctrine.event_subscriber }
 
     odiseo_sylius_mailchimp_plugin.listener.customer_listener:
         class: Odiseo\SyliusMailchimpPlugin\EventListener\CustomerListener
         arguments:
-            - "@odiseo_sylius_mailchimp_plugin.handler.customer_register_handler"
-            - "@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription_handler"
+            - "@odiseo_sylius_mailchimp_plugin.handler.customer_register"
+            - "@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription"
         tags:
             - { name: "kernel.event_listener", event: "sylius.customer.post_register", method: customerCreate }
             - { name: "kernel.event_listener", event: "sylius.customer.pre_update", method: customerUpdate }

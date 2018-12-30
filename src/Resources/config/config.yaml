@@ -4,11 +4,11 @@ winzou_state_machine:
             after:
                 register_cart:
                     on: ["address"]
-                    do: ["@odiseo_sylius_mailchimp_plugin.handler.cart_register_handler", "register"]
+                    do: ["@odiseo_sylius_mailchimp_plugin.handler.cart_register", "register"]
                     args: ["object"]
                     priority: 3
                 register_order:
                     on: ["complete"]
-                    do: ["@odiseo_sylius_mailchimp_plugin.handler.order_register_handler", "register"]
+                    do: ["@odiseo_sylius_mailchimp_plugin.handler.order_register", "register"]
                     args: ["object"]
                     priority: 3
