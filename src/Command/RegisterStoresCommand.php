@@ -9,10 +9,11 @@ use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class ConnectStoresCommand extends Command
+class RegisterStoresCommand extends Command
 {
     /**
      * @var ChannelRepositoryInterface
@@ -50,8 +51,9 @@ class ConnectStoresCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('odiseo:mailchimp:connect-stores')
+            ->setName('odiseo:mailchimp:register-stores')
             ->setDescription('Connect the Sylius stores (channels) to Mailchimp.')
+            ->addOption('purge', 'p', InputOption::VALUE_NONE, 'Unregister all stores before register the new ones.')
         ;
     }
 
@@ -62,22 +64,36 @@ class ConnectStoresCommand extends Command
     {
         $this->io = new SymfonyStyle($input, $output);
 
-        $this->connectStores();
-    }
-
-    protected function connectStores()
-    {
         $this->io->title('Connecting the stores to Mailchimp.');
 
-        try {
-            $channels = $this->channelRepository->findBy([
-                'enabled' => true
-            ]);
+        $this->registerStores($input);
+    }
 
-            /** @var ChannelInterface $channel */
-            foreach ($channels as $channel) {
-                $this->io->write('Connecting the "'.$channel->getName().'" store ...');
+    protected function registerStores(InputInterface $input)
+    {
+        $withPurge = $input->getOption('purge');
 
+        $channels = $this->channelRepository->findBy([
+            'enabled' => true
+        ]);
+
+        /** @var ChannelInterface $channel */
+        foreach ($channels as $channel) {
+            if ($withPurge) {
+                $this->io->write('Removing the "'.$channel->getName().'" store...');
+
+                try {
+                    $this->storeRegisterHandler->unregister($channel);
+                    $this->io->writeln('Done.');
+                } catch (\Exception $e) {
+                    $this->io->writeln('Error.');
+                    $this->io->error($e->getMessage());
+                }
+            }
+
+            $this->io->write('Connecting the "'.$channel->getName().'" store...');
+
+            try {
                 $response = $this->storeRegisterHandler->register($channel);
 
                 if (isset($response['id'])) {
@@ -86,11 +102,12 @@ class ConnectStoresCommand extends Command
                     $this->io->writeln('Error.');
                     $this->io->error('Status: '.$response['status'].', Detail: '.$response['detail']);
                 }
+            } catch(\Exception $e) {
+                $this->io->writeln('Error.');
+                $this->io->error($e->getMessage());
             }
-
-            $this->io->success('Store connected successfully.');
-        } catch(\Exception $e) {
-            $this->io->error($e->getMessage());
         }
+
+        $this->io->success('Stores registered successfully.');
     }
 }
