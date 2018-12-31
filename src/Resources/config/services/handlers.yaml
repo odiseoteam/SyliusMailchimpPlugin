@@ -22,7 +22,10 @@ services:
         public: true
         arguments:
             - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
+            - "@odiseo_sylius_mailchimp_plugin.handler.customer_register"
             - "@router"
+            - "@sylius.unique_id_based_order_token_assigner"
+            - "@doctrine.orm.entity_manager"
 
     odiseo_sylius_mailchimp_plugin.handler.order_register:
         class: Odiseo\SyliusMailchimpPlugin\Handler\OrderRegisterHandler

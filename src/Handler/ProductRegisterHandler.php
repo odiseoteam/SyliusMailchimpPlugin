@@ -14,7 +14,7 @@ use Sylius\Component\Core\Model\ProductVariant;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class ProductRegisterHandler implements ProductRegisterHandlerInterface
+final class ProductRegisterHandler implements ProductRegisterHandlerInterface
 {
     /**
      * @var EcommerceInterface
@@ -67,7 +67,7 @@ class ProductRegisterHandler implements ProductRegisterHandlerInterface
             ];
 
             if ($variantPrice = $this->getVariantPrice($productVariant, $channel)) {
-                $variant['price'] = $variantPrice;
+                $variant['price'] = $variantPrice/100;
             }
 
             if ($productVariant->isTracked()) {

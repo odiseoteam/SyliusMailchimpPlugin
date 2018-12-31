@@ -54,6 +54,7 @@ class SyncStoresCommand extends Command
             ->setName('odiseo:mailchimp:sync-stores')
             ->setDescription('Synchronize the Sylius stores (channels) to Mailchimp.')
             ->addOption('purge', 'p', InputOption::VALUE_NONE, 'Remove all stores before create the new ones.')
+            ->addOption('isSyncing', 's', InputOption::VALUE_NONE, 'Mark the stores with "is_syncing" field like true.')
         ;
     }
 
@@ -75,6 +76,7 @@ class SyncStoresCommand extends Command
     protected function registerStores(InputInterface $input)
     {
         $withPurge = $input->getOption('purge');
+        $isSyncing = $input->getOption('isSyncing');
 
         $channels = $this->channelRepository->findBy([
             'enabled' => true
@@ -97,13 +99,15 @@ class SyncStoresCommand extends Command
             $this->io->write('Connecting the "'.$channel->getName().'" store...');
 
             try {
-                $response = $this->storeRegisterHandler->register($channel);
+                $response = $this->storeRegisterHandler->register($channel, $isSyncing);
 
                 if (isset($response['id'])) {
                     $this->io->writeln('Done.');
                 } else {
                     $this->io->writeln('Error.');
-                    $this->io->error('Status: '.$response['status'].', Detail: '.$response['detail']);
+                    if ($response !== false) {
+                        $this->showError($response);
+                    }
                 }
             } catch(\Exception $e) {
                 $this->io->writeln('Error.');
@@ -112,5 +116,19 @@ class SyncStoresCommand extends Command
         }
 
         $this->io->success('The stores has been synchronized successfully.');
+    }
+
+    /**
+     * @param array $response
+     */
+    private function showError(array $response)
+    {
+        $this->io->error('Status: '.$response['status'].', Detail: '.$response['detail']);
+
+        if (isset($response['errors']) && count($response['errors']) > 0) {
+            foreach ($response['errors'] as $error) {
+                $this->io->listing($error);
+            }
+        }
     }
 }

@@ -30,6 +30,14 @@ services:
             - "@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription"
             - "@translator"
 
+    odiseo_sylius_mailchimp_plugin.controller.action.continue_cart_purchase:
+        class: Odiseo\SyliusMailchimpPlugin\Controller\Action\ContinueCartPurchaseAction
+        public: true
+        arguments:
+            - "@sylius.storage.cart_session"
+            - "@sylius.repository.order"
+            - "@router"
+
     # Listeners
     odiseo_sylius_mailchimp_plugin.subscriber.store_subscriber:
         class: Odiseo\SyliusMailchimpPlugin\EventListener\StoreSubscriber

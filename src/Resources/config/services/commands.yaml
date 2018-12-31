@@ -7,12 +7,14 @@ services:
         tags:
             - { name: "console.command", command: "odiseo:mailchimp:sync-stores" }
 
-    odiseo_sylius_mailchimp_plugin.add_customers.command:
-        class: Odiseo\SyliusMailchimpPlugin\Command\AddCustomersCommand
+    odiseo_sylius_mailchimp_plugin.command.sync_customers:
+        class: Odiseo\SyliusMailchimpPlugin\Command\SyncCustomersCommand
         arguments:
-            - "@odiseo.mailchimp_plugin.ecommerce.api"
-            - "@sylius.context.channel"
+            - "@sylius.repository.channel"
             - "@sylius.repository.customer"
+            - "@odiseo_sylius_mailchimp_plugin.handler.customer_register"
+        tags:
+            - { name: "console.command", command: "odiseo:mailchimp:sync-customers" }
 
     odiseo_sylius_mailchimp_plugin.command.sync_products:
         class: Odiseo\SyliusMailchimpPlugin\Command\SyncProductsCommand
@@ -21,3 +23,11 @@ services:
             - "@odiseo_sylius_mailchimp_plugin.handler.product_register"
         tags:
             - { name: "console.command", command: "odiseo:mailchimp:sync-products" }
+
+    odiseo_sylius_mailchimp_plugin.command.sync_carts:
+        class: Odiseo\SyliusMailchimpPlugin\Command\SyncCartsCommand
+        arguments:
+            - "@sylius.repository.order"
+            - "@odiseo_sylius_mailchimp_plugin.handler.cart_register"
+        tags:
+            - { name: "console.command", command: "odiseo:mailchimp:sync-carts" }

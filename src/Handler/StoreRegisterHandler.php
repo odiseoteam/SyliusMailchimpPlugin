@@ -36,7 +36,7 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
     /**
      * @inheritdoc
      */
-    public function register(ChannelInterface $channel)
+    public function register(ChannelInterface $channel, bool $isSyncing = false)
     {
         $storeId = $channel->getCode();
 
@@ -58,10 +58,12 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
             'id' => $storeId,
             'list_id' => $this->getListIdByChannel($channel),
             'name' => $channel->getName(),
+            'platform' => 'Sylius',
             'domain' => $channel->getHostname(),
+            'is_syncing' => $isSyncing,
             'email_address' => $channel->getContactEmail(),
-            'primary_locale' => $localeCode,
             'currency_code' => $currencyCode,
+            'primary_locale' => $localeCode,
         ];
 
         if ($isNew) {

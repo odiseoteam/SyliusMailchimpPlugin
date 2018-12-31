@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Odiseo\SyliusMailchimpPlugin\Handler;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGenerator;
+use Sylius\Component\Core\TokenAssigner\OrderTokenAssignerInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Webmozart\Assert\Assert;
 
-class CartRegisterHandler
+final class CartRegisterHandler
 {
     /**
      * @var EcommerceInterface
@@ -20,84 +19,112 @@ class CartRegisterHandler
     private $ecommerceApi;
 
     /**
+     * @var CustomerRegisterHandlerInterface
+     */
+    private $customerRegisterHandler;
+
+    /**
      * @var RouterInterface
      */
     private $router;
 
     /**
+     * @var OrderTokenAssignerInterface
+     */
+    private $orderTokenAssigner;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
      * @param EcommerceInterface $ecommerceApi
      * @param RouterInterface $router
+     * @param OrderTokenAssignerInterface $orderTokenAssigner
+     * @param EntityManagerInterface $entityManager
+     * @param CustomerRegisterHandlerInterface $customerRegisterHandler
      */
     public function __construct(
         EcommerceInterface $ecommerceApi,
-        RouterInterface $router
+        CustomerRegisterHandlerInterface $customerRegisterHandler,
+        RouterInterface $router,
+        OrderTokenAssignerInterface $orderTokenAssigner,
+        EntityManagerInterface $entityManager
     ) {
         $this->ecommerceApi = $ecommerceApi;
         $this->router = $router;
+        $this->orderTokenAssigner = $orderTokenAssigner;
+        $this->entityManager = $entityManager;
+        $this->customerRegisterHandler = $customerRegisterHandler;
     }
 
     /**
      * @param OrderInterface $order
+     *
+     * @return array|false
      */
     public function register(OrderInterface $order)
     {
+        /** @var CustomerInterface $customer */
+        if ((null === $customer = $order->getCustomer()) || (count($order->getItems()) == 0)) {
+            return false;
+        }
+
         $channel = $order->getChannel();
         $storeId = $channel->getCode();
+        $cartId = (string) $order->getId();
 
-        $cartId = (string)$order->getId();
+        // Registering the customer to ensure that exist on Mailchimp
+        $response = $this->customerRegisterHandler->register($customer, $channel);
 
-        $routeName = $this->router->generate(
-            'sylius_shop_checkout_start',
-            [],
-            UrlGenerator::ABSOLUTE_URL
-        );
-
-        $lines = [];
-        $items = $order->getItems();
-        foreach ($items as $item) {
-            $lines[] = [
-                'id' => (string)$item->getId(),
-                'product_id' => (string)$item->getProduct()->getId(),
-                'product_variant_id' => (string)$item->getVariant()->getId(),
-                'quantity' => $item->getQuantity(),
-                'price' => $item->getTotal()
-            ];
+        if (!isset($response['id']) && $response !== false) {
+            return false;
         }
+
+        // Assigning the token value to the order
+        $this->orderTokenAssigner->assignTokenValueIfNotSet($order);
+        $this->entityManager->flush();
+
+	// Creating continue purchase url
+        $context = $this->router->getContext();
+        $context->setHost($channel->getHostname());
+        $continuePurchaseUrl = $this->router->generate('odiseo_sylius_mailchimp_plugin_continue_cart_purchase', [
+            '_locale' => $order->getLocaleCode()?:'en',
+            'tokenValue' => $order->getTokenValue()
+        ], RouterInterface::ABSOLUTE_URL);
 
         $response = $this->ecommerceApi->getCart($storeId, $cartId);
+        $isNew = !isset($response['id']);
 
-        Assert::keyExists($response, 'status');
+        $data = [
+            'id' => $cartId,
+            'customer' => [
+                'id' => (string) $customer->getId(),
+            ],
+            'checkout_url' => $continuePurchaseUrl,
+            'currency_code' => $order->getCurrencyCode()?:'USD',
+            'order_total' => $order->getTotal()/100,
+            'tax_total' => $order->getTaxTotal()/100,
+            'lines' => [],
+        ];
 
-        if ($response['status'] === Response::HTTP_NOT_FOUND) {
-            /** @var CustomerInterface $customer */
-            if (null === $customer = $order->getCustomer()) {
-                return;
-            }
-
-            $data = [
-                'id' => $cartId,
-                'customer' => [
-                    'id' => (string)$customer->getId(),
-                    'email_address' => $customer->getEmail(),
-                    'opt_in_status' => false,
-                    'first_name' => $customer->getFirstName() ? $customer->getFirstName() : '-',
-                    'last_name' => $customer->getLastName() ? $customer->getLastName() : '-'
-                ],
-                'currency_code' => 'USD',
-                'order_total' => $order->getTotal(),
-                'checkout_url' => $routeName,
-                'lines' => $lines,
+        foreach ($order->getItems() as $item) {
+            $data['lines'][] = [
+                'id' => (string) $item->getId(),
+                'product_id' => (string) $item->getProduct()->getId(),
+                'product_variant_id' => (string) $item->getVariant()->getId(),
+                'quantity' => $item->getQuantity(),
+                'price' => $item->getTotal()/100,
             ];
-
-            $this->ecommerceApi->addCart($storeId, $data);
-        } else {
-            $data = [
-                'order_total' => $order->getTotal(),
-                'checkout_url' => $routeName,
-                'lines' => $lines
-            ];
-
-            $this->ecommerceApi->updateCart($storeId, $cartId, $data);
         }
+
+        if ($isNew) {
+            $response = $this->ecommerceApi->addCart($storeId, $data);
+        } else {
+            $response = $this->ecommerceApi->updateCart($storeId, $cartId, $data);
+        }
+
+        return $response;
     }
 }

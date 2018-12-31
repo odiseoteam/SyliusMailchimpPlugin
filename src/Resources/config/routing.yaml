@@ -3,3 +3,9 @@ odiseo_sylius_mailchimp_plugin_newsletter:
     methods: ["POST", "PATCH"]
     defaults:
         _controller: odiseo_sylius_mailchimp_plugin.controller.action.subscribe_to_newsletter
+
+odiseo_sylius_mailchimp_plugin_continue_cart_purchase:
+    path: /continue-cart-purchase/{tokenValue}
+    methods: ["GET"]
+    defaults:
+        _controller: odiseo_sylius_mailchimp_plugin.controller.action.continue_cart_purchase

@@ -62,7 +62,7 @@ class SyncProductsCommand extends Command
     {
         $this->io = new SymfonyStyle($input, $output);
 
-        $this->io->title('Synchronizing the products to Mailchimp.');
+        $this->io->title('Synchronizing the products to Mailchimp');
 
         $this->registerProducts();
     }
@@ -83,11 +83,7 @@ class SyncProductsCommand extends Command
                     $response = $this->productRegisterHandler->register($product, $channel);
 
                     if (!isset($response['id']) && $response !== false) {
-                        $this->io->error('Status: '.$response['status'].', Detail: '.$response['detail']);
-
-                        if (is_array($response['errors']) && count($response['errors']) > 0) {
-                            $this->io->listing($response['errors']);
-                        }
+                        $this->showError($response);
                     }
 
                     $this->io->progressAdvance(1);
@@ -99,5 +95,19 @@ class SyncProductsCommand extends Command
 
         $this->io->progressFinish();
         $this->io->success('The products has been synchronized successfully.');
+    }
+
+    /**
+     * @param array $response
+     */
+    private function showError(array $response)
+    {
+        $this->io->error('Status: '.$response['status'].', Detail: '.$response['detail']);
+
+        if (isset($response['errors']) && count($response['errors']) > 0) {
+            foreach ($response['errors'] as $error) {
+                $this->io->listing($error);
+            }
+        }
     }
 }
