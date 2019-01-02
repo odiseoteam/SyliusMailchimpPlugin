@@ -69,9 +69,7 @@ class SyncCartsCommand extends Command
     protected function registerCarts()
     {
         $orders = $this->orderRepository->createQueryBuilder('o')
-            ->leftJoin('o.customer', 'c')
-            ->where("c.email = 'songecko@gmail.com'")
-            //->where('o.customer IS NOT NULL')
+            ->where('o.customer IS NOT NULL')
             ->getQuery()
             ->getResult()
         ;

@@ -70,8 +70,6 @@ class SyncOrdersCommand extends Command
     protected function registerOrders()
     {
         $orders = $this->orderRepository->createQueryBuilder('o')
-            ->leftJoin('o.customer', 'c')
-            ->where("c.email = 'songecko@gmail.com'")
             ->andWhere('o.paymentState = :paymentState')
             ->setParameter('paymentState', OrderPaymentStates::STATE_PAID)
             ->getQuery()

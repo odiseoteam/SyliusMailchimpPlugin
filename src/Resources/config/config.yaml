@@ -7,8 +7,11 @@ winzou_state_machine:
                     do: ["@odiseo_sylius_mailchimp_plugin.handler.cart_register", "register"]
                     args: ["object"]
                     priority: 3
+    sylius_order_payment:
+        callbacks:
+            after:
                 register_order:
-                    on: ["complete"]
+                    on: ["pay"]
                     do: ["@odiseo_sylius_mailchimp_plugin.handler.order_register", "register"]
                     args: ["object"]
                     priority: 3
