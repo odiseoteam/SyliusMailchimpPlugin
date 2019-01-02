@@ -37,8 +37,7 @@ class SyncStoresCommand extends Command
     public function __construct(
         ChannelRepositoryInterface $channelRepository,
         StoreRegisterHandlerInterface $storeRegisterHandler
-    )
-    {
+    ) {
         parent::__construct();
 
         $this->channelRepository = $channelRepository;
@@ -46,7 +45,7 @@ class SyncStoresCommand extends Command
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -59,7 +58,7 @@ class SyncStoresCommand extends Command
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -79,13 +78,13 @@ class SyncStoresCommand extends Command
         $isSyncing = $input->getOption('isSyncing');
 
         $channels = $this->channelRepository->findBy([
-            'enabled' => true
+            'enabled' => true,
         ]);
 
         /** @var ChannelInterface $channel */
         foreach ($channels as $channel) {
             if ($withPurge) {
-                $this->io->write('Removing the "'.$channel->getName().'" store...');
+                $this->io->write('Removing the "' . $channel->getName() . '" store...');
 
                 try {
                     $this->storeRegisterHandler->unregister($channel);
@@ -96,7 +95,7 @@ class SyncStoresCommand extends Command
                 }
             }
 
-            $this->io->write('Connecting the "'.$channel->getName().'" store...');
+            $this->io->write('Connecting the "' . $channel->getName() . '" store...');
 
             try {
                 $response = $this->storeRegisterHandler->register($channel, $isSyncing);
@@ -109,7 +108,7 @@ class SyncStoresCommand extends Command
                         $this->showError($response);
                     }
                 }
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $this->io->writeln('Error.');
                 $this->io->error($e->getMessage());
             }
@@ -123,7 +122,7 @@ class SyncStoresCommand extends Command
      */
     private function showError(array $response)
     {
-        $this->io->error('Status: '.$response['status'].', Detail: '.$response['detail']);
+        $this->io->error('Status: ' . $response['status'] . ', Detail: ' . $response['detail']);
 
         if (isset($response['errors']) && count($response['errors']) > 0) {
             foreach ($response['errors'] as $error) {

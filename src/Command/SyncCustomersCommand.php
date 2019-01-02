@@ -6,6 +6,7 @@ namespace Odiseo\SyliusMailchimpPlugin\Command;
 
 use Odiseo\SyliusMailchimpPlugin\Handler\CustomerRegisterHandlerInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Repository\CustomerRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
@@ -44,8 +45,7 @@ class SyncCustomersCommand extends Command
         ChannelRepositoryInterface $channelRepository,
         CustomerRepositoryInterface $customerRepository,
         CustomerRegisterHandlerInterface $customerRegisterHandler
-    )
-    {
+    ) {
         parent::__construct();
 
         $this->channelRepository = $channelRepository;
@@ -54,7 +54,7 @@ class SyncCustomersCommand extends Command
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -65,7 +65,7 @@ class SyncCustomersCommand extends Command
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -81,11 +81,12 @@ class SyncCustomersCommand extends Command
         $channels = $this->channelRepository->findAll();
         $customers = $this->customerRepository->findAll();
 
-        $this->io->text('Connecting '.count($customers).' customers.');
+        $this->io->text('Connecting ' . count($customers) . ' customers.');
         $this->io->progressStart(count($customers));
 
         /** @var CustomerInterface $customer */
         foreach ($customers as $customer) {
+            /** @var ChannelInterface $channel */
             foreach ($channels as $channel) {
                 try {
                     $response = $this->customerRegisterHandler->register($customer, $channel);
@@ -93,7 +94,7 @@ class SyncCustomersCommand extends Command
                     if (!isset($response['id']) && $response !== false) {
                         $this->showError($response);
                     }
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     $this->io->error($e->getMessage());
                 }
             }
@@ -110,7 +111,7 @@ class SyncCustomersCommand extends Command
      */
     private function showError(array $response)
     {
-        $this->io->error('Status: '.$response['status'].', Detail: '.$response['detail']);
+        $this->io->error('Status: ' . $response['status'] . ', Detail: ' . $response['detail']);
 
         if (isset($response['errors']) && count($response['errors']) > 0) {
             foreach ($response['errors'] as $error) {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Odiseo\SyliusMailchimpPlugin\Command;
 
 use Odiseo\SyliusMailchimpPlugin\Handler\ProductRegisterHandlerInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
@@ -36,8 +37,7 @@ class SyncProductsCommand extends Command
     public function __construct(
         ProductRepositoryInterface $productRepository,
         ProductRegisterHandlerInterface $productRegisterHandler
-    )
-    {
+    ) {
         parent::__construct();
 
         $this->productRepository = $productRepository;
@@ -45,7 +45,7 @@ class SyncProductsCommand extends Command
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -56,7 +56,7 @@ class SyncProductsCommand extends Command
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -71,14 +71,15 @@ class SyncProductsCommand extends Command
     {
         $products = $this->productRepository->findAll();
 
-        $this->io->text('Connecting '.count($products).' products.');
+        $this->io->text('Connecting ' . count($products) . ' products.');
         $this->io->progressStart(count($products));
 
         /** @var ProductInterface $product */
         foreach ($products as $product) {
             $channels = $product->getChannels();
 
-            foreach($channels as $channel) {
+            /** @var ChannelInterface $channel */
+            foreach ($channels as $channel) {
                 try {
                     $response = $this->productRegisterHandler->register($product, $channel);
 
@@ -87,7 +88,7 @@ class SyncProductsCommand extends Command
                     }
 
                     $this->io->progressAdvance(1);
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     $this->io->error($e->getMessage());
                 }
             }
@@ -102,7 +103,7 @@ class SyncProductsCommand extends Command
      */
     private function showError(array $response)
     {
-        $this->io->error('Status: '.$response['status'].', Detail: '.$response['detail']);
+        $this->io->error('Status: ' . $response['status'] . ', Detail: ' . $response['detail']);
 
         if (isset($response['errors']) && count($response['errors']) > 0) {
             foreach ($response['errors'] as $error) {

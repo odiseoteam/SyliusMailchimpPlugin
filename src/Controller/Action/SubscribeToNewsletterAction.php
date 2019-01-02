@@ -88,8 +88,9 @@ final class SubscribeToNewsletterAction
     private function getListIdByChannel(ChannelInterface $channel): string
     {
         if ($channel instanceof MailchimpListIdAwareInterface) {
-            if ($listId = $channel->getListId())
+            if ($listId = $channel->getListId()) {
                 return $listId;
+            }
         }
 
         return $this->listIdProvider->getListId();

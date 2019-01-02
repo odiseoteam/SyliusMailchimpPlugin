@@ -24,7 +24,7 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function subscribe(CustomerInterface $customer, string $listId)
     {
@@ -48,7 +48,7 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unsubscribe(CustomerInterface $customer, string $listId)
     {

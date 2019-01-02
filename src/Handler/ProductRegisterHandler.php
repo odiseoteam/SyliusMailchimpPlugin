@@ -40,19 +40,18 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         EcommerceInterface $ecommerceApi,
         RouterInterface $router,
         CacheManager $cacheManager
-    )
-    {
+    ) {
         $this->ecommerceApi = $ecommerceApi;
         $this->router = $router;
         $this->cacheManager = $cacheManager;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function register(ProductInterface $product, ChannelInterface $channel)
     {
-        $productId = (string)$product->getId();
+        $productId = (string) $product->getId();
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getProduct($storeId, $productId);
@@ -62,13 +61,13 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         /** @var ProductVariant $productVariant */
         foreach ($product->getVariants() as $productVariant) {
             $variant = [
-                'id' => (string)$productVariant->getId(),
-                'title' => $productVariant->getName()?$productVariant->getName():$product->getName(),
-                'inventory_quantity' => $productVariant->isTracked()?$productVariant->getOnHand():1,
+                'id' => (string) $productVariant->getId(),
+                'title' => $productVariant->getName() ? $productVariant->getName() : $product->getName(),
+                'inventory_quantity' => $productVariant->isTracked() ? $productVariant->getOnHand() : 1,
             ];
 
             if ($variantPrice = $this->getVariantPrice($productVariant, $channel)) {
-                $variant['price'] = $variantPrice/100;
+                $variant['price'] = $variantPrice / 100;
             }
 
             $variants[] = $variant;
@@ -87,7 +86,7 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
             'id' => $productId,
             'title' => $product->getName(),
             'url' => $this->getProductUrl($product, $channel),
-            'description' => $product->getDescription()?:'',
+            'description' => $product->getDescription() ?: '',
             'images' => $productImages,
             'variants' => $variants,
         ];
@@ -106,11 +105,11 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unregister(ProductInterface $product, ChannelInterface $channel)
     {
-        $productId = (string)$product->getId();
+        $productId = (string) $product->getId();
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getProduct($storeId, $productId);
@@ -129,12 +128,12 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
      *
      * @return int|null
      */
-    protected function getVariantPrice(ProductVariant $variant, ChannelInterface $channel)
+    private function getVariantPrice(ProductVariant $variant, ChannelInterface $channel)
     {
         /** @var ChannelPricingInterface $channelPricing */
         $channelPricing = $variant->getChannelPricingForChannel($channel);
 
-        return $channelPricing ? $channelPricing->getPrice() : null;
+        return $channelPricing !== null ? $channelPricing->getPrice() : null;
     }
 
     /**
@@ -143,7 +142,7 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
      *
      * @return string
      */
-    protected function getProductUrl(ProductInterface $product, ChannelInterface $channel): string
+    private function getProductUrl(ProductInterface $product, ChannelInterface $channel): string
     {
         $context = $this->router->getContext();
         $context->setHost($channel->getHostname());
@@ -161,7 +160,7 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
 
         return $this->router->generate('sylius_shop_product_show', [
             '_locale' => $locale,
-            'slug' => $product->getSlug()
+            'slug' => $product->getSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
@@ -171,7 +170,7 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
      *
      * @return string
      */
-    protected function getImageUrl(ProductImageInterface $image, ChannelInterface $channel): string
+    private function getImageUrl(ProductImageInterface $image, ChannelInterface $channel): string
     {
         $context = $this->router->getContext();
         $context->setHost($channel->getHostname());

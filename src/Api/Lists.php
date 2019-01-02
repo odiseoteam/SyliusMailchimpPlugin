@@ -9,34 +9,34 @@ use DrewM\MailChimp\MailChimp;
 class Lists extends MailChimp implements ListsInterface
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function addMember(string $listId, array $data)
     {
-        return $this->post('lists/'.$listId.'/members', $data);
+        return $this->post('lists/' . $listId . '/members', $data);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getMember(string $listId, string $hash)
     {
-        return $this->get('lists/'.$listId.'/members/'.$hash);
+        return $this->get('lists/' . $listId . '/members/' . $hash);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function updateMember(string $listId, string $hash, array $data)
     {
-        return $this->patch('lists/'.$listId.'/members/'.$hash, $data);
+        return $this->patch('lists/' . $listId . '/members/' . $hash, $data);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function removeMember(string $listId, string $hash)
     {
-        return $this->delete('lists/'.$listId.'/members/'.$hash);
+        return $this->delete('lists/' . $listId . '/members/' . $hash);
     }
 }

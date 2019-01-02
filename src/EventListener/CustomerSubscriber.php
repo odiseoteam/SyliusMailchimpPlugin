@@ -47,8 +47,7 @@ final class CustomerSubscriber implements EventSubscriber
         CustomerRegisterHandlerInterface $customerRegisterHandler,
         CustomerNewsletterSubscriptionHandlerInterface $customerNewsletterSubscriptionHandler,
         ListIdProviderInterface $listIdProvider
-    )
-    {
+    ) {
         $this->channelRepository = $channelRepository;
         $this->customerRegisterHandler = $customerRegisterHandler;
         $this->customerNewsletterSubscriptionHandler = $customerNewsletterSubscriptionHandler;
@@ -107,6 +106,7 @@ final class CustomerSubscriber implements EventSubscriber
     {
         $channels = $this->channelRepository->findAll();
 
+        /** @var ChannelInterface $channel */
         foreach ($channels as $channel) {
             $this->customerRegisterHandler->register($customer, $channel);
 
@@ -123,6 +123,7 @@ final class CustomerSubscriber implements EventSubscriber
     {
         $channels = $this->channelRepository->findAll();
 
+        /** @var ChannelInterface $channel */
         foreach ($channels as $channel) {
             $this->customerRegisterHandler->unregister($customer, $channel);
         }
@@ -136,8 +137,9 @@ final class CustomerSubscriber implements EventSubscriber
     private function getListIdByChannel(ChannelInterface $channel): string
     {
         if ($channel instanceof MailchimpListIdAwareInterface) {
-            if ($listId = $channel->getListId())
+            if ($listId = $channel->getListId()) {
                 return $listId;
+            }
         }
 
         return $this->listIdProvider->getListId();

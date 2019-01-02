@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Odiseo\SyliusMailchimpPlugin\Handler;
 
 use Sylius\Component\Core\Model\OrderInterface;

@@ -9,7 +9,7 @@ use DrewM\MailChimp\MailChimp;
 class Ecommerce extends MailChimp implements EcommerceInterface
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function addStore(array $data)
     {
@@ -17,7 +17,7 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getStores()
     {
@@ -25,119 +25,119 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getStore(string $storeId)
     {
-        return $this->get('ecommerce/stores/'.$storeId);
+        return $this->get('ecommerce/stores/' . $storeId);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function updateStore(string $storeId, array $data)
     {
-        return $this->patch('ecommerce/stores/'.$storeId, $data);
+        return $this->patch('ecommerce/stores/' . $storeId, $data);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function removeStore(string $storeId)
     {
-        return $this->delete('ecommerce/stores/'.$storeId);
+        return $this->delete('ecommerce/stores/' . $storeId);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function addCustomer(string $storeId, array $data)
     {
-        return $this->post('ecommerce/stores/'.$storeId.'/customers', $data);
+        return $this->post('ecommerce/stores/' . $storeId . '/customers', $data);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getCustomers(string $storeId)
     {
-        return $this->get('ecommerce/stores/'.$storeId.'/customers');
+        return $this->get('ecommerce/stores/' . $storeId . '/customers');
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getCustomer(string $storeId, string $customerId)
     {
-        return $this->get('ecommerce/stores/'.$storeId.'/customers/'.$customerId);
+        return $this->get('ecommerce/stores/' . $storeId . '/customers/' . $customerId);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function updateCustomer(string $storeId, string $customerId, array $data)
     {
-        return $this->patch('ecommerce/stores/'.$storeId.'/customers/'.$customerId, $data);
+        return $this->patch('ecommerce/stores/' . $storeId . '/customers/' . $customerId, $data);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function removeCustomer(string $storeId, string $customerId)
     {
-        return $this->delete('ecommerce/stores/'.$storeId.'/customers/'.$customerId);
+        return $this->delete('ecommerce/stores/' . $storeId . '/customers/' . $customerId);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function addProduct(string $storeId, array $data)
     {
-        return $this->post('ecommerce/stores/'.$storeId.'/products', $data);
+        return $this->post('ecommerce/stores/' . $storeId . '/products', $data);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getProducts(string $storeId)
     {
-        return $this->get('ecommerce/stores/'.$storeId.'/products');
+        return $this->get('ecommerce/stores/' . $storeId . '/products');
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getProduct(string $storeId, string $productId)
     {
-        return $this->get('ecommerce/stores/'.$storeId.'/products/'.$productId);
+        return $this->get('ecommerce/stores/' . $storeId . '/products/' . $productId);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function updateProduct(string $storeId, string $productId, array $data)
     {
-        return $this->patch('ecommerce/stores/'.$storeId.'/products/'.$productId, $data);
+        return $this->patch('ecommerce/stores/' . $storeId . '/products/' . $productId, $data);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function removeProduct(string $storeId, string $productId)
     {
-        return $this->delete('ecommerce/stores/'.$storeId.'/products/'.$productId);
+        return $this->delete('ecommerce/stores/' . $storeId . '/products/' . $productId);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function addOrder(string $storeId, array $data)
     {
-        return $this->post('ecommerce/stores/'.$storeId.'/orders', $data);
+        return $this->post('ecommerce/stores/' . $storeId . '/orders', $data);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getOrders()
     {
@@ -145,74 +145,74 @@ class Ecommerce extends MailChimp implements EcommerceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getOrdersByStore(string $storeId)
     {
-        return $this->get('ecommerce/stores/'.$storeId.'/orders');
+        return $this->get('ecommerce/stores/' . $storeId . '/orders');
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getOrder(string $storeId, string $orderId)
     {
-        return $this->get('ecommerce/stores/'.$storeId.'/orders/'.$orderId);
+        return $this->get('ecommerce/stores/' . $storeId . '/orders/' . $orderId);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function updateOrder(string $storeId, string $orderId, array $data)
     {
-        return $this->patch('ecommerce/stores/'.$storeId.'/orders/'.$orderId, $data);
+        return $this->patch('ecommerce/stores/' . $storeId . '/orders/' . $orderId, $data);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function removeOrder(string $storeId, string $orderId)
     {
-        return $this->delete('ecommerce/stores/'.$storeId.'/orders/'.$orderId);
+        return $this->delete('ecommerce/stores/' . $storeId . '/orders/' . $orderId);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function addCart(string $storeId, array $data)
     {
-        return $this->post('ecommerce/stores/'.$storeId.'/carts', $data);
+        return $this->post('ecommerce/stores/' . $storeId . '/carts', $data);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getCarts(string $storeId)
     {
-        return $this->get('ecommerce/stores/'.$storeId.'/carts');
+        return $this->get('ecommerce/stores/' . $storeId . '/carts');
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getCart(string $storeId, string $cartId)
     {
-        return $this->get('ecommerce/stores/'.$storeId.'/carts/'.$cartId);
+        return $this->get('ecommerce/stores/' . $storeId . '/carts/' . $cartId);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function updateCart(string $storeId, string $cartId, array $data)
     {
-        return $this->patch('ecommerce/stores/'.$storeId.'/carts/'.$cartId, $data);
+        return $this->patch('ecommerce/stores/' . $storeId . '/carts/' . $cartId, $data);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function removeCart(string $storeId, string $cartId)
     {
-        return $this->delete('ecommerce/stores/'.$storeId.'/carts/'.$cartId);
+        return $this->delete('ecommerce/stores/' . $storeId . '/carts/' . $cartId);
     }
 }

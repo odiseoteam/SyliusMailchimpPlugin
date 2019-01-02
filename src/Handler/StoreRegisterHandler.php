@@ -19,7 +19,7 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
     /**
      * @var ListIdProviderInterface
      */
-    protected $listIdProvider;
+    private $listIdProvider;
 
     /**
      * @param EcommerceInterface $ecommerceApi
@@ -34,7 +34,7 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function register(ChannelInterface $channel, bool $isSyncing = false)
     {
@@ -76,7 +76,7 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unregister(ChannelInterface $channel)
     {
@@ -100,8 +100,9 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
     private function getListIdByChannel(ChannelInterface $channel): string
     {
         if ($channel instanceof MailchimpListIdAwareInterface) {
-            if ($listId = $channel->getListId())
+            if ($listId = $channel->getListId()) {
                 return $listId;
+            }
         }
 
         return $this->listIdProvider->getListId();

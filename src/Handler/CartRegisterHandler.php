@@ -60,7 +60,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function register(OrderInterface $order)
     {
@@ -88,8 +88,8 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         $context = $this->router->getContext();
         $context->setHost($channel->getHostname());
         $continuePurchaseUrl = $this->router->generate('odiseo_sylius_mailchimp_plugin_continue_cart_purchase', [
-            '_locale' => $order->getLocaleCode()?:'en',
-            'tokenValue' => $order->getTokenValue()
+            '_locale' => $order->getLocaleCode() ?: 'en',
+            'tokenValue' => $order->getTokenValue(),
         ], RouterInterface::ABSOLUTE_URL);
 
         $response = $this->ecommerceApi->getCart($storeId, $cartId);
@@ -101,9 +101,9 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
                 'id' => (string) $customer->getId(),
             ],
             'checkout_url' => $continuePurchaseUrl,
-            'currency_code' => $order->getCurrencyCode()?:'USD',
-            'order_total' => $order->getTotal()/100,
-            'tax_total' => $order->getTaxTotal()/100,
+            'currency_code' => $order->getCurrencyCode() ?: 'USD',
+            'order_total' => $order->getTotal() / 100,
+            'tax_total' => $order->getTaxTotal() / 100,
             'lines' => [],
         ];
 
@@ -113,7 +113,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
                 'product_id' => (string) $item->getProduct()->getId(),
                 'product_variant_id' => (string) $item->getVariant()->getId(),
                 'quantity' => $item->getQuantity(),
-                'price' => $item->getTotal()/100,
+                'price' => $item->getTotal() / 100,
             ];
         }
 
@@ -127,7 +127,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unregister(OrderInterface $order)
     {

@@ -37,8 +37,7 @@ class SyncOrdersCommand extends Command
     public function __construct(
         EntityRepository $orderRepository,
         OrderRegisterHandlerInterface $orderRegisterHandler
-    )
-    {
+    ) {
         parent::__construct();
 
         $this->orderRepository = $orderRepository;
@@ -46,7 +45,7 @@ class SyncOrdersCommand extends Command
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -57,7 +56,7 @@ class SyncOrdersCommand extends Command
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -79,7 +78,7 @@ class SyncOrdersCommand extends Command
             ->getResult()
         ;
 
-        $this->io->text('Connecting '.count($orders).' carts.');
+        $this->io->text('Connecting ' . count($orders) . ' carts.');
         $this->io->progressStart(count($orders));
 
         /** @var OrderInterface $order */
@@ -90,7 +89,7 @@ class SyncOrdersCommand extends Command
                 if (!isset($response['id']) && $response !== false) {
                     $this->showError($response);
                 }
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $this->io->error($e->getMessage());
             }
 
@@ -106,7 +105,7 @@ class SyncOrdersCommand extends Command
      */
     private function showError(array $response)
     {
-        $this->io->error('Status: '.$response['status'].', Detail: '.$response['detail']);
+        $this->io->error('Status: ' . $response['status'] . ', Detail: ' . $response['detail']);
 
         if (isset($response['errors']) && count($response['errors']) > 0) {
             foreach ($response['errors'] as $error) {

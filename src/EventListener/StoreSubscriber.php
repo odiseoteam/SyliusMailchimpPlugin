@@ -25,7 +25,7 @@ final class StoreSubscriber implements EventSubscriber
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getSubscribedEvents()
     {
@@ -43,7 +43,7 @@ final class StoreSubscriber implements EventSubscriber
     {
         $channel = $args->getEntity();
 
-        if($channel instanceof ChannelInterface) {
+        if ($channel instanceof ChannelInterface) {
             $this->register($channel);
         }
     }
@@ -55,7 +55,7 @@ final class StoreSubscriber implements EventSubscriber
     {
         $channel = $args->getEntity();
 
-        if($channel instanceof ChannelInterface) {
+        if ($channel instanceof ChannelInterface) {
             $this->register($channel);
         }
     }
@@ -67,7 +67,7 @@ final class StoreSubscriber implements EventSubscriber
     {
         $channel = $args->getEntity();
 
-        if($channel instanceof ChannelInterface) {
+        if ($channel instanceof ChannelInterface) {
             $this->unregister($channel);
         }
     }

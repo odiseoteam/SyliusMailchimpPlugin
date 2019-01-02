@@ -47,19 +47,19 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
             'id' => $customerId,
             'email_address' => $customer->getEmail(),
             'opt_in_status' => true,
-            'first_name' => $firstName?:'',
-            'last_name' => $lastName?:'',
+            'first_name' => $firstName ?: '',
+            'last_name' => $lastName ?: '',
         ];
 
         if ($customerAddress) {
-            $data['company'] = $customerAddress->getCompany()?:'';
+            $data['company'] = $customerAddress->getCompany() ?: '';
             $data['address'] = [
-                'address1' => $customerAddress->getStreet()?:'',
-                'city' => $customerAddress->getCity()?:'',
-                'province' => $customerAddress->getProvinceName()?:'',
-                'province_code' => $customerAddress->getProvinceCode()?:'',
-                'postal_code' => $customerAddress->getPostcode()?:'',
-                'country_code' => $customerAddress->getCountryCode()?:'',
+                'address1' => $customerAddress->getStreet() ?: '',
+                'city' => $customerAddress->getCity() ?: '',
+                'province' => $customerAddress->getProvinceName() ?: '',
+                'province_code' => $customerAddress->getProvinceCode() ?: '',
+                'postal_code' => $customerAddress->getPostcode() ?: '',
+                'country_code' => $customerAddress->getCountryCode() ?: '',
             ];
         }
 
@@ -73,7 +73,7 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unregister(CustomerInterface $customer, ChannelInterface $channel)
     {
@@ -92,7 +92,8 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
 
     /**
      * @param CustomerInterface $customer
-     * @return null|AddressInterface
+     *
+     * @return AddressInterface|null
      */
     private function getCustomerAddress(CustomerInterface $customer): ?AddressInterface
     {
@@ -109,9 +110,9 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
      * @param CustomerInterface $customer
      * @param AddressInterface|null $address
      *
-     * @return null|string
+     * @return string|null
      */
-    protected function getCustomerFirstName(CustomerInterface $customer, AddressInterface $address = null): ?string
+    private function getCustomerFirstName(CustomerInterface $customer, AddressInterface $address = null): ?string
     {
         $firstName = $customer->getFirstName();
 
@@ -126,9 +127,9 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
      * @param CustomerInterface $customer
      * @param AddressInterface|null $address
      *
-     * @return null|string
+     * @return string|null
      */
-    protected function getCustomerLastName(CustomerInterface $customer, AddressInterface $address = null): ?string
+    private function getCustomerLastName(CustomerInterface $customer, AddressInterface $address = null): ?string
     {
         $lastName = $customer->getLastName();
 
@@ -143,9 +144,9 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
      * @param CustomerInterface $customer
      * @param AddressInterface|null $address
      *
-     * @return null|string
+     * @return string|null
      */
-    protected function getCustomerPhoneNumber(CustomerInterface $customer, AddressInterface $address = null): ?string
+    private function getCustomerPhoneNumber(CustomerInterface $customer, AddressInterface $address = null): ?string
     {
         $phoneNumber = $customer->getPhoneNumber();
 

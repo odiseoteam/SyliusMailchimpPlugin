@@ -48,10 +48,10 @@ final class ContinueCartPurchaseAction
      */
     public function __invoke(Request $request): Response
     {
-        $tokenValue= $request->get('tokenValue');
+        $tokenValue = $request->get('tokenValue');
         /** @var OrderInterface $order */
         $order = $this->orderRepository->findOneBy([
-            'tokenValue' => $tokenValue
+            'tokenValue' => $tokenValue,
         ]);
 
         Assert::notNull($order);
@@ -59,18 +59,19 @@ final class ContinueCartPurchaseAction
         // If the order state is paid
         if (OrderPaymentStates::STATE_PAID === $order->getPaymentState()) {
             return new RedirectResponse($this->router->generate('sylius_shop_order_show', [
-                'tokenValue' => $order->getTokenValue()
+                'tokenValue' => $order->getTokenValue(),
             ]));
         }
 
         // If the order is in state cart with a valid token value
         if (OrderInterface::STATE_CART !== $order->getState() && $order->getTokenValue()) {
             return new RedirectResponse($this->router->generate('sylius_shop_order_pay', [
-                'tokenValue' => $order->getTokenValue()
+                'tokenValue' => $order->getTokenValue(),
             ]));
         }
 
         $this->cartStorage->setForChannel($order->getChannel(), $order);
+
         return new RedirectResponse($this->router->generate('sylius_shop_checkout_start'));
     }
 }

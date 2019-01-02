@@ -7,6 +7,7 @@ namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Odiseo\SyliusMailchimpPlugin\Handler\ProductRegisterHandlerInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 
 final class ProductSubscriber implements EventSubscriber
@@ -29,7 +30,7 @@ final class ProductSubscriber implements EventSubscriber
         return [
             'postPersist',
             'postUpdate',
-            'postRemove'
+            'postRemove',
         ];
     }
 
@@ -74,6 +75,7 @@ final class ProductSubscriber implements EventSubscriber
      */
     private function register(ProductInterface $product)
     {
+        /** @var ChannelInterface $channel */
         foreach ($product->getChannels() as $channel) {
             $this->productRegisterHandler->register($product, $channel);
         }
@@ -84,6 +86,7 @@ final class ProductSubscriber implements EventSubscriber
      */
     private function unregister(ProductInterface $product)
     {
+        /** @var ChannelInterface $channel */
         foreach ($product->getChannels() as $channel) {
             $this->productRegisterHandler->unregister($product, $channel);
         }

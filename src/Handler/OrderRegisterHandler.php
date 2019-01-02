@@ -44,7 +44,7 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function register(OrderInterface $order)
     {
@@ -68,8 +68,8 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
         $context = $this->router->getContext();
         $context->setHost($channel->getHostname());
         $orderShowUrl = $this->router->generate('sylius_shop_order_show', [
-            '_locale' => $order->getLocaleCode()?:'en',
-            'tokenValue' => $order->getTokenValue()
+            '_locale' => $order->getLocaleCode() ?: 'en',
+            'tokenValue' => $order->getTokenValue(),
         ], RouterInterface::ABSOLUTE_URL);
 
         $response = $this->ecommerceApi->getOrder($storeId, $orderId);
@@ -81,16 +81,16 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
                 'id' => (string) $customer->getId(),
             ],
             'financial_status' => 'paid',
-            'currency_code' => $order->getCurrencyCode()?:'USD',
-            'order_total' => $order->getTotal()/100,
+            'currency_code' => $order->getCurrencyCode() ?: 'USD',
+            'order_total' => $order->getTotal() / 100,
             'order_url' => $orderShowUrl,
-            'discount_total' => $order->getOrderPromotionTotal()/100,
-            'tax_total' => $order->getTaxTotal()/100,
-            'shipping_total' => $order->getShippingTotal()/100,
+            'discount_total' => $order->getOrderPromotionTotal() / 100,
+            'tax_total' => $order->getTaxTotal() / 100,
+            'shipping_total' => $order->getShippingTotal() / 100,
             'processed_at_foreign' => $order->getLastPayment(PaymentInterface::STATE_COMPLETED)->getUpdatedAt()->format('c'),
             'shipping_address' => $this->getAddressData($order->getShippingAddress()),
             'billing_address' => $this->getAddressData($order->getBillingAddress()),
-            'lines' => []
+            'lines' => [],
         ];
 
         foreach ($order->getItems() as $item) {
@@ -99,7 +99,7 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
                 'product_id' => (string) $item->getProduct()->getId(),
                 'product_variant_id' => (string) $item->getVariant()->getId(),
                 'quantity' => $item->getQuantity(),
-                'price' => $item->getTotal()/100,
+                'price' => $item->getTotal() / 100,
             ];
         }
 
@@ -113,7 +113,7 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unregister(OrderInterface $order)
     {
@@ -138,14 +138,14 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
     private function getAddressData(AddressInterface $address): array
     {
         return [
-            'company' => $address->getCompany()?:'',
-            'address1' => $address->getStreet()?:'',
-            'city' => $address->getCity()?:'',
-            'province' => $address->getProvinceName()?:'',
-            'province_code' => $address->getProvinceCode()?:'',
-            'postal_code' => $address->getPostcode()?:'',
-            'country_code' => $address->getCountryCode()?:'',
-            'phone' => $address->getPhoneNumber()?:'',
+            'company' => $address->getCompany() ?: '',
+            'address1' => $address->getStreet() ?: '',
+            'city' => $address->getCity() ?: '',
+            'province' => $address->getProvinceName() ?: '',
+            'province_code' => $address->getProvinceCode() ?: '',
+            'postal_code' => $address->getPostcode() ?: '',
+            'country_code' => $address->getCountryCode() ?: '',
+            'phone' => $address->getPhoneNumber() ?: '',
         ];
     }
 }
