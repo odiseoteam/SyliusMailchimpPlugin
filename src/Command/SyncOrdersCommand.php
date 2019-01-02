@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Odiseo\SyliusMailchimpPlugin\Command;
 
-use Odiseo\SyliusMailchimpPlugin\Handler\CartRegisterHandlerInterface;
+use Odiseo\SyliusMailchimpPlugin\Handler\OrderRegisterHandlerInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\OrderPaymentStates;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SyncCartsCommand extends Command
+class SyncOrdersCommand extends Command
 {
     /**
      * @var EntityRepository
@@ -20,9 +21,9 @@ class SyncCartsCommand extends Command
     protected $orderRepository;
 
     /**
-     * @var CartRegisterHandlerInterface
+     * @var OrderRegisterHandlerInterface
      */
-    protected $cartRegisterHandler;
+    protected $orderRegisterHandler;
 
     /**
      * @var SymfonyStyle
@@ -31,17 +32,17 @@ class SyncCartsCommand extends Command
 
     /**
      * @param EntityRepository $orderRepository
-     * @param CartRegisterHandlerInterface $cartRegisterHandler
+     * @param OrderRegisterHandlerInterface $orderRegisterHandler
      */
     public function __construct(
         EntityRepository $orderRepository,
-        CartRegisterHandlerInterface $cartRegisterHandler
+        OrderRegisterHandlerInterface $orderRegisterHandler
     )
     {
         parent::__construct();
 
         $this->orderRepository = $orderRepository;
-        $this->cartRegisterHandler = $cartRegisterHandler;
+        $this->orderRegisterHandler = $orderRegisterHandler;
     }
 
     /**
@@ -50,8 +51,8 @@ class SyncCartsCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('odiseo:mailchimp:sync-carts')
-            ->setDescription('Synchronize the carts to Mailchimp.')
+            ->setName('odiseo:mailchimp:sync-orders')
+            ->setDescription('Synchronize the orders to Mailchimp.')
         ;
     }
 
@@ -62,17 +63,18 @@ class SyncCartsCommand extends Command
     {
         $this->io = new SymfonyStyle($input, $output);
 
-        $this->io->title('Synchronizing the carts to Mailchimp');
+        $this->io->title('Synchronizing the orders to Mailchimp');
 
-        $this->registerCarts();
+        $this->registerOrders();
     }
 
-    protected function registerCarts()
+    protected function registerOrders()
     {
         $orders = $this->orderRepository->createQueryBuilder('o')
             ->leftJoin('o.customer', 'c')
             ->where("c.email = 'songecko@gmail.com'")
-            //->where('o.customer IS NOT NULL')
+            ->andWhere('o.paymentState = :paymentState')
+            ->setParameter('paymentState', OrderPaymentStates::STATE_PAID)
             ->getQuery()
             ->getResult()
         ;
@@ -83,7 +85,7 @@ class SyncCartsCommand extends Command
         /** @var OrderInterface $order */
         foreach ($orders as $order) {
             try {
-                $response = $this->cartRegisterHandler->register($order);
+                $response = $this->orderRegisterHandler->register($order);
 
                 if (!isset($response['id']) && $response !== false) {
                     $this->showError($response);
@@ -96,7 +98,7 @@ class SyncCartsCommand extends Command
         }
 
         $this->io->progressFinish();
-        $this->io->success('The carts has been synchronized successfully.');
+        $this->io->success('The orders has been synchronized successfully.');
     }
 
     /**

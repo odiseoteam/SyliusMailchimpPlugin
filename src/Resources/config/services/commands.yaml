@@ -31,3 +31,11 @@ services:
             - "@odiseo_sylius_mailchimp_plugin.handler.cart_register"
         tags:
             - { name: "console.command", command: "odiseo:mailchimp:sync-carts" }
+
+    odiseo_sylius_mailchimp_plugin.command.sync_orders:
+        class: Odiseo\SyliusMailchimpPlugin\Command\SyncOrdersCommand
+        arguments:
+            - "@sylius.repository.order"
+            - "@odiseo_sylius_mailchimp_plugin.handler.order_register"
+        tags:
+            - { name: "console.command", command: "odiseo:mailchimp:sync-orders" }

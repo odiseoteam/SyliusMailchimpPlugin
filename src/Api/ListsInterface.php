@@ -25,6 +25,15 @@ interface ListsInterface
     /**
      * @param string $listId
      * @param string $hash
+     * @param array $data
+     *
+     * @return array|false
+     */
+    public function updateMember(string $listId, string $hash, array $data);
+
+    /**
+     * @param string $listId
+     * @param string $hash
      *
      * @return array|false
      */

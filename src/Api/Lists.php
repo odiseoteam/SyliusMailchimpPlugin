@@ -27,6 +27,14 @@ class Lists extends MailChimp implements ListsInterface
     /**
      * @inheritdoc
      */
+    public function updateMember(string $listId, string $hash, array $data)
+    {
+        return $this->patch('lists/'.$listId.'/members/'.$hash, $data);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function removeMember(string $listId, string $hash)
     {
         return $this->delete('lists/'.$listId.'/members/'.$hash);

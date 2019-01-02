@@ -64,19 +64,15 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
             $variant = [
                 'id' => (string)$productVariant->getId(),
                 'title' => $productVariant->getName()?$productVariant->getName():$product->getName(),
+                'inventory_quantity' => $productVariant->isTracked()?$productVariant->getOnHand():1,
             ];
 
             if ($variantPrice = $this->getVariantPrice($productVariant, $channel)) {
                 $variant['price'] = $variantPrice/100;
             }
 
-            if ($productVariant->isTracked()) {
-                $variant['inventory_quantity'] = $productVariant->getOnHand();
-            }
-
             $variants[] = $variant;
         }
-
 
         $productImages = [];
         /** @var ProductImageInterface $image */

@@ -11,7 +11,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\TokenAssigner\OrderTokenAssignerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-final class CartRegisterHandler
+final class CartRegisterHandler implements CartRegisterHandlerInterface
 {
     /**
      * @var EcommerceInterface
@@ -60,9 +60,7 @@ final class CartRegisterHandler
     }
 
     /**
-     * @param OrderInterface $order
-     *
-     * @return array|false
+     * @inheritdoc
      */
     public function register(OrderInterface $order)
     {
@@ -86,7 +84,7 @@ final class CartRegisterHandler
         $this->orderTokenAssigner->assignTokenValueIfNotSet($order);
         $this->entityManager->flush();
 
-	// Creating continue purchase url
+        // Creating continue purchase url
         $context = $this->router->getContext();
         $context->setHost($channel->getHostname());
         $continuePurchaseUrl = $this->router->generate('odiseo_sylius_mailchimp_plugin_continue_cart_purchase', [
@@ -126,5 +124,23 @@ final class CartRegisterHandler
         }
 
         return $response;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function unregister(OrderInterface $order)
+    {
+        $orderId = (string) $order->getId();
+        $storeId = $order->getChannel()->getCode();
+
+        $response = $this->ecommerceApi->getCart($storeId, $orderId);
+        $isNew = !isset($response['id']);
+
+        if (!$isNew) {
+            return $this->ecommerceApi->removeCart($storeId, $orderId);
+        }
+
+        return false;
     }
 }

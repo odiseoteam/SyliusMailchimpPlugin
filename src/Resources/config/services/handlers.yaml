@@ -32,12 +32,10 @@ services:
         public: true
         arguments:
             - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
+            - "@odiseo_sylius_mailchimp_plugin.handler.customer_register"
+            - "@router"
 
     odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription:
         class: Odiseo\SyliusMailchimpPlugin\Handler\CustomerNewsletterSubscriptionHandler
         arguments:
-            - "@sylius.repository.customer"
-            - "@sylius.factory.customer"
-            - "@sylius.manager.customer"
             - "@odiseo_sylius_mailchimp_plugin.lists.api"
-            - "%env(ODISEO_MAILCHIMP_DEFAULT_LISTID)%"

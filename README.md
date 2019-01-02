@@ -112,6 +112,11 @@ $ bin/console odiseo:mailchimp:add-customers
 $ bin/console odiseo:mailchimp:add-products
 ```
 
+## Todo
+
+* Promo codes sync.
+* Connected Sites sync.
+
 ## Test the plugin
 
 You can follow the instructions to test this plugins in the proper documentation page: [Test the plugin](doc/tests.md).

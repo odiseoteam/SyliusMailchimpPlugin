@@ -29,6 +29,8 @@ services:
         arguments:
             - "@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription"
             - "@translator"
+            - "@sylius.context.channel"
+            - "@odiseo_sylius_mailchimp_plugin.default.list_id_provider"
 
     odiseo_sylius_mailchimp_plugin.controller.action.continue_cart_purchase:
         class: Odiseo\SyliusMailchimpPlugin\Controller\Action\ContinueCartPurchaseAction
@@ -53,11 +55,12 @@ services:
         tags:
             - { name: doctrine.event_subscriber }
 
-    odiseo_sylius_mailchimp_plugin.listener.customer_listener:
-        class: Odiseo\SyliusMailchimpPlugin\EventListener\CustomerListener
+    odiseo_sylius_mailchimp_plugin.subscriber.customer_subscriber:
+        class: Odiseo\SyliusMailchimpPlugin\EventListener\CustomerSubscriber
         arguments:
+            - "@sylius.repository.channel"
             - "@odiseo_sylius_mailchimp_plugin.handler.customer_register"
             - "@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription"
+            - "@odiseo_sylius_mailchimp_plugin.default.list_id_provider"
         tags:
-            - { name: "kernel.event_listener", event: "sylius.customer.post_register", method: customerCreate }
-            - { name: "kernel.event_listener", event: "sylius.customer.pre_update", method: customerUpdate }
+            - { name: doctrine.event_subscriber }

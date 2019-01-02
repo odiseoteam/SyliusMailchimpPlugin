@@ -6,20 +6,20 @@ namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Odiseo\SyliusMailchimpPlugin\Handler\StoreRegisterHandler;
+use Odiseo\SyliusMailchimpPlugin\Handler\StoreRegisterHandlerInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 
 final class StoreSubscriber implements EventSubscriber
 {
     /**
-     * @var StoreRegisterHandler
+     * @var StoreRegisterHandlerInterface
      */
     private $storeRegisterHandler;
 
     /**
-     * @param StoreRegisterHandler $storeRegisterHandler
+     * @param StoreRegisterHandlerInterface $storeRegisterHandler
      */
-    public function __construct(StoreRegisterHandler $storeRegisterHandler)
+    public function __construct(StoreRegisterHandlerInterface $storeRegisterHandler)
     {
         $this->storeRegisterHandler = $storeRegisterHandler;
     }
