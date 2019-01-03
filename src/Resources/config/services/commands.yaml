@@ -39,3 +39,8 @@ services:
             - "@odiseo_sylius_mailchimp_plugin.handler.order_register"
         tags:
             - { name: "console.command", command: "odiseo:mailchimp:sync-orders" }
+
+    odiseo_sylius_mailchimp_plugin.command.sync_all:
+        class: Odiseo\SyliusMailchimpPlugin\Command\SyncAllCommand
+        tags:
+            - { name: "console.command", command: "odiseo:mailchimp:sync-all" }

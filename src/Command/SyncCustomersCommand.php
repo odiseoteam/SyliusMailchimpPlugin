@@ -9,12 +9,11 @@ use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Repository\CustomerRepositoryInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SyncCustomersCommand extends Command
+class SyncCustomersCommand extends BaseSyncCommand
 {
     /**
      * @var ChannelRepositoryInterface
@@ -30,11 +29,6 @@ class SyncCustomersCommand extends Command
      * @var CustomerRegisterHandlerInterface
      */
     protected $customerRegisterHandler;
-
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
 
     /**
      * @param ChannelRepositoryInterface $channelRepository
@@ -104,19 +98,5 @@ class SyncCustomersCommand extends Command
 
         $this->io->progressFinish();
         $this->io->success('The customers has been synchronized successfully.');
-    }
-
-    /**
-     * @param array $response
-     */
-    private function showError(array $response)
-    {
-        $this->io->error('Status: ' . $response['status'] . ', Detail: ' . $response['detail']);
-
-        if (isset($response['errors']) && count($response['errors']) > 0) {
-            foreach ($response['errors'] as $error) {
-                $this->io->listing($error);
-            }
-        }
     }
 }

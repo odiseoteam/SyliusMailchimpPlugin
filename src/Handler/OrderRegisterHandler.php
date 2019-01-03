@@ -75,6 +75,9 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
         $response = $this->ecommerceApi->getOrder($storeId, $orderId);
         $isNew = !isset($response['id']);
 
+        $lastCompletedPayment = $order->getLastPayment(PaymentInterface::STATE_COMPLETED);
+        $orderCompletedDate = $lastCompletedPayment?$lastCompletedPayment->getUpdatedAt():$order->getUpdatedAt();
+
         $data = [
             'id' => $orderId,
             'customer' => [
@@ -87,7 +90,7 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
             'discount_total' => $order->getOrderPromotionTotal() / 100,
             'tax_total' => $order->getTaxTotal() / 100,
             'shipping_total' => $order->getShippingTotal() / 100,
-            'processed_at_foreign' => $order->getLastPayment(PaymentInterface::STATE_COMPLETED)->getUpdatedAt()->format('c'),
+            'processed_at_foreign' => $orderCompletedDate->format('c'),
             'shipping_address' => $this->getAddressData($order->getShippingAddress()),
             'billing_address' => $this->getAddressData($order->getBillingAddress()),
             'lines' => [],

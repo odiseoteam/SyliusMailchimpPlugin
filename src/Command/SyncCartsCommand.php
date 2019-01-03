@@ -7,12 +7,11 @@ namespace Odiseo\SyliusMailchimpPlugin\Command;
 use Odiseo\SyliusMailchimpPlugin\Handler\CartRegisterHandlerInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Core\Model\OrderInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SyncCartsCommand extends Command
+class SyncCartsCommand extends BaseSyncCommand
 {
     /**
      * @var EntityRepository
@@ -23,11 +22,6 @@ class SyncCartsCommand extends Command
      * @var CartRegisterHandlerInterface
      */
     protected $cartRegisterHandler;
-
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
 
     /**
      * @param EntityRepository $orderRepository
@@ -94,19 +88,5 @@ class SyncCartsCommand extends Command
 
         $this->io->progressFinish();
         $this->io->success('The carts has been synchronized successfully.');
-    }
-
-    /**
-     * @param array $response
-     */
-    private function showError(array $response)
-    {
-        $this->io->error('Status: ' . $response['status'] . ', Detail: ' . $response['detail']);
-
-        if (isset($response['errors']) && count($response['errors']) > 0) {
-            foreach ($response['errors'] as $error) {
-                $this->io->listing($error);
-            }
-        }
     }
 }

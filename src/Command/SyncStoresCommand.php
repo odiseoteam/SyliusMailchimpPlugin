@@ -7,13 +7,12 @@ namespace Odiseo\SyliusMailchimpPlugin\Command;
 use Odiseo\SyliusMailchimpPlugin\Handler\StoreRegisterHandlerInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SyncStoresCommand extends Command
+class SyncStoresCommand extends BaseSyncCommand
 {
     /**
      * @var ChannelRepositoryInterface
@@ -24,11 +23,6 @@ class SyncStoresCommand extends Command
      * @var StoreRegisterHandlerInterface
      */
     protected $storeRegisterHandler;
-
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
 
     /**
      * @param ChannelRepositoryInterface $channelRepository
@@ -95,7 +89,7 @@ class SyncStoresCommand extends Command
                 }
             }
 
-            $this->io->write('Connecting the "' . $channel->getName() . '" store...');
+            $this->io->write('Connecting the "' . $channel->getName() . '" store with is_syncing = '.($isSyncing?'true':'false').'...');
 
             try {
                 $response = $this->storeRegisterHandler->register($channel, $isSyncing);
@@ -115,19 +109,5 @@ class SyncStoresCommand extends Command
         }
 
         $this->io->success('The stores has been synchronized successfully.');
-    }
-
-    /**
-     * @param array $response
-     */
-    private function showError(array $response)
-    {
-        $this->io->error('Status: ' . $response['status'] . ', Detail: ' . $response['detail']);
-
-        if (isset($response['errors']) && count($response['errors']) > 0) {
-            foreach ($response['errors'] as $error) {
-                $this->io->listing($error);
-            }
-        }
     }
 }

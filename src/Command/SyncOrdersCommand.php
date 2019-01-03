@@ -8,12 +8,11 @@ use Odiseo\SyliusMailchimpPlugin\Handler\OrderRegisterHandlerInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\OrderPaymentStates;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SyncOrdersCommand extends Command
+class SyncOrdersCommand extends BaseSyncCommand
 {
     /**
      * @var EntityRepository
@@ -24,11 +23,6 @@ class SyncOrdersCommand extends Command
      * @var OrderRegisterHandlerInterface
      */
     protected $orderRegisterHandler;
-
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
 
     /**
      * @param EntityRepository $orderRepository
@@ -96,19 +90,5 @@ class SyncOrdersCommand extends Command
 
         $this->io->progressFinish();
         $this->io->success('The orders has been synchronized successfully.');
-    }
-
-    /**
-     * @param array $response
-     */
-    private function showError(array $response)
-    {
-        $this->io->error('Status: ' . $response['status'] . ', Detail: ' . $response['detail']);
-
-        if (isset($response['errors']) && count($response['errors']) > 0) {
-            foreach ($response['errors'] as $error) {
-                $this->io->listing($error);
-            }
-        }
     }
 }
