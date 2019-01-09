@@ -17,6 +17,8 @@ final class OdiseoSyliusMailchimpExtension extends Extension
     public function load(array $config, ContainerBuilder $container): void
     {
         $config = $this->processConfiguration($this->getConfiguration([], $container), $config);
+        $container->setParameter('odiseo_sylius_mailchimp_plugin.enabled', $config['enabled']);
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
 
         $loader->load('services.yaml');

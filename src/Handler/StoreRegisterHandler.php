@@ -22,15 +22,23 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
     private $listIdProvider;
 
     /**
+     * @var bool
+     */
+    private $enabled;
+
+    /**
      * @param EcommerceInterface $ecommerceApi
      * @param ListIdProviderInterface $listIdProvider
+     * @param bool $enabled
      */
     public function __construct(
         EcommerceInterface $ecommerceApi,
-        ListIdProviderInterface $listIdProvider
+        ListIdProviderInterface $listIdProvider,
+        bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
         $this->listIdProvider = $listIdProvider;
+        $this->enabled = $enabled;
     }
 
     /**
@@ -38,6 +46,10 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
      */
     public function register(ChannelInterface $channel, bool $isSyncing = false)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getStore($storeId);
@@ -80,6 +92,10 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
      */
     public function unregister(ChannelInterface $channel)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getStore($storeId);

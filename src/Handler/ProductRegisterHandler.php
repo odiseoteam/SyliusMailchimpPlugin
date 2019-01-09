@@ -32,18 +32,26 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
     private $cacheManager;
 
     /**
+     * @var bool
+     */
+    private $enabled;
+
+    /**
      * @param EcommerceInterface $ecommerceApi
      * @param RouterInterface $router
      * @param CacheManager $cacheManager
+     * @param bool $enabled
      */
     public function __construct(
         EcommerceInterface $ecommerceApi,
         RouterInterface $router,
-        CacheManager $cacheManager
+        CacheManager $cacheManager,
+        bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
         $this->router = $router;
         $this->cacheManager = $cacheManager;
+        $this->enabled = $enabled;
     }
 
     /**
@@ -51,6 +59,10 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
      */
     public function register(ProductInterface $product, ChannelInterface $channel)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         $productId = (string) $product->getId();
         $storeId = $channel->getCode();
 
@@ -109,6 +121,10 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
      */
     public function unregister(ProductInterface $product, ChannelInterface $channel)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         $productId = (string) $product->getId();
         $storeId = $channel->getCode();
 

@@ -15,7 +15,12 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('odiseo_sylius_mailchimp_plugin');
+        $rootNode = $treeBuilder->root('odiseo_sylius_mailchimp');
+        $rootNode
+            ->children()
+                ->booleanNode('enabled')->defaultValue(true)->end()
+            ->end()
+        ;
 
         return $treeBuilder;
     }

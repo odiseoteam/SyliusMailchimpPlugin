@@ -39,24 +39,32 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
     private $entityManager;
 
     /**
+     * @var bool
+     */
+    private $enabled;
+
+    /**
      * @param EcommerceInterface $ecommerceApi
      * @param RouterInterface $router
      * @param OrderTokenAssignerInterface $orderTokenAssigner
      * @param EntityManagerInterface $entityManager
      * @param CustomerRegisterHandlerInterface $customerRegisterHandler
+     * @param bool $enabled
      */
     public function __construct(
         EcommerceInterface $ecommerceApi,
         CustomerRegisterHandlerInterface $customerRegisterHandler,
         RouterInterface $router,
         OrderTokenAssignerInterface $orderTokenAssigner,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
         $this->router = $router;
         $this->orderTokenAssigner = $orderTokenAssigner;
         $this->entityManager = $entityManager;
         $this->customerRegisterHandler = $customerRegisterHandler;
+        $this->enabled = $enabled;
     }
 
     /**
@@ -64,6 +72,10 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
      */
     public function register(OrderInterface $order)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         /** @var CustomerInterface $customer */
         if ((null === $customer = $order->getCustomer()) || (count($order->getItems()) == 0)) {
             return false;
@@ -131,6 +143,10 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
      */
     public function unregister(OrderInterface $order)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         $orderId = (string) $order->getId();
         $storeId = $order->getChannel()->getCode();
 

@@ -29,18 +29,26 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
     private $router;
 
     /**
+     * @var bool
+     */
+    private $enabled;
+
+    /**
      * @param EcommerceInterface $ecommerceApi
      * @param CustomerRegisterHandlerInterface $customerRegisterHandler
      * @param RouterInterface $router
+     * @param bool $enabled
      */
     public function __construct(
         EcommerceInterface $ecommerceApi,
         CustomerRegisterHandlerInterface $customerRegisterHandler,
-        RouterInterface $router
+        RouterInterface $router,
+        bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
         $this->customerRegisterHandler = $customerRegisterHandler;
         $this->router = $router;
+        $this->enabled = $enabled;
     }
 
     /**
@@ -48,6 +56,10 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
      */
     public function register(OrderInterface $order)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         /** @var CustomerInterface $customer */
         if ((null === $customer = $order->getCustomer()) || (count($order->getItems()) == 0)) {
             return false;
@@ -123,6 +135,10 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
      */
     public function unregister(OrderInterface $order)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         $orderId = (string) $order->getId();
         $storeId = $order->getChannel()->getCode();
 

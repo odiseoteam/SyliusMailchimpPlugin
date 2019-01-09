@@ -17,12 +17,20 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
     private $ecommerceApi;
 
     /**
+     * @var bool
+     */
+    private $enabled;
+
+    /**
      * @param EcommerceInterface $ecommerceApi
+     * @param bool $enabled
      */
     public function __construct(
-        EcommerceInterface $ecommerceApi
+        EcommerceInterface $ecommerceApi,
+        bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
+        $this->enabled = $enabled;
     }
 
     /**
@@ -33,6 +41,10 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
      */
     public function register(CustomerInterface $customer, ChannelInterface $channel)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         $customerId = (string) $customer->getId();
         $storeId = $channel->getCode();
         $customerAddress = $this->getCustomerAddress($customer);
@@ -77,6 +89,10 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
      */
     public function unregister(CustomerInterface $customer, ChannelInterface $channel)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         $customerId = (string) $customer->getId();
         $storeId = $channel->getCode();
 

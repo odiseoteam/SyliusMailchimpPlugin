@@ -15,12 +15,20 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
     private $listsApi;
 
     /**
+     * @var bool
+     */
+    private $enabled;
+
+    /**
      * @param ListsInterface $listsApi
+     * @param bool $enabled
      */
     public function __construct(
-        ListsInterface $listsApi
+        ListsInterface $listsApi,
+        bool $enabled
     ) {
         $this->listsApi = $listsApi;
+        $this->enabled = $enabled;
     }
 
     /**
@@ -28,6 +36,10 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
      */
     public function subscribe(CustomerInterface $customer, string $listId)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         $subscriberHash = md5(strtolower($customer->getEmail()));
 
         $response = $this->listsApi->getMember($listId, $subscriberHash);
@@ -52,6 +64,10 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
      */
     public function unsubscribe(CustomerInterface $customer, string $listId)
     {
+        if (!$this->enabled) {
+            return false;
+        }
+
         $subscriberHash = md5(strtolower($customer->getEmail()));
 
         $response = $this->listsApi->getMember($listId, $subscriberHash);
