@@ -108,6 +108,9 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
 
         if ($isNew) {
             $response = $this->ecommerceApi->addOrder($storeId, $data);
+
+            // Unregister abandoned cart after order create
+            $this->removeCart($order);
         } else {
             $response = $this->ecommerceApi->updateOrder($storeId, $orderId, $data);
         }
@@ -150,5 +153,16 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
             'country_code' => $address->getCountryCode() ?: '',
             'phone' => $address->getPhoneNumber() ?: '',
         ];
+    }
+
+    /**
+     * @param OrderInterface $order
+     */
+    private function removeCart(OrderInterface $order): void
+    {
+        $cartId = (string) $order->getId();
+        $storeId = $order->getChannel()->getCode();
+
+        $this->ecommerceApi->removeCart($storeId, $cartId);
     }
 }
