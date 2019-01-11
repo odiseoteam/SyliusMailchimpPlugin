@@ -58,7 +58,7 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         $data = [
             'id' => $customerId,
             'email_address' => $customer->getEmail(),
-            'opt_in_status' => true,
+            'opt_in_status' => false,
             'first_name' => $firstName ?: '',
             'last_name' => $lastName ?: '',
         ];

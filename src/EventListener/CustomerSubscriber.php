@@ -10,6 +10,7 @@ use Odiseo\SyliusMailchimpPlugin\Handler\CustomerNewsletterSubscriptionHandlerIn
 use Odiseo\SyliusMailchimpPlugin\Handler\CustomerRegisterHandlerInterface;
 use Odiseo\SyliusMailchimpPlugin\Model\MailchimpListIdAwareInterface;
 use Odiseo\SyliusMailchimpPlugin\Provider\ListIdProviderInterface;
+use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
@@ -20,6 +21,11 @@ final class CustomerSubscriber implements EventSubscriber
      * @var ChannelRepositoryInterface
      */
     private $channelRepository;
+
+    /**
+     * @var ChannelContextInterface
+     */
+    private $channelContext;
 
     /**
      * @var CustomerRegisterHandlerInterface
@@ -38,18 +44,21 @@ final class CustomerSubscriber implements EventSubscriber
 
     /**
      * @param ChannelRepositoryInterface $channelRepository
+     * @param ChannelContextInterface $channelContext
      * @param CustomerRegisterHandlerInterface $customerRegisterHandler
      * @param CustomerNewsletterSubscriptionHandlerInterface $customerNewsletterSubscriptionHandler
      * @param ListIdProviderInterface $listIdProvider
      */
     public function __construct(
         ChannelRepositoryInterface $channelRepository,
+        ChannelContextInterface $channelContext,
         CustomerRegisterHandlerInterface $customerRegisterHandler,
         CustomerNewsletterSubscriptionHandlerInterface $customerNewsletterSubscriptionHandler,
         ListIdProviderInterface $listIdProvider
     ) {
         $this->channelRepository = $channelRepository;
         $this->customerRegisterHandler = $customerRegisterHandler;
+        $this->channelContext = $channelContext;
         $this->customerNewsletterSubscriptionHandler = $customerNewsletterSubscriptionHandler;
         $this->listIdProvider = $listIdProvider;
     }
@@ -104,15 +113,18 @@ final class CustomerSubscriber implements EventSubscriber
      */
     private function register(CustomerInterface $customer)
     {
-        $channels = $this->channelRepository->findAll();
+        try {
+            if (true === $customer->isSubscribedToNewsletter()) {
+                /** @var ChannelInterface $channel */
+                $channel = $this->channelContext->getChannel();
+                $this->customerNewsletterSubscriptionHandler->subscribe($customer, $this->getListIdByChannel($channel));
+            }
+        } catch (\Exception $e) {}
 
+        $channels = $this->channelRepository->findAll();
         /** @var ChannelInterface $channel */
         foreach ($channels as $channel) {
             $this->customerRegisterHandler->register($customer, $channel);
-
-            if (true === $customer->isSubscribedToNewsletter()) {
-                $this->customerNewsletterSubscriptionHandler->subscribe($customer, $this->getListIdByChannel($channel));
-            }
         }
     }
 
