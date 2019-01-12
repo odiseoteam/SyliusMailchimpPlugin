@@ -34,12 +34,9 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
     }
 
     /**
-     * @param CustomerInterface $customer
-     * @param ChannelInterface $channel
-     *
-     * @return array|false
+     * {@inheritdoc}
      */
-    public function register(CustomerInterface $customer, ChannelInterface $channel)
+    public function register(CustomerInterface $customer, ChannelInterface $channel, bool $optInStatus = false)
     {
         if (!$this->enabled) {
             return false;
@@ -48,17 +45,16 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         $customerId = (string) $customer->getId();
         $storeId = $channel->getCode();
         $customerAddress = $this->getCustomerAddress($customer);
+        $firstName = $this->getCustomerFirstName($customer, $customerAddress);
+        $lastName = $this->getCustomerLastName($customer, $customerAddress);
 
         $response = $this->ecommerceApi->getCustomer($storeId, $customerId);
         $isNew = !isset($response['id']);
 
-        $firstName = $this->getCustomerFirstName($customer, $customerAddress);
-        $lastName = $this->getCustomerLastName($customer, $customerAddress);
-
         $data = [
             'id' => $customerId,
             'email_address' => $customer->getEmail(),
-            'opt_in_status' => false,
+            'opt_in_status' => $optInStatus,
             'first_name' => $firstName ?: '',
             'last_name' => $lastName ?: '',
         ];
@@ -154,22 +150,5 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         }
 
         return $lastName;
-    }
-
-    /**
-     * @param CustomerInterface $customer
-     * @param AddressInterface|null $address
-     *
-     * @return string|null
-     */
-    private function getCustomerPhoneNumber(CustomerInterface $customer, AddressInterface $address = null): ?string
-    {
-        $phoneNumber = $customer->getPhoneNumber();
-
-        if (!$phoneNumber && $address) {
-            $phoneNumber = $address->getPhoneNumber();
-        }
-
-        return $phoneNumber;
     }
 }

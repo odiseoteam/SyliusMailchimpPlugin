@@ -62,6 +62,5 @@ services:
             - "@sylius.context.channel"
             - "@odiseo_sylius_mailchimp_plugin.handler.customer_register"
             - "@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription"
-            - "@odiseo_sylius_mailchimp_plugin.default.list_id_provider"
         tags:
             - { name: doctrine.event_subscriber }
