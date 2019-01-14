@@ -1,2 +1,2 @@
 imports:
-    - suites/ui/managing_reports.yml
+    - suites/ui/newsletter.yml

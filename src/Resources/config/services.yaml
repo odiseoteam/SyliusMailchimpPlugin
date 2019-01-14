@@ -6,6 +6,7 @@ services:
     # Providers
     odiseo_sylius_mailchimp_plugin.default.list_id_provider:
         class: Odiseo\SyliusMailchimpPlugin\Provider\DefaultListIdProvider
+        public: true
         arguments:
             - "%env(ODISEO_MAILCHIMP_DEFAULT_LISTID)%"
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Odiseo\SyliusReportPlugin\Behat\Behaviour;
+namespace Tests\Odiseo\SyliusMailchimpPlugin\Behat\Behaviour;
 
 interface ContainsErrorInterface
 {
