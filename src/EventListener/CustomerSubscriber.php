@@ -8,8 +8,8 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Odiseo\SyliusMailchimpPlugin\Handler\CustomerNewsletterSubscriptionHandlerInterface;
 use Odiseo\SyliusMailchimpPlugin\Handler\CustomerRegisterHandlerInterface;
-use Odiseo\SyliusMailchimpPlugin\Model\MailchimpListIdAwareInterface;
 use Odiseo\SyliusMailchimpPlugin\Provider\ListIdProviderInterface;
+use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
@@ -22,6 +22,11 @@ final class CustomerSubscriber implements EventSubscriber
     private $channelRepository;
 
     /**
+     * @var ChannelContextInterface
+     */
+    private $channelContext;
+
+    /**
      * @var CustomerRegisterHandlerInterface
      */
     private $customerRegisterHandler;
@@ -32,26 +37,21 @@ final class CustomerSubscriber implements EventSubscriber
     private $customerNewsletterSubscriptionHandler;
 
     /**
-     * @var ListIdProviderInterface
-     */
-    private $listIdProvider;
-
-    /**
      * @param ChannelRepositoryInterface $channelRepository
+     * @param ChannelContextInterface $channelContext
      * @param CustomerRegisterHandlerInterface $customerRegisterHandler
      * @param CustomerNewsletterSubscriptionHandlerInterface $customerNewsletterSubscriptionHandler
-     * @param ListIdProviderInterface $listIdProvider
      */
     public function __construct(
         ChannelRepositoryInterface $channelRepository,
+        ChannelContextInterface $channelContext,
         CustomerRegisterHandlerInterface $customerRegisterHandler,
-        CustomerNewsletterSubscriptionHandlerInterface $customerNewsletterSubscriptionHandler,
-        ListIdProviderInterface $listIdProvider
+        CustomerNewsletterSubscriptionHandlerInterface $customerNewsletterSubscriptionHandler
     ) {
         $this->channelRepository = $channelRepository;
         $this->customerRegisterHandler = $customerRegisterHandler;
+        $this->channelContext = $channelContext;
         $this->customerNewsletterSubscriptionHandler = $customerNewsletterSubscriptionHandler;
-        $this->listIdProvider = $listIdProvider;
     }
 
     public function getSubscribedEvents()
@@ -104,15 +104,17 @@ final class CustomerSubscriber implements EventSubscriber
      */
     private function register(CustomerInterface $customer)
     {
-        $channels = $this->channelRepository->findAll();
+        /** @var ChannelInterface|null $subscribedChannel */
+        $subscribedChannel = null;
+        try {
+            $subscribedChannel = (true === $customer->isSubscribedToNewsletter())?$this->channelContext->getChannel():null;
+        } catch (\Exception $e) {}
 
+        $channels = $this->channelRepository->findAll();
         /** @var ChannelInterface $channel */
         foreach ($channels as $channel) {
-            $this->customerRegisterHandler->register($customer, $channel);
-
-            if (true === $customer->isSubscribedToNewsletter()) {
-                $this->customerNewsletterSubscriptionHandler->subscribe($customer, $this->getListIdByChannel($channel));
-            }
+            $isSubscribed = !!($subscribedChannel && $subscribedChannel->getCode() == $channel->getCode());
+            $this->customerRegisterHandler->register($customer, $channel, $isSubscribed);
         }
     }
 
@@ -127,21 +129,5 @@ final class CustomerSubscriber implements EventSubscriber
         foreach ($channels as $channel) {
             $this->customerRegisterHandler->unregister($customer, $channel);
         }
-    }
-
-    /**
-     * @param ChannelInterface $channel
-     *
-     * @return string
-     */
-    private function getListIdByChannel(ChannelInterface $channel): string
-    {
-        if ($channel instanceof MailchimpListIdAwareInterface) {
-            if ($listId = $channel->getListId()) {
-                return $listId;
-            }
-        }
-
-        return $this->listIdProvider->getListId();
     }
 }
