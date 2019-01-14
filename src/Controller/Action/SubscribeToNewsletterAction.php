@@ -12,7 +12,7 @@ use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Core\Model\Customer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Contracts\Translation\LocaleAwareInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class SubscribeToNewsletterAction
 {
@@ -22,7 +22,7 @@ final class SubscribeToNewsletterAction
     private $customerNewsletterSubscriptionHandler;
 
     /**
-     * @var LocaleAwareInterface
+     * @var TranslatorInterface
      */
     private $translator;
 
@@ -38,13 +38,13 @@ final class SubscribeToNewsletterAction
 
     /**
      * @param CustomerNewsletterSubscriptionHandler $customerNewsletterSubscriptionHandler
-     * @param LocaleAwareInterface $translator
+     * @param TranslatorInterface $translator
      * @param ChannelContextInterface $channelContext
      * @param ListIdProviderInterface $listIdProvider
      */
     public function __construct(
         CustomerNewsletterSubscriptionHandler $customerNewsletterSubscriptionHandler,
-        LocaleAwareInterface $translator,
+        TranslatorInterface $translator,
         ChannelContextInterface $channelContext,
         ListIdProviderInterface $listIdProvider
     ) {
