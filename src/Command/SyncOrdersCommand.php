@@ -9,6 +9,7 @@ use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\OrderPaymentStates;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -46,6 +47,7 @@ class SyncOrdersCommand extends BaseSyncCommand
         $this
             ->setName('odiseo:mailchimp:sync-orders')
             ->setDescription('Synchronize the orders to Mailchimp.')
+            ->addOption('create-only', 'c', InputOption::VALUE_NONE, 'With this option the existing carts will be not updated.')
         ;
     }
 
@@ -58,11 +60,16 @@ class SyncOrdersCommand extends BaseSyncCommand
 
         $this->io->title('Synchronizing the orders to Mailchimp');
 
-        $this->registerOrders();
+        $this->registerOrders($input);
     }
 
-    protected function registerOrders()
+    /**
+     * @param InputInterface $input
+     */
+    protected function registerOrders(InputInterface $input)
     {
+        $createOnly = $input->getOption('create-only');
+
         $orders = $this->orderRepository->createQueryBuilder('o')
             ->andWhere('o.paymentState = :paymentState')
             ->setParameter('paymentState', OrderPaymentStates::STATE_PAID)
@@ -76,7 +83,7 @@ class SyncOrdersCommand extends BaseSyncCommand
         /** @var OrderInterface $order */
         foreach ($orders as $order) {
             try {
-                $response = $this->orderRegisterHandler->register($order);
+                $response = $this->orderRegisterHandler->register($order, $createOnly);
 
                 if (!isset($response['id']) && $response !== false) {
                     $this->showError($response);

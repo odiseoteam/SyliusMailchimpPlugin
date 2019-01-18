@@ -70,28 +70,42 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function register(OrderInterface $order)
+    public function register(OrderInterface $order, bool $createOnly = false)
     {
         if (!$this->enabled) {
             return false;
         }
 
         /** @var CustomerInterface $customer */
-        if ((null === $customer = $order->getCustomer()) || (count($order->getItems()) == 0)) {
+        $customer = $order->getCustomer();
+        $channel = $order->getChannel();
+
+        if (
+            null == $customer ||
+            null == $channel ||
+            count($order->getItems()) == 0
+        ) {
             return false;
         }
 
-        $channel = $order->getChannel();
         $storeId = $channel->getCode();
         $cartId = (string) $order->getId();
 
+        $response = $this->ecommerceApi->getCart($storeId, $cartId);
+        $isNew = !isset($response['id']);
+
+        // Do nothing if the cart exists
+        if (false === $isNew && true === $createOnly) {
+            return false;
+        }
+
         // Registering the customer to ensure that exist on Mailchimp
-        $response = $this->customerRegisterHandler->register($customer, $channel);
+        $response = $this->customerRegisterHandler->register($customer, $channel, false, $createOnly);
 
         if (!isset($response['id']) && $response !== false) {
             return false;
         }
-
+	
         // Assigning the token value to the order
         $this->orderTokenAssigner->assignTokenValueIfNotSet($order);
         $this->entityManager->flush();
@@ -103,10 +117,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
             '_locale' => $order->getLocaleCode() ?: 'en',
             'tokenValue' => $order->getTokenValue(),
         ], RouterInterface::ABSOLUTE_URL);
-
-        $response = $this->ecommerceApi->getCart($storeId, $cartId);
-        $isNew = !isset($response['id']);
-
+	
         $data = [
             'id' => $cartId,
             'customer' => [
@@ -120,10 +131,17 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         ];
 
         foreach ($order->getItems() as $item) {
+            $product = $item->getProduct();
+            $variant = $item->getVariant();
+
+            if (null == $product || null == $variant) {
+                continue;
+            }
+
             $data['lines'][] = [
                 'id' => (string) $item->getId(),
-                'product_id' => (string) $item->getProduct()->getId(),
-                'product_variant_id' => (string) $item->getVariant()->getId(),
+                'product_id' => (string) $product->getId(),
+                'product_variant_id' => (string) $variant->getId(),
                 'quantity' => $item->getQuantity(),
                 'price' => $item->getTotal() / 100,
             ];
@@ -148,7 +166,13 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         }
 
         $orderId = (string) $order->getId();
-        $storeId = $order->getChannel()->getCode();
+        $channel = $order->getChannel();
+
+        if (null == $channel) {
+            return false;
+        }
+
+        $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getCart($storeId, $orderId);
         $isNew = !isset($response['id']);

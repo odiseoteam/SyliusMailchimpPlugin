@@ -10,10 +10,11 @@ interface CartRegisterHandlerInterface
 {
     /**
      * @param OrderInterface $order
+     * @param bool $createOnly
      *
      * @return array|false
      */
-    public function register(OrderInterface $order);
+    public function register(OrderInterface $order, bool $createOnly = false);
 
     /**
      * @param OrderInterface $order

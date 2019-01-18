@@ -54,23 +54,37 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function register(OrderInterface $order)
+    public function register(OrderInterface $order, bool $createOnly = false)
     {
         if (!$this->enabled) {
             return false;
         }
 
         /** @var CustomerInterface $customer */
-        if ((null === $customer = $order->getCustomer()) || (count($order->getItems()) == 0)) {
+        $customer = $order->getCustomer();
+        $channel = $order->getChannel();
+
+        if (
+            null == $customer ||
+            null == $channel ||
+            count($order->getItems()) == 0
+        ) {
             return false;
         }
 
-        $channel = $order->getChannel();
         $storeId = $channel->getCode();
         $orderId = (string) $order->getId();
 
+        $response = $this->ecommerceApi->getOrder($storeId, $orderId);
+        $isNew = !isset($response['id']);
+
+        // Do nothing if the order exists
+        if (false === $isNew && true === $createOnly) {
+            return false;
+        }
+
         // Registering the customer to ensure that exist on Mailchimp
-        $response = $this->customerRegisterHandler->register($customer, $channel);
+        $response = $this->customerRegisterHandler->register($customer, $channel, false, $createOnly);
 
         if (!isset($response['id']) && $response !== false) {
             return false;
@@ -84,10 +98,8 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
             'tokenValue' => $order->getTokenValue(),
         ], RouterInterface::ABSOLUTE_URL);
 
-        $response = $this->ecommerceApi->getOrder($storeId, $orderId);
-        $isNew = !isset($response['id']);
-
         $lastCompletedPayment = $order->getLastPayment(PaymentInterface::STATE_COMPLETED);
+        /** @var \DateTime $orderCompletedDate */
         $orderCompletedDate = $lastCompletedPayment?$lastCompletedPayment->getUpdatedAt():$order->getUpdatedAt();
 
         $data = [
@@ -109,10 +121,17 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
         ];
 
         foreach ($order->getItems() as $item) {
+            $product = $item->getProduct();
+            $variant = $item->getVariant();
+
+            if (null == $product || null == $variant) {
+                continue;
+            }
+
             $data['lines'][] = [
                 'id' => (string) $item->getId(),
-                'product_id' => (string) $item->getProduct()->getId(),
-                'product_variant_id' => (string) $item->getVariant()->getId(),
+                'product_id' => (string) $product->getId(),
+                'product_variant_id' => (string) $variant->getId(),
                 'quantity' => $item->getQuantity(),
                 'price' => $item->getTotal() / 100,
             ];
@@ -140,7 +159,13 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
         }
 
         $orderId = (string) $order->getId();
-        $storeId = $order->getChannel()->getCode();
+        $channel = $order->getChannel();
+
+        if (null == $channel) {
+            return false;
+        }
+
+        $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getOrder($storeId, $orderId);
         $isNew = !isset($response['id']);
@@ -177,7 +202,13 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
     private function removeCart(OrderInterface $order): void
     {
         $cartId = (string) $order->getId();
-        $storeId = $order->getChannel()->getCode();
+        $channel = $order->getChannel();
+
+        if (null == $channel) {
+            return;
+        }
+
+        $storeId = $channel->getCode();
 
         $this->ecommerceApi->removeCart($storeId, $cartId);
     }

@@ -164,8 +164,10 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         $context->setHost($channel->getHostname());
 
         $locale = 'en';
-        if ($channel->getDefaultLocale()) {
-            $locale = $channel->getDefaultLocale()->getCode();
+        $channelDefaultLocale = $channel->getDefaultLocale();
+        
+        if (null !== $channelDefaultLocale) {
+            $locale = $channelDefaultLocale->getCode();
         } else {
             if (count($channel->getLocales()) > 0) {
                 $locale = $channel->getLocales()->first()->getCode();

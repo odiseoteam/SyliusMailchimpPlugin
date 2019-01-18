@@ -8,6 +8,7 @@ use Odiseo\SyliusMailchimpPlugin\Handler\CartRegisterHandlerInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Core\Model\OrderInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -45,6 +46,7 @@ class SyncCartsCommand extends BaseSyncCommand
         $this
             ->setName('odiseo:mailchimp:sync-carts')
             ->setDescription('Synchronize the carts to Mailchimp.')
+            ->addOption('create-only', 'c', InputOption::VALUE_NONE, 'With this option the existing carts will be not updated.')
         ;
     }
 
@@ -57,11 +59,16 @@ class SyncCartsCommand extends BaseSyncCommand
 
         $this->io->title('Synchronizing the carts to Mailchimp');
 
-        $this->registerCarts();
+        $this->registerCarts($input);
     }
 
-    protected function registerCarts()
+    /**
+     * @param InputInterface $input
+     */
+    protected function registerCarts(InputInterface $input)
     {
+        $createOnly = $input->getOption('create-only');
+
         $orders = $this->orderRepository->createQueryBuilder('o')
             ->where('o.customer IS NOT NULL')
             ->getQuery()
@@ -74,7 +81,7 @@ class SyncCartsCommand extends BaseSyncCommand
         /** @var OrderInterface $order */
         foreach ($orders as $order) {
             try {
-                $response = $this->cartRegisterHandler->register($order);
+                $response = $this->cartRegisterHandler->register($order, $createOnly);
 
                 if (!isset($response['id']) && $response !== false) {
                     $this->showError($response);

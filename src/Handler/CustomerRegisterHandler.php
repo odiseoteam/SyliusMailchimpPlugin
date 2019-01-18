@@ -36,7 +36,12 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function register(CustomerInterface $customer, ChannelInterface $channel, bool $optInStatus = false)
+    public function register(
+        CustomerInterface $customer,
+        ChannelInterface $channel,
+        bool $optInStatus = false,
+        bool $createOnly = false
+    )
     {
         if (!$this->enabled) {
             return false;
@@ -50,6 +55,10 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
 
         $response = $this->ecommerceApi->getCustomer($storeId, $customerId);
         $isNew = !isset($response['id']);
+
+        if (false === $isNew && true === $createOnly) {
+            return false;
+        }
 
         $data = [
             'id' => $customerId,
