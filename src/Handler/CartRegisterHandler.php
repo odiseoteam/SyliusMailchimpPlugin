@@ -105,7 +105,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         if (!isset($response['id']) && $response !== false) {
             return false;
         }
-	
+    
         // Assigning the token value to the order
         $this->orderTokenAssigner->assignTokenValueIfNotSet($order);
         $this->entityManager->flush();
@@ -117,7 +117,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
             '_locale' => $order->getLocaleCode() ?: 'en',
             'tokenValue' => $order->getTokenValue(),
         ], RouterInterface::ABSOLUTE_URL);
-	
+    
         $data = [
             'id' => $cartId,
             'customer' => [

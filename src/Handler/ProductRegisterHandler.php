@@ -57,7 +57,7 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function register(ProductInterface $product, ChannelInterface $channel)
+    public function register(ProductInterface $product, ChannelInterface $channel, bool $createOnly = false)
     {
         if (!$this->enabled) {
             return false;
@@ -68,6 +68,11 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
 
         $response = $this->ecommerceApi->getProduct($storeId, $productId);
         $isNew = !isset($response['id']);
+
+        // Do nothing if the product exists
+        if (false === $isNew && true === $createOnly) {
+            return false;
+        }
 
         $variants = [];
         /** @var ProductVariant $productVariant */

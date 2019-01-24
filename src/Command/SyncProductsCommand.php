@@ -9,6 +9,7 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -46,6 +47,7 @@ class SyncProductsCommand extends BaseSyncCommand
         $this
             ->setName('odiseo:mailchimp:sync-products')
             ->setDescription('Synchronize the products to Mailchimp.')
+            ->addOption('create-only', 'c', InputOption::VALUE_NONE, 'With this option the existing products will be not updated.')
         ;
     }
 
@@ -58,11 +60,16 @@ class SyncProductsCommand extends BaseSyncCommand
 
         $this->io->title('Synchronizing the products to Mailchimp');
 
-        $this->registerProducts();
+        $this->registerProducts($input);
     }
 
-    protected function registerProducts()
+    /**
+     * @param InputInterface $input
+     */
+    protected function registerProducts(InputInterface $input)
     {
+        $createOnly = $input->getOption('create-only');
+
         $products = $this->productRepository->findAll();
 
         $this->io->text('Connecting ' . count($products) . ' products.');
@@ -75,7 +82,7 @@ class SyncProductsCommand extends BaseSyncCommand
             /** @var ChannelInterface $channel */
             foreach ($channels as $channel) {
                 try {
-                    $response = $this->productRegisterHandler->register($product, $channel);
+                    $response = $this->productRegisterHandler->register($product, $channel, $createOnly);
 
                     if (!isset($response['id']) && $response !== false) {
                         $this->showError($response);

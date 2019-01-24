@@ -12,10 +12,11 @@ interface ProductRegisterHandlerInterface
     /**
      * @param ProductInterface $product
      * @param ChannelInterface $channel
+     * @param bool $createOnly
      *
      * @return array|false
      */
-    public function register(ProductInterface $product, ChannelInterface $channel);
+    public function register(ProductInterface $product, ChannelInterface $channel, bool $createOnly = false);
 
     /**
      * @param ProductInterface $product

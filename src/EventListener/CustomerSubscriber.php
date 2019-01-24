@@ -108,7 +108,8 @@ final class CustomerSubscriber implements EventSubscriber
         $subscribedChannel = null;
         try {
             $subscribedChannel = (true === $customer->isSubscribedToNewsletter())?$this->channelContext->getChannel():null;
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         $channels = $this->channelRepository->findAll();
         /** @var ChannelInterface $channel */

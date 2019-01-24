@@ -41,8 +41,7 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         ChannelInterface $channel,
         bool $optInStatus = false,
         bool $createOnly = false
-    )
-    {
+    ) {
         if (!$this->enabled) {
             return false;
         }
@@ -56,6 +55,7 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         $response = $this->ecommerceApi->getCustomer($storeId, $customerId);
         $isNew = !isset($response['id']);
 
+        // Do nothing if the customer exists
         if (false === $isNew && true === $createOnly) {
             return false;
         }

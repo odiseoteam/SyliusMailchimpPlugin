@@ -10,6 +10,7 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Repository\CustomerRepositoryInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -55,6 +56,7 @@ class SyncCustomersCommand extends BaseSyncCommand
         $this
             ->setName('odiseo:mailchimp:sync-customers')
             ->setDescription('Synchronize the customers to Mailchimp.')
+            ->addOption('create-only', 'c', InputOption::VALUE_NONE, 'With this option the existing customers will be not updated.')
         ;
     }
 
@@ -67,11 +69,16 @@ class SyncCustomersCommand extends BaseSyncCommand
 
         $this->io->title('Synchronizing the customers to Mailchimp');
 
-        $this->registerCustomers();
+        $this->registerCustomers($input);
     }
 
-    protected function registerCustomers()
+    /**
+     * @param InputInterface $input
+     */
+    protected function registerCustomers(InputInterface $input)
     {
+        $createOnly = $input->getOption('create-only');
+
         $channels = $this->channelRepository->findAll();
         $customers = $this->customerRepository->findAll();
 
@@ -83,7 +90,7 @@ class SyncCustomersCommand extends BaseSyncCommand
             /** @var ChannelInterface $channel */
             foreach ($channels as $channel) {
                 try {
-                    $response = $this->customerRegisterHandler->register($customer, $channel);
+                    $response = $this->customerRegisterHandler->register($customer, $channel, false, $createOnly);
 
                     if (!isset($response['id']) && $response !== false) {
                         $this->showError($response);
