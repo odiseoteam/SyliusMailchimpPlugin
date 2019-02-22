@@ -64,7 +64,7 @@ public function registerBundles(): array
 {
     $bundles = [
         ...
-        new \Odiseo\SyliusReportPlugin\OdiseoSyliusReportPlugin(),
+        new \Odiseo\SyliusMailchimpPlugin\OdiseoSyliusMailchimpPlugin(),
     ];
 }
 ```
