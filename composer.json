@@ -11,7 +11,7 @@
     "require": {
         "php": "^7.2",
 
-        "sylius/sylius": "~1.3",
+        "sylius/sylius": "^1.3",
         "drewm/mailchimp-api": "^2.4",
         "sonata-project/core-bundle": "<v3.12"
     },
