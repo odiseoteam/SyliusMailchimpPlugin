@@ -46,6 +46,8 @@ sales and generate more revenue.
 order confirmations, invoices, shipping confirmations, refund confirmations, and cancellation confirmations—directly 
 through your Mailchimp account.
 
+Now supporting Sylius 1.4 with Symfony 4 + Flex structure.
+
 ## Demo
 
 You can see this plugin in action in our Sylius Demo application.
@@ -55,9 +57,9 @@ You can see this plugin in action in our Sylius Demo application.
 
 ## Installation
 
-1. Run `composer require odiseoteam/sylius-mailchimp-plugin`.
+1. Run `composer require odiseoteam/sylius-mailchimp-plugin`
 
-2. Add the plugin to the bundles.php.
+2. Enable the plugin in bundles.php
 
 ```php
 <?php
@@ -69,7 +71,7 @@ return [
 ];
 ```
  
-3. Import the plugin configurations. For example on services.yaml:
+3. Import the plugin configurations
  
 ```yml
 imports:
@@ -86,11 +88,18 @@ odiseo_sylius_mailchimp_plugin:
         _locale: ^[a-z]{2}(?:_[A-Z]{2})?$
 ```
 
-5. Add the enviorment variables:
+5. Add the enviroment variables:
 
 ```yml
 ODISEO_MAILCHIMP_APIKEY=EDITME
 ODISEO_MAILCHIMP_DEFAULT_LISTID=EDITME
+```
+
+6. Finish the installation updating the database schema and installing assets
+   
+```
+php bin/console doctrine:schema:update --force
+php bin/console assets:install
 ```
 
 If you want to use different List Id for each Sylius Channel, you need to 
