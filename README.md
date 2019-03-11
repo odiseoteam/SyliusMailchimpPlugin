@@ -57,25 +57,36 @@ You can see this plugin in action in our Sylius Demo application.
 
 1. Run `composer require odiseoteam/sylius-mailchimp-plugin`.
 
-2. Add the plugin to the AppKernel:
+2. Add the plugin to the bundles.php.
 
 ```php
-public function registerBundles(): array
-{
-    $bundles = [
-        ...
-        new \Odiseo\SyliusMailchimpPlugin\OdiseoSyliusMailchimpPlugin(),
-    ];
-}
-```
+<?php
 
-3. Import the configurations on your config.yaml:
+return [
+    // ...
+    Odiseo\SyliusMailchimpPlugin\OdiseoSyliusMailchimpPlugin::class => ['all' => true],
+    // ...
+];
+```
+ 
+3. Import the plugin configurations. For example on services.yaml:
  
 ```yml
+imports:
     - { resource: "@OdiseoSyliusMailchimpPlugin/Resources/config/config.yaml" }
 ```
 
-4) Add the enviorment variables:
+4. Add routes:
+
+```yml
+odiseo_sylius_mailchimp_plugin:
+    resource: "@OdiseoSyliusMailchimpPlugin/Resources/config/routing.yaml"
+    prefix: /{_locale}
+    requirements:
+        _locale: ^[a-z]{2}(?:_[A-Z]{2})?$
+```
+
+5. Add the enviorment variables:
 
 ```yml
 ODISEO_MAILCHIMP_APIKEY=EDITME
