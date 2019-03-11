@@ -10,7 +10,6 @@ use Sylius\Behat\Service\SharedStorage;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Repository\CustomerRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
-use Sylius\Component\Resource\Model\ResourceInterface;
 use Tests\Odiseo\SyliusMailchimpPlugin\Behat\Page\Shop\Newsletter\NewsletterPageInterface;
 use Webmozart\Assert\Assert;
 

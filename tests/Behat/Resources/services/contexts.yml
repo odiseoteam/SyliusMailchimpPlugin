@@ -1,20 +1,22 @@
 services:
     odiseo_sylius_mailchimp_plugin.context.ui.shop.newsletter:
         class: Tests\Odiseo\SyliusMailchimpPlugin\Behat\Context\Ui\Shop\NewsletterContext
+        public: true
         arguments:
             - "@odiseo_sylius_mailchimp_plugin.behat.page.newsletter_page"
-            - "@__symfony__.sylius.repository.customer"
-            - "@__symfony__.sylius.factory.customer"
-            - "@__symfony__.sylius.manager.customer"
+            - "@sylius.repository.customer"
+            - "@sylius.factory.customer"
+            - "@sylius.manager.customer"
             - "@sylius.behat.shared_storage"
         tags:
             - { name: fob.context_service }
 
     odiseo_sylius_mailchimp_plugin.context.ui.shop.mailchimp:
         class: Tests\Odiseo\SyliusMailchimpPlugin\Behat\Context\Ui\Shop\MailchimpContext
+        public: true
         arguments:
             - "@sylius.behat.shared_storage"
-            - "@__symfony__.odiseo_sylius_mailchimp_plugin.lists.api"
-            - "@__symfony__.odiseo_sylius_mailchimp_plugin.default.list_id_provider"
+            - "@odiseo_sylius_mailchimp_plugin.lists.api"
+            - "@odiseo_sylius_mailchimp_plugin.default.list_id_provider"
         tags:
             - { name: fob.context_service }
