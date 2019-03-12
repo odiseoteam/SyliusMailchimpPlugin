@@ -23,7 +23,7 @@ final class DefaultListIdProvider implements ListIdProviderInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getListId(): string
     {

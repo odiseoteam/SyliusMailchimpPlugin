@@ -12,5 +12,5 @@ interface ListIdProviderInterface
     /**
      * @return string
      */
-    public function getListId(): string;
+    public function getListId();
 }
