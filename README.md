@@ -99,7 +99,7 @@ ODISEO_MAILCHIMP_DEFAULT_LISTID=EDITME
    
 ```
 php bin/console doctrine:schema:update --force
-php bin/console assets:install
+php bin/console sylius:theme:assets:install
 ```
 
 If you want to use different List Id for each Sylius Channel, you need to 
