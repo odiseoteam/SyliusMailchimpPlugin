@@ -15,3 +15,12 @@ winzou_state_machine:
                     do: ["@odiseo_sylius_mailchimp_plugin.handler.order_register", "register"]
                     args: ["object"]
                     priority: 3
+
+monolog:
+    channels: ['mailchimp']
+    handlers:
+        mailchimp:
+            type: stream
+            path: "%kernel.logs_dir%/mailchimp_%kernel.environment%.log"
+            level: info
+            channels: [mailchimp]

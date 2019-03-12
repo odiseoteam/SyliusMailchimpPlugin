@@ -16,12 +16,14 @@ services:
         public: true
         arguments:
             - "%env(ODISEO_MAILCHIMP_APIKEY)%"
+            - "@monolog.logger.mailchimp"
 
     odiseo_sylius_mailchimp_plugin.lists.api:
         class: Odiseo\SyliusMailchimpPlugin\Api\Lists
         public: true
         arguments:
             - "%env(ODISEO_MAILCHIMP_APIKEY)%"
+            - "@monolog.logger.mailchimp"
 
     # Controllers
     odiseo_sylius_mailchimp_plugin.controller.action.subscribe_to_newsletter:
