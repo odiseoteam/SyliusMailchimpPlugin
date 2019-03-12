@@ -15,7 +15,7 @@ class Lists extends MailChimp implements ListsInterface
     private $logger;
 
     /**
-     * @param $api_key
+     * @param string $api_key
      * @param LoggerInterface $logger
      *
      * @throws \Exception
