@@ -9,6 +9,7 @@ use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 final class OrderRegisterHandler implements OrderRegisterHandlerInterface
@@ -29,6 +30,11 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
     private $router;
 
     /**
+     * @var SessionInterface
+     */
+    private $session;
+
+    /**
      * @var bool
      */
     private $enabled;
@@ -37,17 +43,20 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
      * @param EcommerceInterface $ecommerceApi
      * @param CustomerRegisterHandlerInterface $customerRegisterHandler
      * @param RouterInterface $router
+     * @param SessionInterface $session
      * @param bool $enabled
      */
     public function __construct(
         EcommerceInterface $ecommerceApi,
         CustomerRegisterHandlerInterface $customerRegisterHandler,
         RouterInterface $router,
+        SessionInterface $session,
         bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
         $this->customerRegisterHandler = $customerRegisterHandler;
         $this->router = $router;
+        $this->session = $session;
         $this->enabled = $enabled;
     }
 
@@ -107,6 +116,7 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
             'customer' => [
                 'id' => (string) $customer->getId(),
             ],
+            'campaign_id' => $this->session->get('campaingId') ?: '',
             'financial_status' => 'paid',
             'currency_code' => $order->getCurrencyCode() ?: 'USD',
             'order_total' => $order->getTotal() / 100,

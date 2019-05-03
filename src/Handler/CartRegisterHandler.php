@@ -9,6 +9,7 @@ use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\TokenAssigner\OrderTokenAssignerInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 final class CartRegisterHandler implements CartRegisterHandlerInterface
@@ -39,6 +40,11 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
     private $entityManager;
 
     /**
+     * @var SessionInterface
+     */
+    private $session;
+
+    /**
      * @var bool
      */
     private $enabled;
@@ -49,6 +55,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
      * @param OrderTokenAssignerInterface $orderTokenAssigner
      * @param EntityManagerInterface $entityManager
      * @param CustomerRegisterHandlerInterface $customerRegisterHandler
+     * @param SessionInterface $session
      * @param bool $enabled
      */
     public function __construct(
@@ -57,6 +64,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         RouterInterface $router,
         OrderTokenAssignerInterface $orderTokenAssigner,
         EntityManagerInterface $entityManager,
+        SessionInterface $session,
         bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
@@ -64,6 +72,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         $this->orderTokenAssigner = $orderTokenAssigner;
         $this->entityManager = $entityManager;
         $this->customerRegisterHandler = $customerRegisterHandler;
+        $this->session = $session;
         $this->enabled = $enabled;
     }
 
@@ -105,7 +114,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         if (!isset($response['id']) && $response !== false) {
             return false;
         }
-    
+
         // Assigning the token value to the order
         $this->orderTokenAssigner->assignTokenValueIfNotSet($order);
         $this->entityManager->flush();
@@ -117,12 +126,13 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
             '_locale' => $order->getLocaleCode() ?: 'en',
             'tokenValue' => $order->getTokenValue(),
         ], RouterInterface::ABSOLUTE_URL);
-    
+
         $data = [
             'id' => $cartId,
             'customer' => [
                 'id' => (string) $customer->getId(),
             ],
+            'campaign_id' => $this->session->get('campaingId') ?: '',
             'checkout_url' => $continuePurchaseUrl,
             'currency_code' => $order->getCurrencyCode() ?: 'USD',
             'order_total' => $order->getTotal() / 100,

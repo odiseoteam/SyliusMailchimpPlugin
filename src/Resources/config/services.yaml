@@ -67,3 +67,8 @@ services:
             - "@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription"
         tags:
             - { name: doctrine.event_subscriber }
+
+    odiseo_sylius_mailchimp_plugin.listener.request_listener:
+        class: Odiseo\SyliusMailchimpPlugin\EventListener\RequestListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
