@@ -29,6 +29,7 @@ services:
             - "@router"
             - "@sylius.unique_id_based_order_token_assigner"
             - "@doctrine.orm.entity_manager"
+            - "@session"
             - "%odiseo_sylius_mailchimp_plugin.enabled%"
 
     odiseo_sylius_mailchimp_plugin.handler.order_register:
@@ -38,6 +39,7 @@ services:
             - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
             - "@odiseo_sylius_mailchimp_plugin.handler.customer_register"
             - "@router"
+            - "@session"
             - "%odiseo_sylius_mailchimp_plugin.enabled%"
 
     odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription:
