@@ -12,22 +12,14 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SyncCartsCommand extends BaseSyncCommand
+final class SyncCartsCommand extends BaseSyncCommand
 {
-    /**
-     * @var EntityRepository
-     */
-    protected $orderRepository;
+    /** @var EntityRepository */
+    private $orderRepository;
 
-    /**
-     * @var CartRegisterHandlerInterface
-     */
-    protected $cartRegisterHandler;
+    /** @var CartRegisterHandlerInterface */
+    private $cartRegisterHandler;
 
-    /**
-     * @param EntityRepository $orderRepository
-     * @param CartRegisterHandlerInterface $cartRegisterHandler
-     */
     public function __construct(
         EntityRepository $orderRepository,
         CartRegisterHandlerInterface $cartRegisterHandler
@@ -41,7 +33,7 @@ class SyncCartsCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('odiseo:mailchimp:sync-carts')
@@ -53,7 +45,7 @@ class SyncCartsCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->io = new SymfonyStyle($input, $output);
 
@@ -65,7 +57,7 @@ class SyncCartsCommand extends BaseSyncCommand
     /**
      * @param InputInterface $input
      */
-    protected function registerCarts(InputInterface $input)
+    protected function registerCarts(InputInterface $input): void
     {
         $createOnly = $input->getOption('create-only');
 

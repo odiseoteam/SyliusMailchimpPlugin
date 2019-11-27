@@ -9,15 +9,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 abstract class BaseSyncCommand extends Command
 {
-    /**
-     * @var SymfonyStyle
-     */
+    /** @var SymfonyStyle */
     protected $io;
 
     /**
      * @param array $response
      */
-    protected function showError(array $response)
+    protected function showError(array $response): void
     {
         $this->io->error('Status: ' . $response['status'] . ', Detail: ' . $response['detail']);
 

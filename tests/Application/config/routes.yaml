@@ -1,6 +1,6 @@
-odiseo_sylius_mailchimp_plugin:
-    resource: "@OdiseoSyliusMailchimpPlugin/Resources/config/routing.yaml"
-    prefix: /{_locale}
+odiseo_sylius_mailchimp_plugin_shop:
+    resource: "@OdiseoSyliusMailchimpPlugin/Resources/config/routing/shop.yaml"
+    prefix: /{_locale}/mailchimp
     requirements:
         _locale: ^[a-z]{2}(?:_[A-Z]{2})?$
 

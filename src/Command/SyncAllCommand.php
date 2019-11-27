@@ -10,12 +10,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SyncAllCommand extends BaseSyncCommand
+final class SyncAllCommand extends BaseSyncCommand
 {
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('odiseo:mailchimp:sync-all')
@@ -28,7 +28,7 @@ class SyncAllCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $withPurge = $input->getOption('purge');
         $createOnly = $input->getOption('create-only');

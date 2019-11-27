@@ -11,7 +11,6 @@ interface CustomerNewsletterSubscriptionHandlerInterface
     /**
      * @param CustomerInterface $customer
      * @param string $listId
-     *
      * @return array|false
      */
     public function subscribe(CustomerInterface $customer, string $listId);
@@ -19,7 +18,6 @@ interface CustomerNewsletterSubscriptionHandlerInterface
     /**
      * @param CustomerInterface $customer
      * @param string $listId
-     *
      * @return array|false
      */
     public function unsubscribe(CustomerInterface $customer, string $listId);

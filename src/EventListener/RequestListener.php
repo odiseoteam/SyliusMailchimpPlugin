@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 final class RequestListener
 {
-    public function onKernelRequest(GetResponseEvent $event)
+    /**
+     * @param RequestEvent $event
+     */
+    public function onKernelRequest(RequestEvent $event): void
     {
         if (!$event->isMasterRequest()) {
             return;

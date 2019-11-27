@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Odiseo\SyliusMailchimpPlugin\Handler;
 
 use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
-use Odiseo\SyliusMailchimpPlugin\Model\MailchimpListIdAwareInterface;
+use Odiseo\SyliusMailchimpPlugin\Entity\MailchimpListIdAwareInterface;
 use Odiseo\SyliusMailchimpPlugin\Provider\ListIdProviderInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 

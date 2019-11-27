@@ -13,22 +13,14 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SyncOrdersCommand extends BaseSyncCommand
+final class SyncOrdersCommand extends BaseSyncCommand
 {
-    /**
-     * @var EntityRepository
-     */
-    protected $orderRepository;
+    /** @var EntityRepository */
+    private $orderRepository;
 
-    /**
-     * @var OrderRegisterHandlerInterface
-     */
-    protected $orderRegisterHandler;
+    /** @var OrderRegisterHandlerInterface */
+    private $orderRegisterHandler;
 
-    /**
-     * @param EntityRepository $orderRepository
-     * @param OrderRegisterHandlerInterface $orderRegisterHandler
-     */
     public function __construct(
         EntityRepository $orderRepository,
         OrderRegisterHandlerInterface $orderRegisterHandler
@@ -42,7 +34,7 @@ class SyncOrdersCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('odiseo:mailchimp:sync-orders')
@@ -54,7 +46,7 @@ class SyncOrdersCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->io = new SymfonyStyle($input, $output);
 
@@ -66,7 +58,7 @@ class SyncOrdersCommand extends BaseSyncCommand
     /**
      * @param InputInterface $input
      */
-    protected function registerOrders(InputInterface $input)
+    protected function registerOrders(InputInterface $input): void
     {
         $createOnly = $input->getOption('create-only');
 

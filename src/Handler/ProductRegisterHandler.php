@@ -16,32 +16,18 @@ use Symfony\Component\Routing\RouterInterface;
 
 final class ProductRegisterHandler implements ProductRegisterHandlerInterface
 {
-    /**
-     * @var EcommerceInterface
-     */
+    /** @var EcommerceInterface */
     private $ecommerceApi;
 
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     private $router;
 
-    /**
-     * @var CacheManager
-     */
+    /** @var CacheManager */
     private $cacheManager;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $enabled;
 
-    /**
-     * @param EcommerceInterface $ecommerceApi
-     * @param RouterInterface $router
-     * @param CacheManager $cacheManager
-     * @param bool $enabled
-     */
     public function __construct(
         EcommerceInterface $ecommerceApi,
         RouterInterface $router,
@@ -146,10 +132,9 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
     /**
      * @param ProductVariant $variant
      * @param ChannelInterface $channel
-     *
      * @return int|null
      */
-    private function getVariantPrice(ProductVariant $variant, ChannelInterface $channel)
+    private function getVariantPrice(ProductVariant $variant, ChannelInterface $channel): ?int
     {
         /** @var ChannelPricingInterface $channelPricing */
         $channelPricing = $variant->getChannelPricingForChannel($channel);
@@ -160,7 +145,6 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
     /**
      * @param ProductInterface $product
      * @param ChannelInterface $channel
-     *
      * @return string
      */
     private function getProductUrl(ProductInterface $product, ChannelInterface $channel): string
@@ -170,7 +154,7 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
 
         $locale = 'en';
         $channelDefaultLocale = $channel->getDefaultLocale();
-        
+
         if (null !== $channelDefaultLocale) {
             $locale = $channelDefaultLocale->getCode();
         } else {
@@ -190,7 +174,6 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
     /**
      * @param ProductImageInterface $image
      * @param ChannelInterface $channel
-     *
      * @return string
      */
     private function getImageUrl(ProductImageInterface $image, ChannelInterface $channel): string

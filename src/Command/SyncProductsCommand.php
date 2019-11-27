@@ -13,22 +13,14 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SyncProductsCommand extends BaseSyncCommand
+final class SyncProductsCommand extends BaseSyncCommand
 {
-    /**
-     * @var ProductRepositoryInterface
-     */
-    protected $productRepository;
+    /** @var ProductRepositoryInterface */
+    private $productRepository;
 
-    /**
-     * @var ProductRegisterHandlerInterface
-     */
-    protected $productRegisterHandler;
+    /** @var ProductRegisterHandlerInterface */
+    private $productRegisterHandler;
 
-    /**
-     * @param ProductRepositoryInterface $productRepository
-     * @param ProductRegisterHandlerInterface $productRegisterHandler
-     */
     public function __construct(
         ProductRepositoryInterface $productRepository,
         ProductRegisterHandlerInterface $productRegisterHandler
@@ -42,7 +34,7 @@ class SyncProductsCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('odiseo:mailchimp:sync-products')
@@ -54,7 +46,7 @@ class SyncProductsCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->io = new SymfonyStyle($input, $output);
 
@@ -66,7 +58,7 @@ class SyncProductsCommand extends BaseSyncCommand
     /**
      * @param InputInterface $input
      */
-    protected function registerProducts(InputInterface $input)
+    protected function registerProducts(InputInterface $input): void
     {
         $createOnly = $input->getOption('create-only');
 

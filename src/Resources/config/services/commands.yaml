@@ -2,45 +2,45 @@ services:
     odiseo_sylius_mailchimp_plugin.command.sync_stores:
         class: Odiseo\SyliusMailchimpPlugin\Command\SyncStoresCommand
         arguments:
-            - "@sylius.repository.channel"
-            - "@odiseo_sylius_mailchimp_plugin.handler.store_register"
+            - '@sylius.repository.channel'
+            - '@odiseo_sylius_mailchimp_plugin.handler.store_register'
         tags:
-            - { name: "console.command", command: "odiseo:mailchimp:sync-stores" }
+            - { name: console.command, command: 'odiseo:mailchimp:sync-stores' }
 
     odiseo_sylius_mailchimp_plugin.command.sync_customers:
         class: Odiseo\SyliusMailchimpPlugin\Command\SyncCustomersCommand
         arguments:
-            - "@sylius.repository.channel"
-            - "@sylius.repository.customer"
-            - "@odiseo_sylius_mailchimp_plugin.handler.customer_register"
+            - '@sylius.repository.channel'
+            - '@sylius.repository.customer'
+            - '@odiseo_sylius_mailchimp_plugin.handler.customer_register'
         tags:
-            - { name: "console.command", command: "odiseo:mailchimp:sync-customers" }
+            - { name: console.command, command: 'odiseo:mailchimp:sync-customers' }
 
     odiseo_sylius_mailchimp_plugin.command.sync_products:
         class: Odiseo\SyliusMailchimpPlugin\Command\SyncProductsCommand
         arguments:
-            - "@sylius.repository.product"
-            - "@odiseo_sylius_mailchimp_plugin.handler.product_register"
+            - '@sylius.repository.product'
+            - '@odiseo_sylius_mailchimp_plugin.handler.product_register'
         tags:
-            - { name: "console.command", command: "odiseo:mailchimp:sync-products" }
+            - { name: console.command, command: 'odiseo:mailchimp:sync-products' }
 
     odiseo_sylius_mailchimp_plugin.command.sync_carts:
         class: Odiseo\SyliusMailchimpPlugin\Command\SyncCartsCommand
         arguments:
-            - "@sylius.repository.order"
-            - "@odiseo_sylius_mailchimp_plugin.handler.cart_register"
+            - '@sylius.repository.order'
+            - '@odiseo_sylius_mailchimp_plugin.handler.cart_register'
         tags:
-            - { name: "console.command", command: "odiseo:mailchimp:sync-carts" }
+            - { name: console.command, command: 'odiseo:mailchimp:sync-carts' }
 
     odiseo_sylius_mailchimp_plugin.command.sync_orders:
         class: Odiseo\SyliusMailchimpPlugin\Command\SyncOrdersCommand
         arguments:
-            - "@sylius.repository.order"
-            - "@odiseo_sylius_mailchimp_plugin.handler.order_register"
+            - '@sylius.repository.order'
+            - '@odiseo_sylius_mailchimp_plugin.handler.order_register'
         tags:
-            - { name: "console.command", command: "odiseo:mailchimp:sync-orders" }
+            - { name: console.command, command: 'odiseo:mailchimp:sync-orders' }
 
     odiseo_sylius_mailchimp_plugin.command.sync_all:
         class: Odiseo\SyliusMailchimpPlugin\Command\SyncAllCommand
         tags:
-            - { name: "console.command", command: "odiseo:mailchimp:sync-all" }
+            - { name: console.command, command: 'odiseo:mailchimp:sync-all' }

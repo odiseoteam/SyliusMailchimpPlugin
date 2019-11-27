@@ -11,20 +11,12 @@ use Sylius\Component\Core\Model\CustomerInterface;
 
 final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
 {
-    /**
-     * @var EcommerceInterface
-     */
+    /** @var EcommerceInterface */
     private $ecommerceApi;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $enabled;
 
-    /**
-     * @param EcommerceInterface $ecommerceApi
-     * @param bool $enabled
-     */
     public function __construct(
         EcommerceInterface $ecommerceApi,
         bool $enabled
@@ -113,7 +105,6 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
 
     /**
      * @param CustomerInterface $customer
-     *
      * @return AddressInterface|null
      */
     private function getCustomerAddress(CustomerInterface $customer): ?AddressInterface
@@ -130,7 +121,6 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
     /**
      * @param CustomerInterface $customer
      * @param AddressInterface|null $address
-     *
      * @return string|null
      */
     private function getCustomerFirstName(CustomerInterface $customer, AddressInterface $address = null): ?string
@@ -147,7 +137,6 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
     /**
      * @param CustomerInterface $customer
      * @param AddressInterface|null $address
-     *
      * @return string|null
      */
     private function getCustomerLastName(CustomerInterface $customer, AddressInterface $address = null): ?string

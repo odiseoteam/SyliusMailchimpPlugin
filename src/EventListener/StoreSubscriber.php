@@ -11,14 +11,9 @@ use Sylius\Component\Core\Model\ChannelInterface;
 
 final class StoreSubscriber implements EventSubscriber
 {
-    /**
-     * @var StoreRegisterHandlerInterface
-     */
+    /** @var StoreRegisterHandlerInterface */
     private $storeRegisterHandler;
 
-    /**
-     * @param StoreRegisterHandlerInterface $storeRegisterHandler
-     */
     public function __construct(StoreRegisterHandlerInterface $storeRegisterHandler)
     {
         $this->storeRegisterHandler = $storeRegisterHandler;
@@ -27,7 +22,7 @@ final class StoreSubscriber implements EventSubscriber
     /**
      * {@inheritdoc}
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             'postPersist',
@@ -39,7 +34,7 @@ final class StoreSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(LifecycleEventArgs $args): void
     {
         $channel = $args->getEntity();
 
@@ -51,7 +46,7 @@ final class StoreSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(LifecycleEventArgs $args): void
     {
         $channel = $args->getEntity();
 
@@ -63,7 +58,7 @@ final class StoreSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postRemove(LifecycleEventArgs $args)
+    public function postRemove(LifecycleEventArgs $args): void
     {
         $channel = $args->getEntity();
 
@@ -75,7 +70,7 @@ final class StoreSubscriber implements EventSubscriber
     /**
      * @param ChannelInterface $channel
      */
-    private function register(ChannelInterface $channel)
+    private function register(ChannelInterface $channel): void
     {
         $this->storeRegisterHandler->register($channel);
     }
@@ -83,7 +78,7 @@ final class StoreSubscriber implements EventSubscriber
     /**
      * @param ChannelInterface $channel
      */
-    private function unregister(ChannelInterface $channel)
+    private function unregister(ChannelInterface $channel): void
     {
         $this->storeRegisterHandler->unregister($channel);
     }

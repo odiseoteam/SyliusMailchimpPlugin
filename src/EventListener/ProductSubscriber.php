@@ -12,20 +12,18 @@ use Sylius\Component\Core\Model\ProductInterface;
 
 final class ProductSubscriber implements EventSubscriber
 {
-    /**
-     * @var ProductRegisterHandlerInterface
-     */
+    /** @var ProductRegisterHandlerInterface */
     private $productRegisterHandler;
 
-    /**
-     * @param ProductRegisterHandlerInterface $productRegisterHandler
-     */
     public function __construct(ProductRegisterHandlerInterface $productRegisterHandler)
     {
         $this->productRegisterHandler = $productRegisterHandler;
     }
 
-    public function getSubscribedEvents()
+    /**
+     * {@inheritdoc}
+     */
+    public function getSubscribedEvents(): array
     {
         return [
             'postPersist',
@@ -37,7 +35,7 @@ final class ProductSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(LifecycleEventArgs $args): void
     {
         $product = $args->getEntity();
 
@@ -49,7 +47,7 @@ final class ProductSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(LifecycleEventArgs $args): void
     {
         $product = $args->getEntity();
 
@@ -61,7 +59,7 @@ final class ProductSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postRemove(LifecycleEventArgs $args)
+    public function postRemove(LifecycleEventArgs $args): void
     {
         $product = $args->getEntity();
 
@@ -73,7 +71,7 @@ final class ProductSubscriber implements EventSubscriber
     /**
      * @param ProductInterface $product
      */
-    private function register(ProductInterface $product)
+    private function register(ProductInterface $product): void
     {
         /** @var ChannelInterface $channel */
         foreach ($product->getChannels() as $channel) {
@@ -84,7 +82,7 @@ final class ProductSubscriber implements EventSubscriber
     /**
      * @param ProductInterface $product
      */
-    private function unregister(ProductInterface $product)
+    private function unregister(ProductInterface $product): void
     {
         /** @var ChannelInterface $channel */
         foreach ($product->getChannels() as $channel) {

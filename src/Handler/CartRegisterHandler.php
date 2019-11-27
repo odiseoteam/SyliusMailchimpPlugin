@@ -14,50 +14,27 @@ use Symfony\Component\Routing\RouterInterface;
 
 final class CartRegisterHandler implements CartRegisterHandlerInterface
 {
-    /**
-     * @var EcommerceInterface
-     */
+    /** @var EcommerceInterface */
     private $ecommerceApi;
 
-    /**
-     * @var CustomerRegisterHandlerInterface
-     */
+    /** @var CustomerRegisterHandlerInterface */
     private $customerRegisterHandler;
 
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     private $router;
 
-    /**
-     * @var OrderTokenAssignerInterface
-     */
+    /** @var OrderTokenAssignerInterface */
     private $orderTokenAssigner;
 
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $entityManager;
 
-    /**
-     * @var SessionInterface
-     */
+    /** @var SessionInterface */
     private $session;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $enabled;
 
-    /**
-     * @param EcommerceInterface $ecommerceApi
-     * @param RouterInterface $router
-     * @param OrderTokenAssignerInterface $orderTokenAssigner
-     * @param EntityManagerInterface $entityManager
-     * @param CustomerRegisterHandlerInterface $customerRegisterHandler
-     * @param SessionInterface $session
-     * @param bool $enabled
-     */
     public function __construct(
         EcommerceInterface $ecommerceApi,
         CustomerRegisterHandlerInterface $customerRegisterHandler,

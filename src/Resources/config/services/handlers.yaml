@@ -2,48 +2,48 @@ services:
     odiseo_sylius_mailchimp_plugin.handler.store_register:
         class: Odiseo\SyliusMailchimpPlugin\Handler\StoreRegisterHandler
         arguments:
-            - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
-            - "@odiseo_sylius_mailchimp_plugin.default.list_id_provider"
-            - "%odiseo_sylius_mailchimp_plugin.enabled%"
+            - '@odiseo_sylius_mailchimp_plugin.ecommerce.api'
+            - '@odiseo_sylius_mailchimp_plugin.default.list_id_provider'
+            - '%odiseo_sylius_mailchimp_plugin.enabled%'
 
     odiseo_sylius_mailchimp_plugin.handler.product_register:
         class: Odiseo\SyliusMailchimpPlugin\Handler\ProductRegisterHandler
         arguments:
-            - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
-            - "@router"
-            - "@liip_imagine.cache.manager"
-            - "%odiseo_sylius_mailchimp_plugin.enabled%"
+            - '@odiseo_sylius_mailchimp_plugin.ecommerce.api'
+            - '@router'
+            - '@liip_imagine.cache.manager'
+            - '%odiseo_sylius_mailchimp_plugin.enabled%'
 
     odiseo_sylius_mailchimp_plugin.handler.customer_register:
         class: Odiseo\SyliusMailchimpPlugin\Handler\CustomerRegisterHandler
         arguments:
-            - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
-            - "%odiseo_sylius_mailchimp_plugin.enabled%"
+            - '@odiseo_sylius_mailchimp_plugin.ecommerce.api'
+            - '%odiseo_sylius_mailchimp_plugin.enabled%'
 
     odiseo_sylius_mailchimp_plugin.handler.cart_register:
         class: Odiseo\SyliusMailchimpPlugin\Handler\CartRegisterHandler
         public: true
         arguments:
-            - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
-            - "@odiseo_sylius_mailchimp_plugin.handler.customer_register"
-            - "@router"
-            - "@sylius.unique_id_based_order_token_assigner"
-            - "@doctrine.orm.entity_manager"
-            - "@session"
-            - "%odiseo_sylius_mailchimp_plugin.enabled%"
+            - '@odiseo_sylius_mailchimp_plugin.ecommerce.api'
+            - '@odiseo_sylius_mailchimp_plugin.handler.customer_register'
+            - '@router'
+            - '@sylius.unique_id_based_order_token_assigner'
+            - '@doctrine.orm.entity_manager'
+            - '@session'
+            - '%odiseo_sylius_mailchimp_plugin.enabled%'
 
     odiseo_sylius_mailchimp_plugin.handler.order_register:
         class: Odiseo\SyliusMailchimpPlugin\Handler\OrderRegisterHandler
         public: true
         arguments:
-            - "@odiseo_sylius_mailchimp_plugin.ecommerce.api"
-            - "@odiseo_sylius_mailchimp_plugin.handler.customer_register"
-            - "@router"
-            - "@session"
-            - "%odiseo_sylius_mailchimp_plugin.enabled%"
+            - '@odiseo_sylius_mailchimp_plugin.ecommerce.api'
+            - '@odiseo_sylius_mailchimp_plugin.handler.customer_register'
+            - '@router'
+            - '@session'
+            - '%odiseo_sylius_mailchimp_plugin.enabled%'
 
     odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription:
         class: Odiseo\SyliusMailchimpPlugin\Handler\CustomerNewsletterSubscriptionHandler
         arguments:
-            - "@odiseo_sylius_mailchimp_plugin.lists.api"
-            - "%odiseo_sylius_mailchimp_plugin.enabled%"
+            - '@odiseo_sylius_mailchimp_plugin.lists.api'
+            - '%odiseo_sylius_mailchimp_plugin.enabled%'

@@ -14,38 +14,21 @@ use Symfony\Component\Routing\RouterInterface;
 
 final class OrderRegisterHandler implements OrderRegisterHandlerInterface
 {
-    /**
-     * @var EcommerceInterface
-     */
+    /** @var EcommerceInterface */
     private $ecommerceApi;
 
-    /**
-     * @var CustomerRegisterHandlerInterface
-     */
+    /** @var CustomerRegisterHandlerInterface */
     private $customerRegisterHandler;
 
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     private $router;
 
-    /**
-     * @var SessionInterface
-     */
+    /** @var SessionInterface */
     private $session;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $enabled;
 
-    /**
-     * @param EcommerceInterface $ecommerceApi
-     * @param CustomerRegisterHandlerInterface $customerRegisterHandler
-     * @param RouterInterface $router
-     * @param SessionInterface $session
-     * @param bool $enabled
-     */
     public function __construct(
         EcommerceInterface $ecommerceApi,
         CustomerRegisterHandlerInterface $customerRegisterHandler,
@@ -189,7 +172,6 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
 
     /**
      * @param AddressInterface $address
-     *
      * @return array
      */
     private function getAddressData(AddressInterface $address): array

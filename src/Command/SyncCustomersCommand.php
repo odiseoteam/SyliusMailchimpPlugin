@@ -14,28 +14,17 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SyncCustomersCommand extends BaseSyncCommand
+final class SyncCustomersCommand extends BaseSyncCommand
 {
-    /**
-     * @var ChannelRepositoryInterface
-     */
-    protected $channelRepository;
+    /** @var ChannelRepositoryInterface */
+    private $channelRepository;
 
-    /**
-     * @var CustomerRepositoryInterface
-     */
-    protected $customerRepository;
+    /** @var CustomerRepositoryInterface */
+    private $customerRepository;
 
-    /**
-     * @var CustomerRegisterHandlerInterface
-     */
-    protected $customerRegisterHandler;
+    /** @var CustomerRegisterHandlerInterface */
+    private $customerRegisterHandler;
 
-    /**
-     * @param ChannelRepositoryInterface $channelRepository
-     * @param CustomerRepositoryInterface $customerRepository
-     * @param CustomerRegisterHandlerInterface $customerRegisterHandler
-     */
     public function __construct(
         ChannelRepositoryInterface $channelRepository,
         CustomerRepositoryInterface $customerRepository,
@@ -51,7 +40,7 @@ class SyncCustomersCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('odiseo:mailchimp:sync-customers')
@@ -63,7 +52,7 @@ class SyncCustomersCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->io = new SymfonyStyle($input, $output);
 
@@ -75,7 +64,7 @@ class SyncCustomersCommand extends BaseSyncCommand
     /**
      * @param InputInterface $input
      */
-    protected function registerCustomers(InputInterface $input)
+    protected function registerCustomers(InputInterface $input): void
     {
         $createOnly = $input->getOption('create-only');
 

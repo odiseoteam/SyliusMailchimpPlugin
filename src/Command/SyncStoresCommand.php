@@ -12,22 +12,14 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SyncStoresCommand extends BaseSyncCommand
+final class SyncStoresCommand extends BaseSyncCommand
 {
-    /**
-     * @var ChannelRepositoryInterface
-     */
-    protected $channelRepository;
+    /** @var ChannelRepositoryInterface */
+    private $channelRepository;
 
-    /**
-     * @var StoreRegisterHandlerInterface
-     */
-    protected $storeRegisterHandler;
+    /** @var StoreRegisterHandlerInterface */
+    private $storeRegisterHandler;
 
-    /**
-     * @param ChannelRepositoryInterface $channelRepository
-     * @param StoreRegisterHandlerInterface $storeRegisterHandler
-     */
     public function __construct(
         ChannelRepositoryInterface $channelRepository,
         StoreRegisterHandlerInterface $storeRegisterHandler
@@ -41,7 +33,7 @@ class SyncStoresCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('odiseo:mailchimp:sync-stores')
@@ -54,7 +46,7 @@ class SyncStoresCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->io = new SymfonyStyle($input, $output);
 
@@ -66,7 +58,7 @@ class SyncStoresCommand extends BaseSyncCommand
     /**
      * @param InputInterface $input
      */
-    protected function registerStores(InputInterface $input)
+    protected function registerStores(InputInterface $input): void
     {
         $withPurge = $input->getOption('purge');
         $isSyncing = $input->getOption('isSyncing');

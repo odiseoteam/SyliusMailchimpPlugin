@@ -9,20 +9,12 @@ use Sylius\Component\Core\Model\CustomerInterface;
 
 final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterSubscriptionHandlerInterface
 {
-    /**
-     * @var ListsInterface
-     */
+    /** @var ListsInterface */
     private $listsApi;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $enabled;
 
-    /**
-     * @param ListsInterface $listsApi
-     * @param bool $enabled
-     */
     public function __construct(
         ListsInterface $listsApi,
         bool $enabled

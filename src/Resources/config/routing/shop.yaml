@@ -1,0 +1,2 @@
+odiseo_sylius_mailchimp_plugin_shop_mailchimp:
+    resource: shop/mailchimp.yaml

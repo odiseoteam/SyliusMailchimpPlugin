@@ -1,0 +1,29 @@
+services:
+    odiseo_sylius_mailchimp_plugin.event_listener.store_subscriber:
+        class: Odiseo\SyliusMailchimpPlugin\EventListener\StoreSubscriber
+        arguments:
+            - '@odiseo_sylius_mailchimp_plugin.handler.store_register'
+        tags:
+            - { name: doctrine.event_subscriber }
+
+    odiseo_sylius_mailchimp_plugin.event_listener.product_subscriber:
+        class: Odiseo\SyliusMailchimpPlugin\EventListener\ProductSubscriber
+        arguments:
+            - '@odiseo_sylius_mailchimp_plugin.handler.product_register'
+        tags:
+            - { name: doctrine.event_subscriber }
+
+    odiseo_sylius_mailchimp_plugin.event_listener.customer_subscriber:
+        class: Odiseo\SyliusMailchimpPlugin\EventListener\CustomerSubscriber
+        arguments:
+            - '@sylius.repository.channel'
+            - '@sylius.context.channel'
+            - '@odiseo_sylius_mailchimp_plugin.handler.customer_register'
+            - '@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription'
+        tags:
+            - { name: doctrine.event_subscriber }
+
+    odiseo_sylius_mailchimp_plugin.event_listener.request_listener:
+        class: Odiseo\SyliusMailchimpPlugin\EventListener\RequestListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

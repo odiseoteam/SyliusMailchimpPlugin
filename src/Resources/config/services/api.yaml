@@ -1,0 +1,14 @@
+services:
+    odiseo_sylius_mailchimp_plugin.api.ecommerce:
+        class: Odiseo\SyliusMailchimpPlugin\Api\Ecommerce
+        public: true
+        arguments:
+            - '%env(ODISEO_MAILCHIMP_APIKEY)%'
+            - '@monolog.logger.mailchimp'
+
+    odiseo_sylius_mailchimp_plugin.api.lists:
+        class: Odiseo\SyliusMailchimpPlugin\Api\Lists
+        public: true
+        arguments:
+            - '%env(ODISEO_MAILCHIMP_APIKEY)%'
+            - '@monolog.logger.mailchimp'

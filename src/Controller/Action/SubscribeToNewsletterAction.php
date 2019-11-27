@@ -5,43 +5,29 @@ declare(strict_types=1);
 namespace Odiseo\SyliusMailchimpPlugin\Controller\Action;
 
 use Odiseo\SyliusMailchimpPlugin\Handler\CustomerNewsletterSubscriptionHandler;
-use Odiseo\SyliusMailchimpPlugin\Model\MailchimpListIdAwareInterface;
+use Odiseo\SyliusMailchimpPlugin\Entity\MailchimpListIdAwareInterface;
 use Odiseo\SyliusMailchimpPlugin\Provider\ListIdProviderInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Core\Model\Customer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class SubscribeToNewsletterAction
 {
-    /**
-     * @var CustomerNewsletterSubscriptionHandler
-     */
+    /** @var CustomerNewsletterSubscriptionHandler */
     private $customerNewsletterSubscriptionHandler;
 
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface */
     private $translator;
 
-    /**
-     * @var ChannelContextInterface
-     */
+    /** @var ChannelContextInterface */
     private $channelContext;
 
-    /**
-     * @var ListIdProviderInterface
-     */
+    /** @var ListIdProviderInterface */
     private $listIdProvider;
 
-    /**
-     * @param CustomerNewsletterSubscriptionHandler $customerNewsletterSubscriptionHandler
-     * @param TranslatorInterface $translator
-     * @param ChannelContextInterface $channelContext
-     * @param ListIdProviderInterface $listIdProvider
-     */
     public function __construct(
         CustomerNewsletterSubscriptionHandler $customerNewsletterSubscriptionHandler,
         TranslatorInterface $translator,
@@ -54,6 +40,10 @@ final class SubscribeToNewsletterAction
         $this->listIdProvider = $listIdProvider;
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function __invoke(Request $request): JsonResponse
     {
         $newsletter = $request->request->get('newsletter');
@@ -82,7 +72,6 @@ final class SubscribeToNewsletterAction
 
     /**
      * @param ChannelInterface $channel
-     *
      * @return string
      */
     private function getListIdByChannel(ChannelInterface $channel): string

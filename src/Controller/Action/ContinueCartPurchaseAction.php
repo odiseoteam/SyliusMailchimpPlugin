@@ -16,19 +16,13 @@ use Webmozart\Assert\Assert;
 
 final class ContinueCartPurchaseAction
 {
-    /**
-     * @var CartStorageInterface
-     */
+    /** @var CartStorageInterface */
     private $cartStorage;
 
-    /**
-     * @var OrderRepositoryInterface
-     */
+    /** @var OrderRepositoryInterface */
     private $orderRepository;
 
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     private $router;
 
     public function __construct(
@@ -43,7 +37,6 @@ final class ContinueCartPurchaseAction
 
     /**
      * @param Request $request
-     *
      * @return Response
      */
     public function __invoke(Request $request): Response

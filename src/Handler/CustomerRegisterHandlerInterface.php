@@ -14,7 +14,6 @@ interface CustomerRegisterHandlerInterface
      * @param ChannelInterface $channel
      * @param bool $optInStatus
      * @param bool $createOnly
-     *
      * @return array|false
      */
     public function register(
@@ -27,7 +26,6 @@ interface CustomerRegisterHandlerInterface
     /**
      * @param CustomerInterface $customer
      * @param ChannelInterface $channel
-     *
      * @return array|false
      */
     public function unregister(CustomerInterface $customer, ChannelInterface $channel);

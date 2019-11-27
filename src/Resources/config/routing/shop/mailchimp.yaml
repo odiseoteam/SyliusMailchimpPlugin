@@ -1,10 +1,10 @@
-odiseo_sylius_mailchimp_plugin_newsletter:
+odiseo_sylius_mailchimp_plugin_shop_newsletter:
     path: /newsletter
     methods: ["POST", "PATCH"]
     defaults:
         _controller: odiseo_sylius_mailchimp_plugin.controller.action.subscribe_to_newsletter
 
-odiseo_sylius_mailchimp_plugin_continue_cart_purchase:
+odiseo_sylius_mailchimp_plugin_shop_continue_cart_purchase:
     path: /continue-cart-purchase/{tokenValue}
     methods: ["GET"]
     defaults:

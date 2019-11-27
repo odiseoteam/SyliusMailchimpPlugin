@@ -1,0 +1,17 @@
+services:
+    odiseo_sylius_mailchimp_plugin.controller.action.subscribe_to_newsletter:
+        class: Odiseo\SyliusMailchimpPlugin\Controller\Action\SubscribeToNewsletterAction
+        public: true
+        arguments:
+            - '@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription'
+            - '@translator'
+            - '@sylius.context.channel'
+            - '@odiseo_sylius_mailchimp_plugin.default.list_id_provider'
+
+    odiseo_sylius_mailchimp_plugin.controller.action.continue_cart_purchase:
+        class: Odiseo\SyliusMailchimpPlugin\Controller\Action\ContinueCartPurchaseAction
+        public: true
+        arguments:
+            - '@sylius.storage.cart_session'
+            - '@sylius.repository.order'
+            - '@router'
