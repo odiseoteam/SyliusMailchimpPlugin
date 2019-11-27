@@ -1,5 +1,5 @@
 services:
-    odiseo_sylius_mailchimp_plugin.behat.page.newsletter_page:
+    odiseo_sylius_mailchimp_plugin.page.shop.newsletter_page:
         class: Tests\Odiseo\SyliusMailchimpPlugin\Behat\Page\Shop\Newsletter\NewsletterPage
         parent: sylius.behat.page.shop.home
         public: false

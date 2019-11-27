@@ -6,7 +6,7 @@ services:
             - '@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription'
             - '@translator'
             - '@sylius.context.channel'
-            - '@odiseo_sylius_mailchimp_plugin.default.list_id_provider'
+            - '@odiseo_sylius_mailchimp_plugin.provider.default_list_id_provider'
 
     odiseo_sylius_mailchimp_plugin.controller.action.continue_cart_purchase:
         class: Odiseo\SyliusMailchimpPlugin\Controller\Action\ContinueCartPurchaseAction

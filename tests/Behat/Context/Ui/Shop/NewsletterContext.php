@@ -15,43 +15,21 @@ use Webmozart\Assert\Assert;
 
 final class NewsletterContext implements Context
 {
-    /**
-     * @var NewsletterPageInterface
-     */
+    /** @var NewsletterPageInterface */
     private $newsletterPage;
 
-    /**
-     * @var CustomerRepositoryInterface
-     */
+    /** @var CustomerRepositoryInterface */
     private $customerRepository;
 
-    /**
-     * @var FactoryInterface
-     */
+    /** @var FactoryInterface */
     private $customerFactory;
 
-    /**
-     * @var CustomerInterface
-     */
-    private $customer;
-
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $customerManager;
 
-    /**
-     * @var SharedStorage
-     */
+    /** @var SharedStorage */
     private $sharedStorage;
 
-    /**
-     * @param NewsletterPageInterface $newsletterPage
-     * @param CustomerRepositoryInterface $customerRepository
-     * @param FactoryInterface $customerFactory
-     * @param EntityManagerInterface $customerManager
-     * @param SharedStorage $sharedStorage
-     */
     public function __construct(
         NewsletterPageInterface $newsletterPage,
         CustomerRepositoryInterface $customerRepository,
@@ -71,17 +49,17 @@ final class NewsletterContext implements Context
      * @When I want to subscribe to the newsletter
      * @throws \FriendsOfBehat\PageObjectExtension\Page\UnexpectedPageException
      */
-    public function iWantToSubscribeToTheNewsletter()
+    public function iWantToSubscribeToTheNewsletter(): void
     {
         $this->newsletterPage->open();
     }
 
     /**
      * @When I fill newsletter with :email email
-     * @param $email
+     * @param string $email
      * @throws \Behat\Mink\Exception\ElementNotFoundException
      */
-    public function iFillNewsletterWithEmail($email)
+    public function iFillNewsletterWithEmail(string $email): void
     {
         $this->newsletterPage->fillEmail($email);
     }
@@ -89,7 +67,7 @@ final class NewsletterContext implements Context
     /**
      * @Then I should be notified that I am subscribed to the newsletter
      */
-    public function iShouldBeNotifiedThatIAmSubscribedToTheNewsletter()
+    public function iShouldBeNotifiedThatIAmSubscribedToTheNewsletter(): void
     {
         $contents = json_decode($this->newsletterPage->getContents());
         Assert::contains($contents->message, "Subscribed succesfully");
@@ -99,7 +77,7 @@ final class NewsletterContext implements Context
      * @When I subscribe to it
      * @throws \Behat\Mink\Exception\ElementNotFoundException
      */
-    public function iSubscribeToIt()
+    public function iSubscribeToIt(): void
     {
         $this->newsletterPage->subscribe();
     }

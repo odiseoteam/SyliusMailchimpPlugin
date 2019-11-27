@@ -7,14 +7,14 @@ namespace Tests\Odiseo\SyliusMailchimpPlugin\Behat\Page\Shop\Newsletter;
 use Sylius\Behat\Page\Shop\HomePage;
 use Tests\Odiseo\SyliusMailchimpPlugin\Behat\Behaviour\ContainsErrorTrait;
 
-class NewsletterPage extends HomePage implements NewsletterPageInterface
+final class NewsletterPage extends HomePage implements NewsletterPageInterface
 {
     use ContainsErrorTrait;
 
     /**
      * {@inheritdoc}
      */
-    public function fillEmail($email)
+    public function fillEmail(string $email): void
     {
         $this->getDocument()->fillField('newsletter[email]', $email);
     }
@@ -22,7 +22,7 @@ class NewsletterPage extends HomePage implements NewsletterPageInterface
     /**
      * {@inheritdoc}
      */
-    public function subscribe()
+    public function subscribe(): void
     {
         $this->getDocument()->pressButton('Subscribe');
     }

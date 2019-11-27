@@ -12,33 +12,23 @@ use Webmozart\Assert\Assert;
 
 final class MailchimpContext implements Context
 {
-    /**
-     * @var SharedStorageInterface
-     */
+    /** @var SharedStorageInterface */
     private $sharedStorage;
 
-    /**
-     * @var ListsInterface
-     */
+    /** @var ListsInterface */
     private $listsApi;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $listId;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $subscribedEmail;
 
-    /**
-     * @param SharedStorageInterface $sharedStorage
-     * @param ListsInterface $listsApi
-     * @param ListIdProviderInterface $listIdProvider
-     */
-    public function __construct(SharedStorageInterface $sharedStorage, ListsInterface $listsApi, ListIdProviderInterface $listIdProvider)
-    {
+    public function __construct(
+        SharedStorageInterface $sharedStorage,
+        ListsInterface $listsApi,
+        ListIdProviderInterface $listIdProvider
+    ) {
         $this->sharedStorage = $sharedStorage;
         $this->listsApi = $listsApi;
         $this->listId = $listIdProvider->getListId();
@@ -47,16 +37,16 @@ final class MailchimpContext implements Context
     /**
      * @Given there is a created list in MailChimp with specified ID
      */
-    public function thereIsAMailChimpListWithSpecifiedId()
+    public function thereIsAMailChimpListWithSpecifiedId(): void
     {
         Assert::notNull($this->listId);
     }
 
     /**
      * @Then the email :email should be exported to MailChimp's default list
-     * @param $email
+     * @param string $email
      */
-    public function theEmailShouldBeExportedToMailChimp($email)
+    public function theEmailShouldBeExportedToMailChimp(string $email): void
     {
         $emailHash = $this->getSubscriberHash($email);
 
@@ -76,7 +66,7 @@ final class MailchimpContext implements Context
      * @param string $email
      * @return string
      */
-    private function getSubscriberHash($email)
+    private function getSubscriberHash(string $email): string
     {
         return md5(strtolower($email));
     }

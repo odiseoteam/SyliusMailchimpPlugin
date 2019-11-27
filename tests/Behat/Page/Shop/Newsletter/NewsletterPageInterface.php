@@ -13,10 +13,10 @@ interface NewsletterPageInterface extends HomePageInterface, ContainsErrorInterf
      * @param string $email
      * @throws \Behat\Mink\Exception\ElementNotFoundException
      */
-    public function fillEmail($email);
+    public function fillEmail(string $email): void;
 
     /**
      * @throws \Behat\Mink\Exception\ElementNotFoundException
      */
-    public function subscribe();
+    public function subscribe(): void;
 }

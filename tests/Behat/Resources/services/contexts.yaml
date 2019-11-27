@@ -3,11 +3,11 @@ services:
         class: Tests\Odiseo\SyliusMailchimpPlugin\Behat\Context\Ui\Shop\NewsletterContext
         public: true
         arguments:
-            - "@odiseo_sylius_mailchimp_plugin.behat.page.newsletter_page"
-            - "@sylius.repository.customer"
-            - "@sylius.factory.customer"
-            - "@sylius.manager.customer"
-            - "@sylius.behat.shared_storage"
+            - '@odiseo_sylius_mailchimp_plugin.page.shop.newsletter_page'
+            - '@sylius.repository.customer'
+            - '@sylius.factory.customer'
+            - '@sylius.manager.customer'
+            - '@sylius.behat.shared_storage'
         tags:
             - { name: fob.context_service }
 
@@ -15,8 +15,8 @@ services:
         class: Tests\Odiseo\SyliusMailchimpPlugin\Behat\Context\Ui\Shop\MailchimpContext
         public: true
         arguments:
-            - "@sylius.behat.shared_storage"
-            - "@odiseo_sylius_mailchimp_plugin.lists.api"
-            - "@odiseo_sylius_mailchimp_plugin.default.list_id_provider"
+            - '@sylius.behat.shared_storage'
+            - '@odiseo_sylius_mailchimp_plugin.api.lists'
+            - '@odiseo_sylius_mailchimp_plugin.provider.default_list_id_provider'
         tags:
             - { name: fob.context_service }
