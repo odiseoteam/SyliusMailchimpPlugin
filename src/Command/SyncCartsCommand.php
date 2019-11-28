@@ -45,13 +45,15 @@ final class SyncCartsCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
 
         $this->io->title('Synchronizing the carts to Mailchimp');
 
         $this->registerCarts($input);
+
+        return 0;
     }
 
     /**

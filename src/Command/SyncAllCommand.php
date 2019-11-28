@@ -28,7 +28,7 @@ final class SyncAllCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $withPurge = $input->getOption('purge');
         $createOnly = $input->getOption('create-only');
@@ -68,5 +68,7 @@ final class SyncAllCommand extends BaseSyncCommand
                 '--isSyncing' => false,
             ]), $output);
         }
+
+        return 0;
     }
 }

@@ -139,7 +139,12 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         /** @var ChannelPricingInterface $channelPricing */
         $channelPricing = $variant->getChannelPricingForChannel($channel);
 
-        return $channelPricing !== null ? $channelPricing->getPrice() : null;
+        $variantPrice = null;
+        if ($channelPricing instanceof ChannelPricingInterface) {
+            $variantPrice = $channelPricing->getPrice();
+        }
+
+        return $variantPrice;
     }
 
     /**

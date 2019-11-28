@@ -52,13 +52,15 @@ final class SyncCustomersCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
 
         $this->io->title('Synchronizing the customers to Mailchimp');
 
         $this->registerCustomers($input);
+
+        return 0;
     }
 
     /**

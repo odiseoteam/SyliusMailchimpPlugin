@@ -46,13 +46,15 @@ final class SyncProductsCommand extends BaseSyncCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
 
         $this->io->title('Synchronizing the products to Mailchimp');
 
         $this->registerProducts($input);
+
+        return 0;
     }
 
     /**
