@@ -37,32 +37,36 @@ final class SyncAllCommand extends BaseSyncCommand
 
         $this->io->title('Synchronizing all data to Mailchimp');
 
-        $syncStoresCommand = $this->getApplication()->find('odiseo:mailchimp:sync-stores');
-        $syncCustomersCommand = $this->getApplication()->find('odiseo:mailchimp:sync-customers');
-        $syncProductsCommand = $this->getApplication()->find('odiseo:mailchimp:sync-products');
-        $syncCartsCommand = $this->getApplication()->find('odiseo:mailchimp:sync-carts');
-        $syncOrdersCommand = $this->getApplication()->find('odiseo:mailchimp:sync-orders');
+        $application = $this->getApplication();
 
-        $syncStoresCommand->run(new ArrayInput([
-            '--isSyncing' => true,
-            '--purge' => $withPurge,
-        ]), $output);
+        if ($application) {
+            $syncStoresCommand = $application->find('odiseo:mailchimp:sync-stores');
+            $syncCustomersCommand = $application->find('odiseo:mailchimp:sync-customers');
+            $syncProductsCommand = $application->find('odiseo:mailchimp:sync-products');
+            $syncCartsCommand = $application->find('odiseo:mailchimp:sync-carts');
+            $syncOrdersCommand = $application->find('odiseo:mailchimp:sync-orders');
 
-        $syncCustomersCommand->run(new ArrayInput([
-            '--create-only' => $createOnly,
-        ]), $output);
-        $syncProductsCommand->run(new ArrayInput([
-            '--create-only' => $createOnly,
-        ]), $output);
-        $syncCartsCommand->run(new ArrayInput([
-            '--create-only' => $createOnly,
-        ]), $output);
-        $syncOrdersCommand->run(new ArrayInput([
-            '--create-only' => $createOnly,
-        ]), $output);
+            $syncStoresCommand->run(new ArrayInput([
+                '--isSyncing' => true,
+                '--purge' => $withPurge,
+            ]), $output);
 
-        $syncStoresCommand->run(new ArrayInput([
-            '--isSyncing' => false,
-        ]), $output);
+            $syncCustomersCommand->run(new ArrayInput([
+                '--create-only' => $createOnly,
+            ]), $output);
+            $syncProductsCommand->run(new ArrayInput([
+                '--create-only' => $createOnly,
+            ]), $output);
+            $syncCartsCommand->run(new ArrayInput([
+                '--create-only' => $createOnly,
+            ]), $output);
+            $syncOrdersCommand->run(new ArrayInput([
+                '--create-only' => $createOnly,
+            ]), $output);
+
+            $syncStoresCommand->run(new ArrayInput([
+                '--isSyncing' => false,
+            ]), $output);
+        }
     }
 }

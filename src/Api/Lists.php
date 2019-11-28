@@ -24,7 +24,7 @@ final class Lists extends MailChimp implements ListsInterface
     /**
      * {@inheritdoc}
      */
-    public function addMember(string $listId, array $data): array
+    public function addMember(string $listId, array $data)
     {
         $response = $this->post('lists/' . $listId . '/members', $data);
 
@@ -36,7 +36,7 @@ final class Lists extends MailChimp implements ListsInterface
     /**
      * {@inheritdoc}
      */
-    public function getMember(string $listId, string $hash): array
+    public function getMember(string $listId, string $hash)
     {
         $response = $this->get('lists/' . $listId . '/members/' . $hash);
 
@@ -48,7 +48,7 @@ final class Lists extends MailChimp implements ListsInterface
     /**
      * {@inheritdoc}
      */
-    public function updateMember(string $listId, string $hash, array $data): array
+    public function updateMember(string $listId, string $hash, array $data)
     {
         $response = $this->patch('lists/' . $listId . '/members/' . $hash, $data);
 
@@ -60,7 +60,7 @@ final class Lists extends MailChimp implements ListsInterface
     /**
      * {@inheritdoc}
      */
-    public function removeMember(string $listId, string $hash): array
+    public function removeMember(string $listId, string $hash)
     {
         $response = $this->delete('lists/' . $listId . '/members/' . $hash);
 

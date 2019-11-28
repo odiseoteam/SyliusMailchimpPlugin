@@ -11,14 +11,14 @@ interface ListsInterface
      * @param array $data
      * @return array|false
      */
-    public function addMember(string $listId, array $data): array;
+    public function addMember(string $listId, array $data);
 
     /**
      * @param string $listId
      * @param string $hash
      * @return array|false
      */
-    public function getMember(string $listId, string $hash): array;
+    public function getMember(string $listId, string $hash);
 
     /**
      * @param string $listId
@@ -26,12 +26,12 @@ interface ListsInterface
      * @param array $data
      * @return array|false
      */
-    public function updateMember(string $listId, string $hash, array $data): array;
+    public function updateMember(string $listId, string $hash, array $data);
 
     /**
      * @param string $listId
      * @param string $hash
      * @return array|false
      */
-    public function removeMember(string $listId, string $hash): array;
+    public function removeMember(string $listId, string $hash);
 }
