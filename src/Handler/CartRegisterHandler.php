@@ -99,7 +99,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         // Creating continue purchase url
         $context = $this->router->getContext();
         $context->setHost($channel->getHostname());
-        $continuePurchaseUrl = $this->router->generate('odiseo_sylius_mailchimp_plugin_continue_cart_purchase', [
+        $continuePurchaseUrl = $this->router->generate('odiseo_sylius_mailchimp_plugin_shop_continue_cart_purchase', [
             '_locale' => $order->getLocaleCode() ?: 'en',
             'tokenValue' => $order->getTokenValue(),
         ], RouterInterface::ABSOLUTE_URL);
