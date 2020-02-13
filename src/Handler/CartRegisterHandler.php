@@ -109,13 +109,16 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
             'customer' => [
                 'id' => (string) $customer->getId(),
             ],
-            'campaign_id' => $this->session->get('campaingId') ?: '',
             'checkout_url' => $continuePurchaseUrl,
             'currency_code' => $order->getCurrencyCode() ?: 'USD',
             'order_total' => $order->getTotal() / 100,
             'tax_total' => $order->getTaxTotal() / 100,
             'lines' => [],
         ];
+
+        if ($this->session->has('campaingId')) {
+            $data['campaign_id'] = $this->session->get('campaingId');
+        }
 
         foreach ($order->getItems() as $item) {
             $product = $item->getProduct();
