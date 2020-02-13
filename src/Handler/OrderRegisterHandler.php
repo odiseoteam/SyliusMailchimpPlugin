@@ -99,7 +99,6 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
             'customer' => [
                 'id' => (string) $customer->getId(),
             ],
-            'campaign_id' => $this->session->get('campaingId') ?: '',
             'financial_status' => 'paid',
             'currency_code' => $order->getCurrencyCode() ?: 'USD',
             'order_total' => $order->getTotal() / 100,
@@ -112,6 +111,10 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
             'billing_address' => $this->getAddressData($order->getBillingAddress()),
             'lines' => [],
         ];
+
+        if ($this->session->has('campaingId')) {
+            $data['campaign_id'] = $this->session->get('campaingId');
+        }
 
         foreach ($order->getItems() as $item) {
             $product = $item->getProduct();
