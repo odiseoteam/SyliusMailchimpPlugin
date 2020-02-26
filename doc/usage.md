@@ -3,10 +3,19 @@
 After installing this plugin the store will be connected to Mailchimp. This mean that Mailchimp will be updated with 
 your realtime data using differents event listeners.
 
+The Mailchimp services are enabled by default.
+You can enable or disable the events by configuration:
+
+```yml
+# config/packages/odiseo_sylius_mailchimp.yaml
+odiseo_sylius_mailchimp:
+    enabled: false
+```
+
 #### Get the mailchimp service on your class
 
 ```php
-/** @var Mailchimp $mailchimp */
+/** @var \DrewM\MailChimp\MailChimp $mailchimp */
 $mailchimp = $this->get('odiseo.mailchimp_plugin.mailchimp');
 ```
 
