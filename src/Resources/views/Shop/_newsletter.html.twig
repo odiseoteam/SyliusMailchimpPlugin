@@ -1,6 +1,8 @@
 <form action="{{ path('odiseo_sylius_mailchimp_plugin_shop_newsletter') }}" method="POST" class="ui form">
-    <div class="inline field">
+    <div class="newsletter-input">
         <input type="text" name="newsletter[email]" placeholder="{{ 'odiseo_sylius_mailchimp_plugin.ui.your_email_address'|trans }}"/>
+    </div>
+    <div class="newsletter-button">
         <button title="{{ 'odiseo_sylius_mailchimp_plugin.ui.subscribe' }}" type="submit" class="ui button">
             {{ 'odiseo_sylius_mailchimp_plugin.ui.subscribe'|trans }}
         </button>
