@@ -13,9 +13,9 @@ return [
     Odiseo\SyliusMailchimpPlugin\OdiseoSyliusMailchimpPlugin::class => ['all' => true],
 ];
 ```
- 
+
 3. Import the plugin configurations
- 
+
 ```yml
 # config/packages/_sylius.yaml
 imports:
@@ -32,7 +32,7 @@ odiseo_sylius_mailchimp_plugin_shop:
     resource: "@OdiseoSyliusMailchimpPlugin/Resources/config/routing/shop.yaml"
     prefix: /{_locale}/mailchimp
     requirements:
-        _locale: ^[a-z]{2}(?:_[A-Z]{2})?$
+        _locale: ^[A-Za-z]{2,4}(_([A-Za-z]{4}|[0-9]{3}))?(_([A-Za-z]{2}|[0-9]{3}))?$
 ```
 
 5. Add the enviroment variables
