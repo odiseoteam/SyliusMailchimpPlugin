@@ -9,8 +9,10 @@ use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\TokenAssigner\OrderTokenAssignerInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class CartRegisterHandler implements CartRegisterHandlerInterface
 {
@@ -32,6 +34,9 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
     /** @var SessionInterface */
     private $session;
 
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
     /** @var bool */
     private $enabled;
 
@@ -42,6 +47,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         OrderTokenAssignerInterface $orderTokenAssigner,
         EntityManagerInterface $entityManager,
         SessionInterface $session,
+        EventDispatcherInterface $eventDispatcher,
         bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
@@ -50,6 +56,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         $this->entityManager = $entityManager;
         $this->customerRegisterHandler = $customerRegisterHandler;
         $this->session = $session;
+        $this->eventDispatcher = $eventDispatcher;
         $this->enabled = $enabled;
     }
 
@@ -138,8 +145,16 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         }
 
         if ($isNew) {
+            $event = new GenericEvent($order, ['data' => $data]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.cart.pre_add');
+            $data = $event->getArgument('data');
+
             $response = $this->ecommerceApi->addCart($storeId, $data);
         } else {
+            $event = new GenericEvent($order, ['data' => $data]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.cart.pre_update');
+            $data = $event->getArgument('data');
+
             $response = $this->ecommerceApi->updateCart($storeId, $cartId, $data);
         }
 
@@ -168,6 +183,9 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         $isNew = !isset($response['id']);
 
         if (!$isNew) {
+            $event = new GenericEvent($order);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.cart.pre_remove');
+
             return $this->ecommerceApi->removeCart($storeId, $orderId);
         }
 

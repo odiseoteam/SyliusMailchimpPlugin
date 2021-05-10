@@ -11,8 +11,10 @@ use Sylius\Component\Core\Model\ChannelPricingInterface;
 use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariant;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class ProductRegisterHandler implements ProductRegisterHandlerInterface
 {
@@ -25,6 +27,9 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
     /** @var CacheManager */
     private $cacheManager;
 
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
     /** @var bool */
     private $enabled;
 
@@ -32,11 +37,13 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         EcommerceInterface $ecommerceApi,
         RouterInterface $router,
         CacheManager $cacheManager,
+        EventDispatcherInterface $eventDispatcher,
         bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
         $this->router = $router;
         $this->cacheManager = $cacheManager;
+        $this->eventDispatcher = $eventDispatcher;
         $this->enabled = $enabled;
     }
 
@@ -99,8 +106,16 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         }
 
         if ($isNew) {
+            $event = new GenericEvent($product, ['data' => $data, 'channel' => $channel]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.product.pre_add');
+            $data = $event->getArgument('data');
+
             $response = $this->ecommerceApi->addProduct($storeId, $data);
         } else {
+            $event = new GenericEvent($product, ['data' => $data, 'channel' => $channel]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.product.pre_update');
+            $data = $event->getArgument('data');
+
             $response = $this->ecommerceApi->updateProduct($storeId, $productId, $data);
         }
 
@@ -123,6 +138,9 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         $isNew = !isset($response['id']);
 
         if (!$isNew) {
+            $event = new GenericEvent($product, ['channel' => $channel]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.product.pre_remove');
+
             return $this->ecommerceApi->removeProduct($storeId, $productId);
         }
 

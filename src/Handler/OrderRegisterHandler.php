@@ -9,8 +9,10 @@ use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class OrderRegisterHandler implements OrderRegisterHandlerInterface
 {
@@ -26,6 +28,9 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
     /** @var SessionInterface */
     private $session;
 
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
     /** @var bool */
     private $enabled;
 
@@ -34,12 +39,14 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
         CustomerRegisterHandlerInterface $customerRegisterHandler,
         RouterInterface $router,
         SessionInterface $session,
+        EventDispatcherInterface $eventDispatcher,
         bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
         $this->customerRegisterHandler = $customerRegisterHandler;
         $this->router = $router;
         $this->session = $session;
+        $this->eventDispatcher = $eventDispatcher;
         $this->enabled = $enabled;
     }
 
@@ -134,11 +141,19 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
         }
 
         if ($isNew) {
+            $event = new GenericEvent($order, ['data' => $data]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.order.pre_add');
+            $data = $event->getArgument('data');
+
             $response = $this->ecommerceApi->addOrder($storeId, $data);
 
             // Unregister abandoned cart after order create
             $this->removeCart($order);
         } else {
+            $event = new GenericEvent($order, ['data' => $data]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.order.pre_update');
+            $data = $event->getArgument('data');
+
             $response = $this->ecommerceApi->updateOrder($storeId, $orderId, $data);
         }
 
@@ -167,6 +182,9 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
         $isNew = !isset($response['id']);
 
         if (!$isNew) {
+            $event = new GenericEvent($order);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.order.pre_remove');
+
             return $this->ecommerceApi->removeOrder($storeId, $orderId);
         }
 
