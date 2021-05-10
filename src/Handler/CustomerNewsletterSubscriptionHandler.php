@@ -6,6 +6,8 @@ namespace Odiseo\SyliusMailchimpPlugin\Handler;
 
 use Odiseo\SyliusMailchimpPlugin\Api\ListsInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterSubscriptionHandlerInterface
 {
@@ -15,11 +17,16 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
     /** @var bool */
     private $enabled;
 
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
     public function __construct(
         ListsInterface $listsApi,
+        EventDispatcherInterface $eventDispatcher,
         bool $enabled
     ) {
         $this->listsApi = $listsApi;
+        $this->eventDispatcher = $eventDispatcher;
         $this->enabled = $enabled;
     }
 
@@ -43,8 +50,16 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
         ];
 
         if ($isNew) {
+            $event = new GenericEvent($customer, ['data' => $data]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_add');
+            $data = $event->getArgument('data');
+
             $response = $this->listsApi->addMember($listId, $data);
         } else {
+            $event = new GenericEvent($customer, ['data' => $data]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_update');
+            $data = $event->getArgument('data');
+
             $response = $this->listsApi->updateMember($listId, $subscriberHash, $data);
         }
 
@@ -66,6 +81,9 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
         $isNew = !isset($response['id']);
 
         if (!$isNew) {
+            $event = new GenericEvent($customer, ['listId' => $listId]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_remove');
+
             return $this->listsApi->removeMember($listId, $subscriberHash);
         }
 

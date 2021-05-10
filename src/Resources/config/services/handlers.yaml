@@ -4,6 +4,7 @@ services:
         arguments:
             - '@odiseo_sylius_mailchimp_plugin.api.ecommerce'
             - '@odiseo_sylius_mailchimp_plugin.provider.default_list_id_provider'
+            - '@event_dispatcher'
             - '%odiseo_sylius_mailchimp_plugin.enabled%'
 
     odiseo_sylius_mailchimp_plugin.handler.product_register:
@@ -12,12 +13,14 @@ services:
             - '@odiseo_sylius_mailchimp_plugin.api.ecommerce'
             - '@router'
             - '@liip_imagine.cache.manager'
+            - '@event_dispatcher'
             - '%odiseo_sylius_mailchimp_plugin.enabled%'
 
     odiseo_sylius_mailchimp_plugin.handler.customer_register:
         class: Odiseo\SyliusMailchimpPlugin\Handler\CustomerRegisterHandler
         arguments:
             - '@odiseo_sylius_mailchimp_plugin.api.ecommerce'
+            - '@event_dispatcher'
             - '%odiseo_sylius_mailchimp_plugin.enabled%'
 
     odiseo_sylius_mailchimp_plugin.handler.cart_register:
@@ -30,6 +33,7 @@ services:
             - '@sylius.unique_id_based_order_token_assigner'
             - '@doctrine.orm.entity_manager'
             - '@session'
+            - '@event_dispatcher'
             - '%odiseo_sylius_mailchimp_plugin.enabled%'
 
     odiseo_sylius_mailchimp_plugin.handler.order_register:
@@ -40,10 +44,12 @@ services:
             - '@odiseo_sylius_mailchimp_plugin.handler.customer_register'
             - '@router'
             - '@session'
+            - '@event_dispatcher'
             - '%odiseo_sylius_mailchimp_plugin.enabled%'
 
     odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription:
         class: Odiseo\SyliusMailchimpPlugin\Handler\CustomerNewsletterSubscriptionHandler
         arguments:
             - '@odiseo_sylius_mailchimp_plugin.api.lists'
+            - '@event_dispatcher'
             - '%odiseo_sylius_mailchimp_plugin.enabled%'

@@ -8,6 +8,8 @@ use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
 use Odiseo\SyliusMailchimpPlugin\Entity\MailchimpListIdAwareInterface;
 use Odiseo\SyliusMailchimpPlugin\Provider\ListIdProviderInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class StoreRegisterHandler implements StoreRegisterHandlerInterface
 {
@@ -21,6 +23,9 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
      */
     private $listIdProvider;
 
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
     /**
      * @var bool
      */
@@ -29,15 +34,18 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
     /**
      * @param EcommerceInterface $ecommerceApi
      * @param ListIdProviderInterface $listIdProvider
+     * @param EventDispatcherInterface $eventDispatcher
      * @param bool $enabled
      */
     public function __construct(
         EcommerceInterface $ecommerceApi,
         ListIdProviderInterface $listIdProvider,
+        EventDispatcherInterface $eventDispatcher,
         bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
         $this->listIdProvider = $listIdProvider;
+        $this->eventDispatcher = $eventDispatcher;
         $this->enabled = $enabled;
     }
 
@@ -79,8 +87,16 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
         ];
 
         if ($isNew) {
+            $event = new GenericEvent($channel, ['data' => $data]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_add');
+            $data = $event->getArgument('data');
+
             $response = $this->ecommerceApi->addStore($data);
         } else {
+            $event = new GenericEvent($channel, ['data' => $data]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_update');
+            $data = $event->getArgument('data');
+
             $response = $this->ecommerceApi->updateStore($storeId, $data);
         }
 
@@ -102,6 +118,9 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
         $isNew = !isset($response['id']);
 
         if (!$isNew) {
+            $event = new GenericEvent($channel);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_remove');
+
             return $this->ecommerceApi->removeStore($storeId);
         }
 

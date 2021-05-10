@@ -8,20 +8,27 @@ use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
 use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
 {
     /** @var EcommerceInterface */
     private $ecommerceApi;
 
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
     /** @var bool */
     private $enabled;
 
     public function __construct(
         EcommerceInterface $ecommerceApi,
+        EventDispatcherInterface $eventDispatcher,
         bool $enabled
     ) {
         $this->ecommerceApi = $ecommerceApi;
+        $this->eventDispatcher = $eventDispatcher;
         $this->enabled = $enabled;
     }
 
@@ -73,8 +80,16 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         }
 
         if ($isNew) {
+            $event = new GenericEvent($customer, ['data' => $data, 'channel' => $channel]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.customer.pre_add');
+            $data = $event->getArgument('data');
+
             $response = $this->ecommerceApi->addCustomer($storeId, $data);
         } else {
+            $event = new GenericEvent($customer, ['data' => $data, 'channel' => $channel]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.customer.pre_update');
+            $data = $event->getArgument('data');
+
             $response = $this->ecommerceApi->updateCustomer($storeId, $customerId, $data);
         }
 
@@ -97,6 +112,9 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         $isNew = !isset($response['id']);
 
         if (!$isNew) {
+            $event = new GenericEvent($customer, ['channel' => $channel]);
+            $this->eventDispatcher->dispatch($event, 'mailchimp.customer.pre_remove');
+
             return $this->ecommerceApi->removeCustomer($storeId, $customerId);
         }
 
