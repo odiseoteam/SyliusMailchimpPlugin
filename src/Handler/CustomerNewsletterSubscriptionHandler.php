@@ -41,8 +41,8 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
 
         $subscriberHash = md5(strtolower($customer->getEmail()));
 
-        $response = $this->listsApi->getMember($listId, $subscriberHash);
-        $isNew = !isset($response['id']);
+        $getMemberResponse = $this->listsApi->getMember($listId, $subscriberHash);
+        $isNew = !isset($getMemberResponse['id']);
 
         $data = [
             'email_address' => $customer->getEmail(),
@@ -56,7 +56,7 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
 
             $response = $this->listsApi->addMember($listId, $data);
         } else {
-            $event = new GenericEvent($customer, ['data' => $data]);
+            $event = new GenericEvent($customer, ['data' => $data, 'existing_mailchimp_member_data' => $getMemberResponse]);
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_update');
             $data = $event->getArgument('data');
 
