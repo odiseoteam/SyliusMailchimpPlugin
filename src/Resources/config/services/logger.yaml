@@ -1,0 +1,7 @@
+services:
+    odiseo_sylius_mailchimp_plugin.logger.mailchimp:
+        class: Odiseo\SyliusMailchimpPlugin\Log\MailchimpLogger
+        arguments:
+            - '@logger'
+        tags:
+            - { name: monolog.logger, channel: mailchimp }

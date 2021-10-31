@@ -16,17 +16,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class SubscribeToNewsletterAction
 {
-    /** @var CustomerNewsletterSubscriptionHandler */
-    private $customerNewsletterSubscriptionHandler;
-
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /** @var ChannelContextInterface */
-    private $channelContext;
-
-    /** @var ListIdProviderInterface */
-    private $listIdProvider;
+    private CustomerNewsletterSubscriptionHandler $customerNewsletterSubscriptionHandler;
+    private TranslatorInterface $translator;
+    private ChannelContextInterface $channelContext;
+    private ListIdProviderInterface $listIdProvider;
 
     public function __construct(
         CustomerNewsletterSubscriptionHandler $customerNewsletterSubscriptionHandler,
@@ -40,12 +33,9 @@ final class SubscribeToNewsletterAction
         $this->listIdProvider = $listIdProvider;
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function __invoke(Request $request): JsonResponse
     {
+        /** @var array $newsletter */
         $newsletter = $request->request->get('newsletter');
         /** @var string $email */
         $email = $newsletter['email'];
@@ -70,14 +60,11 @@ final class SubscribeToNewsletterAction
         ]);
     }
 
-    /**
-     * @param ChannelInterface $channel
-     * @return string
-     */
     private function getListIdByChannel(ChannelInterface $channel): string
     {
         if ($channel instanceof MailchimpListIdAwareInterface) {
-            if ($listId = $channel->getListId()) {
+            $listId = $channel->getListId();
+            if (null !== $listId) {
                 return $listId;
             }
         }

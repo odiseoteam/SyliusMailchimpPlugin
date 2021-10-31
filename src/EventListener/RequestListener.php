@@ -8,23 +8,18 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 final class RequestListener
 {
-    /**
-     * @param RequestEvent $event
-     */
     public function onKernelRequest(RequestEvent $event): void
     {
-        if (!$event->isMasterRequest()) {
+        if (!$event->isMainRequest()) {
             return;
         }
 
         $request = $event->getRequest();
 
         $session = $request->getSession();
-        if ($session !== null) {
-            if (!$session->get('campaingId')) {
-                if ($request->get('mc_cid')) {
-                    $session->set('campaingId', $request->get('mc_cid'));
-                }
+        if (null === $session->get('campaingId')) {
+            if (null !== $request->get('mc_cid')) {
+                $session->set('campaingId', $request->get('mc_cid'));
             }
         }
     }

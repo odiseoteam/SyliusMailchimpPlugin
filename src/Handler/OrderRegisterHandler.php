@@ -4,35 +4,26 @@ declare(strict_types=1);
 
 namespace Odiseo\SyliusMailchimpPlugin\Handler;
 
+use DateTime;
 use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
 use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
-use Sylius\Component\Core\Model\PaymentInterface;
+use Sylius\Component\Payment\Model\PaymentInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class OrderRegisterHandler implements OrderRegisterHandlerInterface
 {
-    /** @var EcommerceInterface */
-    private $ecommerceApi;
-
-    /** @var CustomerRegisterHandlerInterface */
-    private $customerRegisterHandler;
-
-    /** @var RouterInterface */
-    private $router;
-
-    /** @var SessionInterface */
-    private $session;
-
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
-
-    /** @var bool */
-    private $enabled;
+    private EcommerceInterface $ecommerceApi;
+    private CustomerRegisterHandlerInterface $customerRegisterHandler;
+    private RouterInterface $router;
+    private SessionInterface $session;
+    private EventDispatcherInterface $eventDispatcher;
+    private bool $enabled;
 
     public function __construct(
         EcommerceInterface $ecommerceApi,
@@ -50,13 +41,10 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
         $this->enabled = $enabled;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function register(OrderInterface $order, bool $createOnly = false)
+    public function register(OrderInterface $order, bool $createOnly = false): array
     {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
         /** @var CustomerInterface $customer */
@@ -68,38 +56,43 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
             null == $channel ||
             count($order->getItems()) == 0
         ) {
-            return false;
+            return [];
         }
 
+        /** @var string $storeId */
         $storeId = $channel->getCode();
         $orderId = (string) $order->getId();
 
         $response = $this->ecommerceApi->getOrder($storeId, $orderId);
         $isNew = !isset($response['id']);
 
-        // Do nothing if the order exists
         if (false === $isNew && true === $createOnly) {
-            return false;
+            return [];
         }
 
-        // Registering the customer to ensure that exist on Mailchimp
         $response = $this->customerRegisterHandler->register($customer, $channel, false, $createOnly);
 
-        if (!isset($response['id']) && $response !== false) {
-            return false;
+        if (!isset($response['id'])) {
+            return [];
         }
 
-        // Creating order show url
         $context = $this->router->getContext();
-        $context->setHost($channel->getHostname());
+        $context->setHost($channel->getHostname() ?? '');
         $orderShowUrl = $this->router->generate('sylius_shop_order_show', [
-            '_locale' => $order->getLocaleCode() ?: 'en',
+            '_locale' => $order->getLocaleCode() ?? 'en',
             'tokenValue' => $order->getTokenValue(),
-        ], RouterInterface::ABSOLUTE_URL);
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $lastCompletedPayment = $order->getLastPayment(PaymentInterface::STATE_COMPLETED);
-        /** @var \DateTime $orderCompletedDate */
-        $orderCompletedDate = $lastCompletedPayment?$lastCompletedPayment->getUpdatedAt():$order->getUpdatedAt();
+        /** @var DateTime $orderCompletedDate */
+        $orderCompletedDate = $lastCompletedPayment !== null ?
+            $lastCompletedPayment->getUpdatedAt() : $order->getUpdatedAt()
+        ;
+
+        /** @var AddressInterface $shippingAddress */
+        $shippingAddress = $order->getShippingAddress();
+        /** @var AddressInterface $billingAddress */
+        $billingAddress = $order->getBillingAddress();
 
         $data = [
             'id' => $orderId,
@@ -107,15 +100,15 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
                 'id' => (string) $customer->getId(),
             ],
             'financial_status' => 'paid',
-            'currency_code' => $order->getCurrencyCode() ?: 'USD',
+            'currency_code' => $order->getCurrencyCode() ?? 'USD',
             'order_total' => $order->getTotal() / 100,
             'order_url' => $orderShowUrl,
             'discount_total' => $order->getOrderPromotionTotal() / 100,
             'tax_total' => $order->getTaxTotal() / 100,
             'shipping_total' => $order->getShippingTotal() / 100,
             'processed_at_foreign' => $orderCompletedDate->format('c'),
-            'shipping_address' => $this->getAddressData($order->getShippingAddress()),
-            'billing_address' => $this->getAddressData($order->getBillingAddress()),
+            'shipping_address' => $this->getAddressData($shippingAddress),
+            'billing_address' => $this->getAddressData($billingAddress),
             'lines' => [],
         ];
 
@@ -140,17 +133,15 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
             ];
         }
 
+        $event = new GenericEvent($order, ['data' => $data]);
         if ($isNew) {
-            $event = new GenericEvent($order, ['data' => $data]);
             $this->eventDispatcher->dispatch($event, 'mailchimp.order.pre_add');
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addOrder($storeId, $data);
 
-            // Unregister abandoned cart after order create
             $this->removeCart($order);
         } else {
-            $event = new GenericEvent($order, ['data' => $data]);
             $this->eventDispatcher->dispatch($event, 'mailchimp.order.pre_update');
             $data = $event->getArgument('data');
 
@@ -160,22 +151,20 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
         return $response;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unregister(OrderInterface $order)
+    public function unregister(OrderInterface $order): array
     {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
         $orderId = (string) $order->getId();
         $channel = $order->getChannel();
 
         if (null == $channel) {
-            return false;
+            return [];
         }
 
+        /** @var string $storeId */
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getOrder($storeId, $orderId);
@@ -188,30 +177,23 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
             return $this->ecommerceApi->removeOrder($storeId, $orderId);
         }
 
-        return false;
+        return [];
     }
 
-    /**
-     * @param AddressInterface $address
-     * @return array
-     */
     private function getAddressData(AddressInterface $address): array
     {
         return [
-            'company' => $address->getCompany() ?: '',
-            'address1' => $address->getStreet() ?: '',
-            'city' => $address->getCity() ?: '',
-            'province' => $address->getProvinceName() ?: '',
-            'province_code' => $address->getProvinceCode() ?: '',
-            'postal_code' => $address->getPostcode() ?: '',
-            'country_code' => $address->getCountryCode() ?: '',
-            'phone' => $address->getPhoneNumber() ?: '',
+            'company' => $address->getCompany() ?? '',
+            'address1' => $address->getStreet() ?? '',
+            'city' => $address->getCity() ?? '',
+            'province' => $address->getProvinceName() ?? '',
+            'province_code' => $address->getProvinceCode() ?? '',
+            'postal_code' => $address->getPostcode() ?? '',
+            'country_code' => $address->getCountryCode() ?? '',
+            'phone' => $address->getPhoneNumber() ?? '',
         ];
     }
 
-    /**
-     * @param OrderInterface $order
-     */
     private function removeCart(OrderInterface $order): void
     {
         $cartId = (string) $order->getId();
@@ -221,6 +203,7 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
             return;
         }
 
+        /** @var string $storeId */
         $storeId = $channel->getCode();
 
         $this->ecommerceApi->removeCart($storeId, $cartId);

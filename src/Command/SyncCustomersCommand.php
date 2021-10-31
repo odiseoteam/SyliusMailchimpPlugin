@@ -16,14 +16,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class SyncCustomersCommand extends BaseSyncCommand
 {
-    /** @var ChannelRepositoryInterface */
-    private $channelRepository;
-
-    /** @var CustomerRepositoryInterface */
-    private $customerRepository;
-
-    /** @var CustomerRegisterHandlerInterface */
-    private $customerRegisterHandler;
+    private ChannelRepositoryInterface $channelRepository;
+    private CustomerRepositoryInterface $customerRepository;
+    private CustomerRegisterHandlerInterface $customerRegisterHandler;
 
     public function __construct(
         ChannelRepositoryInterface $channelRepository,
@@ -37,21 +32,20 @@ final class SyncCustomersCommand extends BaseSyncCommand
         $this->customerRegisterHandler = $customerRegisterHandler;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure(): void
     {
         $this
             ->setName('odiseo:mailchimp:sync-customers')
             ->setDescription('Synchronize the customers to Mailchimp.')
-            ->addOption('create-only', 'c', InputOption::VALUE_NONE, 'With this option the existing customers will be not updated.')
+            ->addOption(
+                'create-only',
+                'c',
+                InputOption::VALUE_NONE,
+                'With this option the existing customers will be not updated.'
+            )
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
@@ -63,9 +57,6 @@ final class SyncCustomersCommand extends BaseSyncCommand
         return 0;
     }
 
-    /**
-     * @param InputInterface $input
-     */
     protected function registerCustomers(InputInterface $input): void
     {
         $createOnly = $input->getOption('create-only');
@@ -83,7 +74,7 @@ final class SyncCustomersCommand extends BaseSyncCommand
                 try {
                     $response = $this->customerRegisterHandler->register($customer, $channel, false, $createOnly);
 
-                    if (!isset($response['id']) && $response !== false) {
+                    if (!isset($response['id'])) {
                         $this->showError($response);
                     }
                 } catch (\Exception $e) {
@@ -91,7 +82,7 @@ final class SyncCustomersCommand extends BaseSyncCommand
                 }
             }
 
-            $this->io->progressAdvance(1);
+            $this->io->progressAdvance();
         }
 
         $this->io->progressFinish();

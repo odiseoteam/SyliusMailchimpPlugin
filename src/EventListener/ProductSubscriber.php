@@ -12,17 +12,13 @@ use Sylius\Component\Core\Model\ProductInterface;
 
 final class ProductSubscriber implements EventSubscriber
 {
-    /** @var ProductRegisterHandlerInterface */
-    private $productRegisterHandler;
+    private ProductRegisterHandlerInterface $productRegisterHandler;
 
     public function __construct(ProductRegisterHandlerInterface $productRegisterHandler)
     {
         $this->productRegisterHandler = $productRegisterHandler;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getSubscribedEvents(): array
     {
         return [
@@ -32,9 +28,6 @@ final class ProductSubscriber implements EventSubscriber
         ];
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
     public function postPersist(LifecycleEventArgs $args): void
     {
         $product = $args->getEntity();
@@ -44,9 +37,6 @@ final class ProductSubscriber implements EventSubscriber
         }
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
     public function postUpdate(LifecycleEventArgs $args): void
     {
         $product = $args->getEntity();
@@ -56,9 +46,6 @@ final class ProductSubscriber implements EventSubscriber
         }
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
     public function postRemove(LifecycleEventArgs $args): void
     {
         $product = $args->getEntity();
@@ -68,9 +55,6 @@ final class ProductSubscriber implements EventSubscriber
         }
     }
 
-    /**
-     * @param ProductInterface $product
-     */
     private function register(ProductInterface $product): void
     {
         /** @var ChannelInterface $channel */
@@ -79,9 +63,6 @@ final class ProductSubscriber implements EventSubscriber
         }
     }
 
-    /**
-     * @param ProductInterface $product
-     */
     private function unregister(ProductInterface $product): void
     {
         /** @var ChannelInterface $channel */

@@ -14,11 +14,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class SyncStoresCommand extends BaseSyncCommand
 {
-    /** @var ChannelRepositoryInterface */
-    private $channelRepository;
-
-    /** @var StoreRegisterHandlerInterface */
-    private $storeRegisterHandler;
+    private ChannelRepositoryInterface $channelRepository;
+    private StoreRegisterHandlerInterface $storeRegisterHandler;
 
     public function __construct(
         ChannelRepositoryInterface $channelRepository,
@@ -30,9 +27,6 @@ final class SyncStoresCommand extends BaseSyncCommand
         $this->storeRegisterHandler = $storeRegisterHandler;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure(): void
     {
         $this
@@ -43,9 +37,6 @@ final class SyncStoresCommand extends BaseSyncCommand
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
@@ -57,12 +48,11 @@ final class SyncStoresCommand extends BaseSyncCommand
         return 0;
     }
 
-    /**
-     * @param InputInterface $input
-     */
     protected function registerStores(InputInterface $input): void
     {
+        /** @var bool $withPurge */
         $withPurge = $input->getOption('purge');
+        /** @var bool $isSyncing */
         $isSyncing = $input->getOption('isSyncing');
 
         $channels = $this->channelRepository->findBy([
@@ -71,8 +61,11 @@ final class SyncStoresCommand extends BaseSyncCommand
 
         /** @var ChannelInterface $channel */
         foreach ($channels as $channel) {
+            /** @var string $channelName */
+            $channelName = $channel->getName();
+
             if ($withPurge) {
-                $this->io->write('Removing the "' . $channel->getName() . '" store...');
+                $this->io->write('Removing the "' . $channelName . '" store...');
 
                 try {
                     $this->storeRegisterHandler->unregister($channel);
@@ -83,7 +76,10 @@ final class SyncStoresCommand extends BaseSyncCommand
                 }
             }
 
-            $this->io->write('Connecting the "' . $channel->getName() . '" store with is_syncing = '.($isSyncing?'true':'false').'...');
+            $this->io->write(
+                'Connecting the "' . $channelName . '" store with is_syncing = ' .
+                ($isSyncing ? 'true' : 'false') . '...'
+            );
 
             try {
                 $response = $this->storeRegisterHandler->register($channel, $isSyncing);
@@ -92,9 +88,8 @@ final class SyncStoresCommand extends BaseSyncCommand
                     $this->io->writeln('Done.');
                 } else {
                     $this->io->writeln('Error.');
-                    if ($response !== false) {
-                        $this->showError($response);
-                    }
+
+                    $this->showError($response);
                 }
             } catch (\Exception $e) {
                 $this->io->writeln('Error.');

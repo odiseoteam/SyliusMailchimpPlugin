@@ -9,14 +9,20 @@
     <a href="https://packagist.org/packages/odiseoteam/sylius-mailchimp-plugin" title="Version" target="_blank">
         <img src="https://img.shields.io/packagist/v/odiseoteam/sylius-mailchimp-plugin.svg" />
     </a>
-    <a href="http://travis-ci.org/odiseoteam/SyliusMailchimpPlugin" title="Build status" target="_blank">
-        <img src="https://img.shields.io/travis/odiseoteam/SyliusMailchimpPlugin/master.svg" />
+    <a href="https://github.com/odiseoteam/SyliusMailchimpPlugin/actions" title="Build Status" target="_blank">
+        <img src="https://img.shields.io/github/workflow/status/odiseoteam/SyliusMailchimpPlugin/Build" />
     </a>
     <a href="https://scrutinizer-ci.com/g/odiseoteam/SyliusMailchimpPlugin/" title="Scrutinizer" target="_blank">
         <img src="https://img.shields.io/scrutinizer/g/odiseoteam/SyliusMailchimpPlugin.svg" />
     </a>
     <a href="https://packagist.org/packages/odiseoteam/sylius-mailchimp-plugin" title="Total Downloads" target="_blank">
         <img src="https://poser.pugx.org/odiseoteam/sylius-mailchimp-plugin/downloads" />
+    </a>
+    <a href="https://sylius-devs.slack.com" title="Slack" target="_blank">
+        <img src="https://img.shields.io/badge/community%20chat-slack-FF1493.svg" />
+    </a>
+    <a href="https://odiseo.io/contact?utm_source=github&utm_medium=referral&utm_campaign=plugins_vendor" title="Support" target="_blank">
+        <img src="https://img.shields.io/badge/support-contact%20author-blue" />
     </a>
 </p>
 <p align="center"><a href="https://sylius.com/partners/odiseo/" target="_blank"><img src="https://github.com/odiseoteam/SyliusMailchimpPlugin/blob/master/badge-partner-by-sylius.png" width="140"></a></p>
@@ -45,7 +51,7 @@ sales and generate more revenue.
 order confirmations, invoices, shipping confirmations, refund confirmations, and cancellation confirmations—directly 
 through your Mailchimp account.
 
-Support Sylius version 1.3+.
+Support Sylius version 1.9+.
 
 ## Demo
 

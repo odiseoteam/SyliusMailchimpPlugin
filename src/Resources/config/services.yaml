@@ -4,4 +4,5 @@ imports:
     - { resource: services/controller.yaml }
     - { resource: services/event_listener.yaml }
     - { resource: services/handlers.yaml }
+    - { resource: services/logger.yaml }
     - { resource: services/provider.yaml }

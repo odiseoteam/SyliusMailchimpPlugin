@@ -1,6 +1,6 @@
 ## Installation
 
-1. Run `composer require odiseoteam/sylius-mailchimp-plugin`
+1. Run `composer require odiseoteam/sylius-mailchimp-plugin` --no-scripts`
 
 2. Enable the plugin in bundles.php
 
@@ -35,7 +35,7 @@ odiseo_sylius_mailchimp_plugin_shop:
         _locale: ^[A-Za-z]{2,4}(_([A-Za-z]{4}|[0-9]{3}))?(_([A-Za-z]{2}|[0-9]{3}))?$
 ```
 
-5. Add the enviroment variables
+5. Add the environment variables
 
 ```yml
 ODISEO_MAILCHIMP_APIKEY=EDITME
@@ -43,10 +43,11 @@ ODISEO_MAILCHIMP_DEFAULT_LISTID=EDITME
 ```
 
 6. Finish the installation updating the database schema and installing assets
-   
+
 ```
-php bin/console doctrine:schema:update --force
+php bin/console doctrine:migrations:migrate
 php bin/console sylius:theme:assets:install
+php bin/console cache:clear
 ```
 
 If you want to use different List Id for each Sylius Channel, you need to 

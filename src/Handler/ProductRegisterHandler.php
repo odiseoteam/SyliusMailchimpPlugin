@@ -11,6 +11,7 @@ use Sylius\Component\Core\Model\ChannelPricingInterface;
 use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariant;
+use Sylius\Component\Locale\Model\LocaleInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -18,20 +19,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class ProductRegisterHandler implements ProductRegisterHandlerInterface
 {
-    /** @var EcommerceInterface */
-    private $ecommerceApi;
-
-    /** @var RouterInterface */
-    private $router;
-
-    /** @var CacheManager */
-    private $cacheManager;
-
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
-
-    /** @var bool */
-    private $enabled;
+    private EcommerceInterface $ecommerceApi;
+    private RouterInterface $router;
+    private CacheManager $cacheManager;
+    private EventDispatcherInterface $eventDispatcher;
+    private bool $enabled;
 
     public function __construct(
         EcommerceInterface $ecommerceApi,
@@ -47,24 +39,22 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         $this->enabled = $enabled;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function register(ProductInterface $product, ChannelInterface $channel, bool $createOnly = false)
+    public function register(ProductInterface $product, ChannelInterface $channel, bool $createOnly = false): array
     {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
         $productId = (string) $product->getId();
+
+        /** @var string $storeId */
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getProduct($storeId, $productId);
         $isNew = !isset($response['id']);
 
-        // Do nothing if the product exists
         if (false === $isNew && true === $createOnly) {
-            return false;
+            return [];
         }
 
         $variants = [];
@@ -72,11 +62,12 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         foreach ($product->getVariants() as $productVariant) {
             $variant = [
                 'id' => (string) $productVariant->getId(),
-                'title' => $productVariant->getName() ? $productVariant->getName() : $product->getName(),
+                'title' => $productVariant->getName() ?? $product->getName(),
                 'inventory_quantity' => $productVariant->isTracked() ? $productVariant->getOnHand() : 1,
             ];
 
-            if ($variantPrice = $this->getVariantPrice($productVariant, $channel)) {
+            $variantPrice = $this->getVariantPrice($productVariant, $channel);
+            if (null !== $variantPrice) {
                 $variant['price'] = $variantPrice / 100;
             }
 
@@ -96,7 +87,7 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
             'id' => $productId,
             'title' => $product->getName(),
             'url' => $this->getProductUrl($product, $channel),
-            'description' => $product->getDescription() ?: '',
+            'description' => $product->getDescription() ?? '',
             'images' => $productImages,
             'variants' => $variants,
         ];
@@ -105,14 +96,13 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
             $data['image_url'] = $productImages[0]['url'];
         }
 
+        $event = new GenericEvent($product, ['data' => $data, 'channel' => $channel]);
         if ($isNew) {
-            $event = new GenericEvent($product, ['data' => $data, 'channel' => $channel]);
             $this->eventDispatcher->dispatch($event, 'mailchimp.product.pre_add');
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addProduct($storeId, $data);
         } else {
-            $event = new GenericEvent($product, ['data' => $data, 'channel' => $channel]);
             $this->eventDispatcher->dispatch($event, 'mailchimp.product.pre_update');
             $data = $event->getArgument('data');
 
@@ -122,16 +112,15 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         return $response;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unregister(ProductInterface $product, ChannelInterface $channel)
+    public function unregister(ProductInterface $product, ChannelInterface $channel): array
     {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
         $productId = (string) $product->getId();
+
+        /** @var string $storeId */
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getProduct($storeId, $productId);
@@ -144,17 +133,11 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
             return $this->ecommerceApi->removeProduct($storeId, $productId);
         }
 
-        return false;
+        return [];
     }
 
-    /**
-     * @param ProductVariant $variant
-     * @param ChannelInterface $channel
-     * @return int|null
-     */
     private function getVariantPrice(ProductVariant $variant, ChannelInterface $channel): ?int
     {
-        /** @var ChannelPricingInterface $channelPricing */
         $channelPricing = $variant->getChannelPricingForChannel($channel);
 
         $variantPrice = null;
@@ -165,15 +148,10 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         return $variantPrice;
     }
 
-    /**
-     * @param ProductInterface $product
-     * @param ChannelInterface $channel
-     * @return string
-     */
     private function getProductUrl(ProductInterface $product, ChannelInterface $channel): string
     {
         $context = $this->router->getContext();
-        $context->setHost($channel->getHostname());
+        $context->setHost($channel->getHostname() ?? '');
 
         $locale = 'en';
         $channelDefaultLocale = $channel->getDefaultLocale();
@@ -182,11 +160,14 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
             $locale = $channelDefaultLocale->getCode();
         } else {
             if (count($channel->getLocales()) > 0) {
-                $locale = $channel->getLocales()->first()->getCode();
+                $channelLocale = $channel->getLocales()->first();
+                if ($channelLocale instanceof LocaleInterface) {
+                    $locale = $channelLocale->getCode();
+                }
             }
         }
 
-        $product->setCurrentLocale($locale);
+        $product->setCurrentLocale($locale ?? '');
 
         return $this->router->generate('sylius_shop_product_show', [
             '_locale' => $locale,
@@ -194,16 +175,11 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
-    /**
-     * @param ProductImageInterface $image
-     * @param ChannelInterface $channel
-     * @return string
-     */
     private function getImageUrl(ProductImageInterface $image, ChannelInterface $channel): string
     {
         $context = $this->router->getContext();
-        $context->setHost($channel->getHostname());
+        $context->setHost($channel->getHostname() ?? '');
 
-        return $this->cacheManager->generateUrl($image->getPath(), 'sylius_large');
+        return $this->cacheManager->generateUrl($image->getPath() ?? '', 'sylius_large');
     }
 }

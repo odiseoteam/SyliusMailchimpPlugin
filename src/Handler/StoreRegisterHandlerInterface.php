@@ -8,14 +8,7 @@ use Sylius\Component\Core\Model\ChannelInterface;
 
 interface StoreRegisterHandlerInterface
 {
-    /**
-     * @param ChannelInterface $channel
-     * @param bool $isSyncing
-     */
-    public function register(ChannelInterface $channel, bool $isSyncing = false);
+    public function register(ChannelInterface $channel, bool $isSyncing = false): array;
 
-    /**
-     * @param ChannelInterface $channel
-     */
-    public function unregister(ChannelInterface $channel);
+    public function unregister(ChannelInterface $channel): array;
 }

@@ -6,7 +6,6 @@ namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Odiseo\SyliusMailchimpPlugin\Handler\CustomerNewsletterSubscriptionHandlerInterface;
 use Odiseo\SyliusMailchimpPlugin\Handler\CustomerRegisterHandlerInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
@@ -15,33 +14,20 @@ use Sylius\Component\Core\Model\CustomerInterface;
 
 final class CustomerSubscriber implements EventSubscriber
 {
-    /** @var ChannelRepositoryInterface */
-    private $channelRepository;
-
-    /** @var ChannelContextInterface */
-    private $channelContext;
-
-    /** @var CustomerRegisterHandlerInterface */
-    private $customerRegisterHandler;
-
-    /** @var CustomerNewsletterSubscriptionHandlerInterface */
-    private $customerNewsletterSubscriptionHandler;
+    private ChannelRepositoryInterface $channelRepository;
+    private ChannelContextInterface $channelContext;
+    private CustomerRegisterHandlerInterface $customerRegisterHandler;
 
     public function __construct(
         ChannelRepositoryInterface $channelRepository,
         ChannelContextInterface $channelContext,
-        CustomerRegisterHandlerInterface $customerRegisterHandler,
-        CustomerNewsletterSubscriptionHandlerInterface $customerNewsletterSubscriptionHandler
+        CustomerRegisterHandlerInterface $customerRegisterHandler
     ) {
         $this->channelRepository = $channelRepository;
         $this->customerRegisterHandler = $customerRegisterHandler;
         $this->channelContext = $channelContext;
-        $this->customerNewsletterSubscriptionHandler = $customerNewsletterSubscriptionHandler;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getSubscribedEvents(): array
     {
         return [
@@ -51,9 +37,6 @@ final class CustomerSubscriber implements EventSubscriber
         ];
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
     public function postPersist(LifecycleEventArgs $args): void
     {
         $customer = $args->getEntity();
@@ -63,9 +46,6 @@ final class CustomerSubscriber implements EventSubscriber
         }
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
     public function postUpdate(LifecycleEventArgs $args): void
     {
         $customer = $args->getEntity();
@@ -75,9 +55,6 @@ final class CustomerSubscriber implements EventSubscriber
         }
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
     public function postRemove(LifecycleEventArgs $args): void
     {
         $customer = $args->getEntity();
@@ -87,29 +64,23 @@ final class CustomerSubscriber implements EventSubscriber
         }
     }
 
-    /**
-     * @param CustomerInterface $customer
-     */
     private function register(CustomerInterface $customer): void
     {
         /** @var ChannelInterface|null $subscribedChannel */
         $subscribedChannel = null;
         try {
-            $subscribedChannel = (true === $customer->isSubscribedToNewsletter())?$this->channelContext->getChannel():null;
+            $subscribedChannel = $customer->isSubscribedToNewsletter() ? $this->channelContext->getChannel() : null;
         } catch (\Exception $e) {
         }
 
         $channels = $this->channelRepository->findAll();
         /** @var ChannelInterface $channel */
         foreach ($channels as $channel) {
-            $isSubscribed = !!($subscribedChannel && $subscribedChannel->getCode() == $channel->getCode());
+            $isSubscribed = !!(null !== $subscribedChannel && $subscribedChannel->getCode() == $channel->getCode());
             $this->customerRegisterHandler->register($customer, $channel, $isSubscribed);
         }
     }
 
-    /**
-     * @param CustomerInterface $customer
-     */
     private function unregister(CustomerInterface $customer): void
     {
         $channels = $this->channelRepository->findAll();

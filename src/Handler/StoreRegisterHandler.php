@@ -8,35 +8,17 @@ use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
 use Odiseo\SyliusMailchimpPlugin\Entity\MailchimpListIdAwareInterface;
 use Odiseo\SyliusMailchimpPlugin\Provider\ListIdProviderInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Locale\Model\LocaleInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class StoreRegisterHandler implements StoreRegisterHandlerInterface
 {
-    /**
-     * @var EcommerceInterface
-     */
-    private $ecommerceApi;
+    private EcommerceInterface $ecommerceApi;
+    private ListIdProviderInterface $listIdProvider;
+    private EventDispatcherInterface $eventDispatcher;
+    private bool $enabled;
 
-    /**
-     * @var ListIdProviderInterface
-     */
-    private $listIdProvider;
-
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
-
-    /**
-     * @var bool
-     */
-    private $enabled;
-
-    /**
-     * @param EcommerceInterface $ecommerceApi
-     * @param ListIdProviderInterface $listIdProvider
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param bool $enabled
-     */
     public function __construct(
         EcommerceInterface $ecommerceApi,
         ListIdProviderInterface $listIdProvider,
@@ -49,15 +31,13 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
         $this->enabled = $enabled;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function register(ChannelInterface $channel, bool $isSyncing = false)
+    public function register(ChannelInterface $channel, bool $isSyncing = false): array
     {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
+        /** @var string $storeId */
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getStore($storeId);
@@ -66,11 +46,13 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
         $localeCode = 'en';
         $currencyCode = 'USD';
 
-        if ($defaultLocale = $channel->getDefaultLocale()) {
+        $defaultLocale = $channel->getDefaultLocale();
+        if ($defaultLocale instanceof LocaleInterface) {
             $localeCode = $defaultLocale->getCode();
         }
 
-        if ($baseCurrency = $channel->getBaseCurrency()) {
+        $baseCurrency = $channel->getBaseCurrency();
+        if ($baseCurrency instanceof LocaleInterface) {
             $currencyCode = $baseCurrency->getCode();
         }
 
@@ -86,14 +68,13 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
             'primary_locale' => $localeCode,
         ];
 
+        $event = new GenericEvent($channel, ['data' => $data]);
         if ($isNew) {
-            $event = new GenericEvent($channel, ['data' => $data]);
             $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_add');
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addStore($data);
         } else {
-            $event = new GenericEvent($channel, ['data' => $data]);
             $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_update');
             $data = $event->getArgument('data');
 
@@ -103,15 +84,13 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
         return $response;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unregister(ChannelInterface $channel)
+    public function unregister(ChannelInterface $channel): array
     {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
+        /** @var string $storeId */
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getStore($storeId);
@@ -124,18 +103,14 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
             return $this->ecommerceApi->removeStore($storeId);
         }
 
-        return false;
+        return [];
     }
 
-    /**
-     * @param ChannelInterface $channel
-     *
-     * @return string
-     */
     private function getListIdByChannel(ChannelInterface $channel): string
     {
         if ($channel instanceof MailchimpListIdAwareInterface) {
-            if ($listId = $channel->getListId()) {
+            $listId = $channel->getListId();
+            if (null !== $listId) {
                 return $listId;
             }
         }

@@ -8,14 +8,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 
 interface OrderRegisterHandlerInterface
 {
-    /**
-     * @param OrderInterface $order
-     * @param bool $createOnly
-     */
-    public function register(OrderInterface $order, bool $createOnly = false);
+    public function register(OrderInterface $order, bool $createOnly = false): array;
 
-    /**
-     * @param OrderInterface $order
-     */
-    public function unregister(OrderInterface $order);
+    public function unregister(OrderInterface $order): array;
 }

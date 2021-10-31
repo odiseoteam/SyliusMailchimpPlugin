@@ -11,14 +11,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterSubscriptionHandlerInterface
 {
-    /** @var ListsInterface */
-    private $listsApi;
-
-    /** @var bool */
-    private $enabled;
-
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
+    private ListsInterface $listsApi;
+    private EventDispatcherInterface $eventDispatcher;
+    private bool $enabled;
 
     public function __construct(
         ListsInterface $listsApi,
@@ -30,22 +25,22 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
         $this->enabled = $enabled;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function subscribe(CustomerInterface $customer, string $listId)
+    public function subscribe(CustomerInterface $customer, string $listId): array
     {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
-        $subscriberHash = md5(strtolower($customer->getEmail()));
+        /** @var string $email */
+        $email = $customer->getEmail();
+
+        $subscriberHash = md5(strtolower($email));
 
         $getMemberResponse = $this->listsApi->getMember($listId, $subscriberHash);
         $isNew = !isset($getMemberResponse['id']);
 
         $data = [
-            'email_address' => $customer->getEmail(),
+            'email_address' => $email,
             'status' => 'subscribed',
         ];
 
@@ -56,7 +51,10 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
 
             $response = $this->listsApi->addMember($listId, $data);
         } else {
-            $event = new GenericEvent($customer, ['data' => $data, 'existing_mailchimp_member_data' => $getMemberResponse]);
+            $event = new GenericEvent(
+                $customer,
+                ['data' => $data, 'existing_mailchimp_member_data' => $getMemberResponse]
+            );
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_update');
             $data = $event->getArgument('data');
 
@@ -66,16 +64,16 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
         return $response;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unsubscribe(CustomerInterface $customer, string $listId)
+    public function unsubscribe(CustomerInterface $customer, string $listId): array
     {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
-        $subscriberHash = md5(strtolower($customer->getEmail()));
+        /** @var string $email */
+        $email = $customer->getEmail();
+
+        $subscriberHash = md5(strtolower($email));
 
         $response = $this->listsApi->getMember($listId, $subscriberHash);
         $isNew = !isset($response['id']);
@@ -87,6 +85,6 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
             return $this->listsApi->removeMember($listId, $subscriberHash);
         }
 
-        return false;
+        return [];
     }
 }

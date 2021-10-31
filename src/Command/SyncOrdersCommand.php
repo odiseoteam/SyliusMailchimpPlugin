@@ -15,11 +15,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class SyncOrdersCommand extends BaseSyncCommand
 {
-    /** @var EntityRepository */
-    private $orderRepository;
-
-    /** @var OrderRegisterHandlerInterface */
-    private $orderRegisterHandler;
+    private EntityRepository $orderRepository;
+    private OrderRegisterHandlerInterface $orderRegisterHandler;
 
     public function __construct(
         EntityRepository $orderRepository,
@@ -31,21 +28,20 @@ final class SyncOrdersCommand extends BaseSyncCommand
         $this->orderRegisterHandler = $orderRegisterHandler;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure(): void
     {
         $this
             ->setName('odiseo:mailchimp:sync-orders')
             ->setDescription('Synchronize the orders to Mailchimp.')
-            ->addOption('create-only', 'c', InputOption::VALUE_NONE, 'With this option the existing carts will be not updated.')
+            ->addOption(
+                'create-only',
+                'c',
+                InputOption::VALUE_NONE,
+                'With this option the existing carts will be not updated.'
+            )
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
@@ -57,9 +53,6 @@ final class SyncOrdersCommand extends BaseSyncCommand
         return 0;
     }
 
-    /**
-     * @param InputInterface $input
-     */
     protected function registerOrders(InputInterface $input): void
     {
         $createOnly = $input->getOption('create-only');
@@ -79,14 +72,14 @@ final class SyncOrdersCommand extends BaseSyncCommand
             try {
                 $response = $this->orderRegisterHandler->register($order, $createOnly);
 
-                if (!isset($response['id']) && $response !== false) {
+                if (!isset($response['id'])) {
                     $this->showError($response);
                 }
             } catch (\Exception $e) {
                 $this->io->error($e->getMessage());
             }
 
-            $this->io->progressAdvance(1);
+            $this->io->progressAdvance();
         }
 
         $this->io->progressFinish();

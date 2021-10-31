@@ -11,34 +11,20 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\TokenAssigner\OrderTokenAssignerInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class CartRegisterHandler implements CartRegisterHandlerInterface
 {
-    /** @var EcommerceInterface */
-    private $ecommerceApi;
-
-    /** @var CustomerRegisterHandlerInterface */
-    private $customerRegisterHandler;
-
-    /** @var RouterInterface */
-    private $router;
-
-    /** @var OrderTokenAssignerInterface */
-    private $orderTokenAssigner;
-
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var SessionInterface */
-    private $session;
-
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
-
-    /** @var bool */
-    private $enabled;
+    private EcommerceInterface $ecommerceApi;
+    private CustomerRegisterHandlerInterface $customerRegisterHandler;
+    private RouterInterface $router;
+    private OrderTokenAssignerInterface $orderTokenAssigner;
+    private EntityManagerInterface $entityManager;
+    private SessionInterface $session;
+    private EventDispatcherInterface $eventDispatcher;
+    private bool $enabled;
 
     public function __construct(
         EcommerceInterface $ecommerceApi,
@@ -60,13 +46,10 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         $this->enabled = $enabled;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function register(OrderInterface $order, bool $createOnly = false)
+    public function register(OrderInterface $order, bool $createOnly = false): array
     {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
         /** @var CustomerInterface $customer */
@@ -78,38 +61,35 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
             null == $channel ||
             count($order->getItems()) == 0
         ) {
-            return false;
+            return [];
         }
 
+        /** @var string $storeId */
         $storeId = $channel->getCode();
         $cartId = (string) $order->getId();
 
         $response = $this->ecommerceApi->getCart($storeId, $cartId);
         $isNew = !isset($response['id']);
 
-        // Do nothing if the cart exists
         if (false === $isNew && true === $createOnly) {
-            return false;
+            return [];
         }
 
-        // Registering the customer to ensure that exist on Mailchimp
         $response = $this->customerRegisterHandler->register($customer, $channel, false, $createOnly);
 
-        if (!isset($response['id']) && $response !== false) {
-            return false;
+        if (!isset($response['id'])) {
+            return [];
         }
 
-        // Assigning the token value to the order
         $this->orderTokenAssigner->assignTokenValueIfNotSet($order);
         $this->entityManager->flush();
 
-        // Creating continue purchase url
         $context = $this->router->getContext();
-        $context->setHost($channel->getHostname());
+        $context->setHost($channel->getHostname() ?? '');
         $continuePurchaseUrl = $this->router->generate('odiseo_sylius_mailchimp_plugin_shop_continue_cart_purchase', [
-            '_locale' => $order->getLocaleCode() ?: 'en',
+            '_locale' => $order->getLocaleCode() ?? 'en',
             'tokenValue' => $order->getTokenValue(),
-        ], RouterInterface::ABSOLUTE_URL);
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $data = [
             'id' => $cartId,
@@ -117,7 +97,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
                 'id' => (string) $customer->getId(),
             ],
             'checkout_url' => $continuePurchaseUrl,
-            'currency_code' => $order->getCurrencyCode() ?: 'USD',
+            'currency_code' => $order->getCurrencyCode() ?? 'USD',
             'order_total' => $order->getTotal() / 100,
             'tax_total' => $order->getTaxTotal() / 100,
             'lines' => [],
@@ -144,14 +124,13 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
             ];
         }
 
+        $event = new GenericEvent($order, ['data' => $data]);
         if ($isNew) {
-            $event = new GenericEvent($order, ['data' => $data]);
             $this->eventDispatcher->dispatch($event, 'mailchimp.cart.pre_add');
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addCart($storeId, $data);
         } else {
-            $event = new GenericEvent($order, ['data' => $data]);
             $this->eventDispatcher->dispatch($event, 'mailchimp.cart.pre_update');
             $data = $event->getArgument('data');
 
@@ -161,22 +140,20 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         return $response;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unregister(OrderInterface $order)
+    public function unregister(OrderInterface $order): array
     {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
         $orderId = (string) $order->getId();
         $channel = $order->getChannel();
 
         if (null == $channel) {
-            return false;
+            return [];
         }
 
+        /** @var string $storeId */
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getCart($storeId, $orderId);
@@ -189,6 +166,6 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
             return $this->ecommerceApi->removeCart($storeId, $orderId);
         }
 
-        return false;
+        return [];
     }
 }

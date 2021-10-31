@@ -19,7 +19,6 @@ services:
             - '@sylius.repository.channel'
             - '@sylius.context.channel'
             - '@odiseo_sylius_mailchimp_plugin.handler.customer_register'
-            - '@odiseo_sylius_mailchimp_plugin.handler.customer_newsletter_subscription'
         tags:
             - { name: doctrine.event_subscriber }
 

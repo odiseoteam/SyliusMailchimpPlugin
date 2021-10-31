@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odiseo\SyliusMailchimpPlugin\Command;
 
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -12,22 +13,26 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class SyncAllCommand extends BaseSyncCommand
 {
-    /**
-     * {@inheritdoc}
-     */
     protected function configure(): void
     {
         $this
             ->setName('odiseo:mailchimp:sync-all')
             ->setDescription('Synchronize all data to Mailchimp.')
-            ->addOption('create-only', 'c', InputOption::VALUE_NONE, 'With this option the existing content will be not updated.')
-            ->addOption('purge', 'p', InputOption::VALUE_NONE, 'Reset all the content and reload from scratch.')
+            ->addOption(
+                'create-only',
+                'c',
+                InputOption::VALUE_NONE,
+                'With this option the existing content will be not updated.'
+            )
+            ->addOption(
+                'purge',
+                'p',
+                InputOption::VALUE_NONE,
+                'Reset all the content and reload from scratch.'
+            )
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $withPurge = $input->getOption('purge');
@@ -39,7 +44,7 @@ final class SyncAllCommand extends BaseSyncCommand
 
         $application = $this->getApplication();
 
-        if ($application) {
+        if ($application instanceof Application) {
             $syncStoresCommand = $application->find('odiseo:mailchimp:sync-stores');
             $syncCustomersCommand = $application->find('odiseo:mailchimp:sync-customers');
             $syncProductsCommand = $application->find('odiseo:mailchimp:sync-products');

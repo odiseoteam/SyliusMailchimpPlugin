@@ -8,15 +8,7 @@ use Sylius\Component\Core\Model\CustomerInterface;
 
 interface CustomerNewsletterSubscriptionHandlerInterface
 {
-    /**
-     * @param CustomerInterface $customer
-     * @param string $listId
-     */
-    public function subscribe(CustomerInterface $customer, string $listId);
+    public function subscribe(CustomerInterface $customer, string $listId): array;
 
-    /**
-     * @param CustomerInterface $customer
-     * @param string $listId
-     */
-    public function unsubscribe(CustomerInterface $customer, string $listId);
+    public function unsubscribe(CustomerInterface $customer, string $listId): array;
 }

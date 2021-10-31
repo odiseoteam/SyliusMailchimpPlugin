@@ -12,7 +12,7 @@ odiseo_sylius_mailchimp:
     enabled: false
 ```
 
-#### Get the mailchimp service on your class
+### Get the mailchimp service on your class
 
 ```php
 /** @var \DrewM\MailChimp\MailChimp $mailchimp */
@@ -37,7 +37,7 @@ $ bin/console odiseo:mailchimp:sync-carts
 $ bin/console odiseo:mailchimp:sync-orders
 ```
 
-#### Newsletter
+### Newsletter
 
 To render this view you can run `mkdir -p templates/bundles/SyliusShopBundle` then `cp vendor/sylius/sylius/src/Sylius/Bundle/ShopBundle/Resources/views/_footer.html.twig templates/bundles/SyliusShopBundle/_footer.html.twig` and then add:
 

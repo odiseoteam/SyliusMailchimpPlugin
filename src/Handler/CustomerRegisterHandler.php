@@ -13,14 +13,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
 {
-    /** @var EcommerceInterface */
-    private $ecommerceApi;
-
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
-
-    /** @var bool */
-    private $enabled;
+    private EcommerceInterface $ecommerceApi;
+    private EventDispatcherInterface $eventDispatcher;
+    private bool $enabled;
 
     public function __construct(
         EcommerceInterface $ecommerceApi,
@@ -32,20 +27,19 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         $this->enabled = $enabled;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function register(
         CustomerInterface $customer,
         ChannelInterface $channel,
         bool $optInStatus = false,
         bool $createOnly = false
-    ) {
+    ): array {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
         $customerId = (string) $customer->getId();
+
+        /** @var string $storeId */
         $storeId = $channel->getCode();
         $customerAddress = $this->getCustomerAddress($customer);
         $firstName = $this->getCustomerFirstName($customer, $customerAddress);
@@ -54,39 +48,37 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         $response = $this->ecommerceApi->getCustomer($storeId, $customerId);
         $isNew = !isset($response['id']);
 
-        // Do nothing if the customer exists
         if (false === $isNew && true === $createOnly) {
-            return false;
+            return [];
         }
 
         $data = [
             'id' => $customerId,
             'email_address' => $customer->getEmail(),
             'opt_in_status' => $optInStatus,
-            'first_name' => $firstName ?: '',
-            'last_name' => $lastName ?: '',
+            'first_name' => $firstName ?? '',
+            'last_name' => $lastName ?? '',
         ];
 
-        if ($customerAddress) {
-            $data['company'] = $customerAddress->getCompany() ?: '';
+        if ($customerAddress instanceof AddressInterface) {
+            $data['company'] = $customerAddress->getCompany() ?? '';
             $data['address'] = [
-                'address1' => $customerAddress->getStreet() ?: '',
-                'city' => $customerAddress->getCity() ?: '',
-                'province' => $customerAddress->getProvinceName() ?: '',
-                'province_code' => $customerAddress->getProvinceCode() ?: '',
-                'postal_code' => $customerAddress->getPostcode() ?: '',
-                'country_code' => $customerAddress->getCountryCode() ?: '',
+                'address1' => $customerAddress->getStreet() ?? '',
+                'city' => $customerAddress->getCity() ?? '',
+                'province' => $customerAddress->getProvinceName() ?? '',
+                'province_code' => $customerAddress->getProvinceCode() ?? '',
+                'postal_code' => $customerAddress->getPostcode() ?? '',
+                'country_code' => $customerAddress->getCountryCode() ?? '',
             ];
         }
 
+        $event = new GenericEvent($customer, ['data' => $data, 'channel' => $channel]);
         if ($isNew) {
-            $event = new GenericEvent($customer, ['data' => $data, 'channel' => $channel]);
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer.pre_add');
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addCustomer($storeId, $data);
         } else {
-            $event = new GenericEvent($customer, ['data' => $data, 'channel' => $channel]);
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer.pre_update');
             $data = $event->getArgument('data');
 
@@ -96,16 +88,15 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         return $response;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unregister(CustomerInterface $customer, ChannelInterface $channel)
+    public function unregister(CustomerInterface $customer, ChannelInterface $channel): array
     {
         if (!$this->enabled) {
-            return false;
+            return [];
         }
 
         $customerId = (string) $customer->getId();
+
+        /** @var string $storeId */
         $storeId = $channel->getCode();
 
         $response = $this->ecommerceApi->getCustomer($storeId, $customerId);
@@ -118,50 +109,37 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
             return $this->ecommerceApi->removeCustomer($storeId, $customerId);
         }
 
-        return false;
+        return [];
     }
 
-    /**
-     * @param CustomerInterface $customer
-     * @return AddressInterface|null
-     */
     private function getCustomerAddress(CustomerInterface $customer): ?AddressInterface
     {
         $address = $customer->getDefaultAddress();
 
-        if (!$address && count($customer->getAddresses()) > 0) {
+        if (null === $address && count($customer->getAddresses()) > 0) {
+            /** @var AddressInterface $address */
             $address = $customer->getAddresses()->first();
         }
 
         return $address;
     }
 
-    /**
-     * @param CustomerInterface $customer
-     * @param AddressInterface|null $address
-     * @return string|null
-     */
     private function getCustomerFirstName(CustomerInterface $customer, AddressInterface $address = null): ?string
     {
         $firstName = $customer->getFirstName();
 
-        if (!$firstName && $address) {
+        if (null === $firstName && $address instanceof AddressInterface) {
             $firstName = $address->getFirstName();
         }
 
         return $firstName;
     }
 
-    /**
-     * @param CustomerInterface $customer
-     * @param AddressInterface|null $address
-     * @return string|null
-     */
     private function getCustomerLastName(CustomerInterface $customer, AddressInterface $address = null): ?string
     {
         $lastName = $customer->getLastName();
 
-        if (!$lastName && $address) {
+        if (null === $lastName && $address instanceof AddressInterface) {
             $lastName = $address->getLastName();
         }
 

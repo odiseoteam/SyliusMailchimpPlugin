@@ -9,16 +9,7 @@ use Sylius\Component\Core\Model\ProductInterface;
 
 interface ProductRegisterHandlerInterface
 {
-    /**
-     * @param ProductInterface $product
-     * @param ChannelInterface $channel
-     * @param bool $createOnly
-     */
-    public function register(ProductInterface $product, ChannelInterface $channel, bool $createOnly = false);
+    public function register(ProductInterface $product, ChannelInterface $channel, bool $createOnly = false): array;
 
-    /**
-     * @param ProductInterface $product
-     * @param ChannelInterface $channel
-     */
-    public function unregister(ProductInterface $product, ChannelInterface $channel);
+    public function unregister(ProductInterface $product, ChannelInterface $channel): array;
 }

@@ -15,11 +15,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class SyncProductsCommand extends BaseSyncCommand
 {
-    /** @var ProductRepositoryInterface */
-    private $productRepository;
-
-    /** @var ProductRegisterHandlerInterface */
-    private $productRegisterHandler;
+    private ProductRepositoryInterface $productRepository;
+    private ProductRegisterHandlerInterface $productRegisterHandler;
 
     public function __construct(
         ProductRepositoryInterface $productRepository,
@@ -31,21 +28,20 @@ final class SyncProductsCommand extends BaseSyncCommand
         $this->productRegisterHandler = $productRegisterHandler;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure(): void
     {
         $this
             ->setName('odiseo:mailchimp:sync-products')
             ->setDescription('Synchronize the products to Mailchimp.')
-            ->addOption('create-only', 'c', InputOption::VALUE_NONE, 'With this option the existing products will be not updated.')
+            ->addOption(
+                'create-only',
+                'c',
+                InputOption::VALUE_NONE,
+                'With this option the existing products will be not updated.'
+            )
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
@@ -57,9 +53,6 @@ final class SyncProductsCommand extends BaseSyncCommand
         return 0;
     }
 
-    /**
-     * @param InputInterface $input
-     */
     protected function registerProducts(InputInterface $input): void
     {
         $createOnly = $input->getOption('create-only');
@@ -78,11 +71,11 @@ final class SyncProductsCommand extends BaseSyncCommand
                 try {
                     $response = $this->productRegisterHandler->register($product, $channel, $createOnly);
 
-                    if (!isset($response['id']) && $response !== false) {
+                    if (!isset($response['id'])) {
                         $this->showError($response);
                     }
 
-                    $this->io->progressAdvance(1);
+                    $this->io->progressAdvance();
                 } catch (\Exception $e) {
                     $this->io->error($e->getMessage());
                 }
