@@ -7,7 +7,6 @@ namespace Odiseo\SyliusMailchimpPlugin\Handler;
 use Odiseo\SyliusMailchimpPlugin\Api\EcommerceInterface;
 use Odiseo\SyliusMailchimpPlugin\Entity\MailchimpListIdAwareInterface;
 use Odiseo\SyliusMailchimpPlugin\Provider\ListIdProviderInterface;
-use ReflectionMethod;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -70,24 +69,13 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
         ];
 
         $event = new GenericEvent($channel, ['data' => $data]);
-        $dispatchMethod = new ReflectionMethod($this->eventDispatcher, 'dispatch');
         if ($isNew) {
-            if (count($dispatchMethod->getParameters()) === 2) {
-                $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_add');
-            } else {
-                $this->eventDispatcher->dispatch($event);
-            }
-
+            $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_add');
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addStore($data);
         } else {
-            if (count($dispatchMethod->getParameters()) === 2) {
-                $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_update');
-            } else {
-                $this->eventDispatcher->dispatch($event);
-            }
-
+            $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_update');
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->updateStore($storeId, $data);
