@@ -70,8 +70,8 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
         ];
 
         $event = new GenericEvent($channel, ['data' => $data]);
+        $dispatchMethod = new ReflectionMethod($this->eventDispatcher, 'dispatch');
         if ($isNew) {
-            $dispatchMethod = new ReflectionMethod($event, 'dispatch');
             if (count($dispatchMethod->getParameters()) === 2) {
                 $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_add');
             } else {
@@ -82,7 +82,6 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
 
             $response = $this->ecommerceApi->addStore($data);
         } else {
-            $dispatchMethod = new ReflectionMethod($event, 'dispatch');
             if (count($dispatchMethod->getParameters()) === 2) {
                 $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_update');
             } else {
