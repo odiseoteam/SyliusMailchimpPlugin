@@ -135,6 +135,10 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
 
         $event = new GenericEvent($order, ['data' => $data]);
         if ($isNew) {
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.order.pre_add');
             $data = $event->getArgument('data');
 
@@ -142,6 +146,10 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
 
             $this->removeCart($order);
         } else {
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.order.pre_update');
             $data = $event->getArgument('data');
 
@@ -172,6 +180,11 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
 
         if (!$isNew) {
             $event = new GenericEvent($order);
+
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.order.pre_remove');
 
             return $this->ecommerceApi->removeOrder($storeId, $orderId);

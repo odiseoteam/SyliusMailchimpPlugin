@@ -50,7 +50,7 @@ final class SubscribeToNewsletterAction
         if (!isset($response['id'])) {
             return new JsonResponse([
                 'success' => false,
-                'message' => $response['detail'],
+                'message' => $response['detail'] ?? '',
             ]);
         }
 

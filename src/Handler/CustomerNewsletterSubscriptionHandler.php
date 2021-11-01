@@ -46,6 +46,11 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
 
         if ($isNew) {
             $event = new GenericEvent($customer, ['data' => $data]);
+
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_add');
             $data = $event->getArgument('data');
 
@@ -55,6 +60,11 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
                 $customer,
                 ['data' => $data, 'existing_mailchimp_member_data' => $getMemberResponse]
             );
+
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_update');
             $data = $event->getArgument('data');
 
@@ -80,6 +90,11 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
 
         if (!$isNew) {
             $event = new GenericEvent($customer, ['listId' => $listId]);
+
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_remove');
 
             return $this->listsApi->removeMember($listId, $subscriberHash);

@@ -126,11 +126,19 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
 
         $event = new GenericEvent($order, ['data' => $data]);
         if ($isNew) {
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.cart.pre_add');
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addCart($storeId, $data);
         } else {
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.cart.pre_update');
             $data = $event->getArgument('data');
 
@@ -161,6 +169,11 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
 
         if (!$isNew) {
             $event = new GenericEvent($order);
+
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.cart.pre_remove');
 
             return $this->ecommerceApi->removeCart($storeId, $orderId);

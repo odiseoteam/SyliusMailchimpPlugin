@@ -16,7 +16,7 @@ services:
         public: true
         arguments:
             - '@sylius.behat.shared_storage'
-            - '@odiseo_sylius_mailchimp_plugin.api.lists'
+            - '%env(ODISEO_MAILCHIMP_APIKEY)%'
             - '@odiseo_sylius_mailchimp_plugin.provider.default_list_id_provider'
         tags:
             - { name: fob.context_service }

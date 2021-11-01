@@ -70,11 +70,19 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
 
         $event = new GenericEvent($channel, ['data' => $data]);
         if ($isNew) {
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_add');
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addStore($data);
         } else {
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_update');
             $data = $event->getArgument('data');
 
@@ -98,6 +106,11 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
 
         if (!$isNew) {
             $event = new GenericEvent($channel);
+
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.store.pre_remove');
 
             return $this->ecommerceApi->removeStore($storeId);

@@ -98,11 +98,19 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
 
         $event = new GenericEvent($product, ['data' => $data, 'channel' => $channel]);
         if ($isNew) {
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.product.pre_add');
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addProduct($storeId, $data);
         } else {
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.product.pre_update');
             $data = $event->getArgument('data');
 
@@ -128,6 +136,11 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
 
         if (!$isNew) {
             $event = new GenericEvent($product, ['channel' => $channel]);
+
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.product.pre_remove');
 
             return $this->ecommerceApi->removeProduct($storeId, $productId);

@@ -8,6 +8,7 @@ use Behat\Behat\Context\Context;
 use Odiseo\SyliusMailchimpPlugin\Api\ListsInterface;
 use Odiseo\SyliusMailchimpPlugin\Provider\ListIdProviderInterface;
 use Sylius\Behat\Service\SharedStorageInterface;
+use Tests\Odiseo\SyliusMailchimpPlugin\Behat\Fake\MailchimpApi;
 use Webmozart\Assert\Assert;
 
 final class MailchimpContext implements Context
@@ -15,8 +16,8 @@ final class MailchimpContext implements Context
     /** @var SharedStorageInterface */
     private $sharedStorage;
 
-    /** @var ListsInterface */
-    private $listsApi;
+    /** @var MailchimpApi */
+    private $mailchimpApi;
 
     /** @var string */
     private $listId;
@@ -26,11 +27,11 @@ final class MailchimpContext implements Context
 
     public function __construct(
         SharedStorageInterface $sharedStorage,
-        ListsInterface $listsApi,
+        string $api_key,
         ListIdProviderInterface $listIdProvider
     ) {
         $this->sharedStorage = $sharedStorage;
-        $this->listsApi = $listsApi;
+        $this->mailchimpApi = new MailchimpApi($api_key);
         $this->listId = $listIdProvider->getListId();
     }
 
@@ -50,7 +51,7 @@ final class MailchimpContext implements Context
     {
         $emailHash = $this->getSubscriberHash($email);
 
-        $response = $this->listsApi->getMember($this->listId, $emailHash);
+        $response = $this->mailchimpApi->get('lists/' . $this->listId. '/members/' . $emailHash);
 
         Assert::keyExists($response, 'status');
         Assert::eq($response['status'], 'subscribed', sprintf(

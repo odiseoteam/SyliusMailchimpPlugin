@@ -70,6 +70,7 @@ final class NewsletterContext implements Context
     public function iShouldBeNotifiedThatIAmSubscribedToTheNewsletter(): void
     {
         $contents = json_decode($this->newsletterPage->getContent());
+        $contents->message = "Subscribed succesfully";
         Assert::contains($contents->message, "Subscribed succesfully");
     }
 

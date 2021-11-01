@@ -74,11 +74,19 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
 
         $event = new GenericEvent($customer, ['data' => $data, 'channel' => $channel]);
         if ($isNew) {
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer.pre_add');
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addCustomer($storeId, $data);
         } else {
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer.pre_update');
             $data = $event->getArgument('data');
 
@@ -104,6 +112,11 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
 
         if (!$isNew) {
             $event = new GenericEvent($customer, ['channel' => $channel]);
+
+            /**
+             * @psalm-suppress TooManyArguments
+             * @phpstan-ignore-next-line
+             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer.pre_remove');
 
             return $this->ecommerceApi->removeCustomer($storeId, $customerId);
