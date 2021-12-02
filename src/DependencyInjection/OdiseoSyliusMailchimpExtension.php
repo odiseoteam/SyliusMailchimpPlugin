@@ -49,6 +49,8 @@ final class OdiseoSyliusMailchimpExtension extends Extension implements PrependE
 
     protected function getNamespacesOfMigrationsExecutedBefore(): array
     {
-        return [];
+        return [
+            'Sylius\Bundle\CoreBundle\Migrations',
+        ];
     }
 }
