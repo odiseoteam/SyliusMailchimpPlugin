@@ -22,9 +22,9 @@ final class RequestListener
         $request = $event->getRequest();
 
         $session = $request->getSession();
-        if (null === $session->get('campaingId')) {
-            if (null !== $request->get('mc_cid')) {
-                $session->set('campaingId', $request->get('mc_cid'));
+        if (null === $session->get('campaignId')) {
+            if (null !== $request->query->get('mc_cid')) {
+                $session->set('campaignId', $request->query->get('mc_cid'));
             }
         }
     }

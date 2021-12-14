@@ -103,8 +103,8 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
             'lines' => [],
         ];
 
-        if ($this->session->has('campaingId')) {
-            $data['campaign_id'] = $this->session->get('campaingId');
+        if ($this->session->has('campaignId')) {
+            $data['campaign_id'] = $this->session->get('campaignId');
         }
 
         foreach ($order->getItems() as $item) {

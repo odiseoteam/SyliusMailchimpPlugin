@@ -33,7 +33,7 @@ final class ContinueCartPurchaseAction
 
     public function __invoke(Request $request): Response
     {
-        $tokenValue = $request->get('tokenValue');
+        $tokenValue = $request->query->get('tokenValue');
 
         $order = $this->orderRepository->findOneBy([
             'tokenValue' => $tokenValue,
