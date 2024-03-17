@@ -32,7 +32,7 @@ services:
             - '@router'
             - '@sylius.unique_id_based_order_token_assigner'
             - '@doctrine.orm.entity_manager'
-            - '@session'
+            - '@request_stack'
             - '@event_dispatcher'
             - '%odiseo_sylius_mailchimp_plugin.enabled%'
 
@@ -43,7 +43,7 @@ services:
             - '@odiseo_sylius_mailchimp_plugin.api.ecommerce'
             - '@odiseo_sylius_mailchimp_plugin.handler.customer_register'
             - '@router'
-            - '@session'
+            - '@request_stack'
             - '@event_dispatcher'
             - '%odiseo_sylius_mailchimp_plugin.enabled%'
 

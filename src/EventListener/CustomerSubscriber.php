@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostPersistEventArgs;
+use Doctrine\ORM\Event\PostRemoveEventArgs;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Odiseo\SyliusMailchimpPlugin\Handler\CustomerRegisterHandlerInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
@@ -14,18 +16,11 @@ use Sylius\Component\Core\Model\CustomerInterface;
 
 final class CustomerSubscriber implements EventSubscriber
 {
-    private ChannelRepositoryInterface $channelRepository;
-    private ChannelContextInterface $channelContext;
-    private CustomerRegisterHandlerInterface $customerRegisterHandler;
-
     public function __construct(
-        ChannelRepositoryInterface $channelRepository,
-        ChannelContextInterface $channelContext,
-        CustomerRegisterHandlerInterface $customerRegisterHandler
+        private ChannelRepositoryInterface $channelRepository,
+        private ChannelContextInterface $channelContext,
+        private CustomerRegisterHandlerInterface $customerRegisterHandler
     ) {
-        $this->channelRepository = $channelRepository;
-        $this->customerRegisterHandler = $customerRegisterHandler;
-        $this->channelContext = $channelContext;
     }
 
     public function getSubscribedEvents(): array
@@ -37,27 +32,27 @@ final class CustomerSubscriber implements EventSubscriber
         ];
     }
 
-    public function postPersist(LifecycleEventArgs $args): void
+    public function postPersist(PostPersistEventArgs $args): void
     {
-        $customer = $args->getEntity();
+        $customer = $args->getObject();
 
         if ($customer instanceof CustomerInterface) {
             $this->register($customer);
         }
     }
 
-    public function postUpdate(LifecycleEventArgs $args): void
+    public function postUpdate(PostUpdateEventArgs $args): void
     {
-        $customer = $args->getEntity();
+        $customer = $args->getObject();
 
         if ($customer instanceof CustomerInterface) {
             $this->register($customer);
         }
     }
 
-    public function postRemove(LifecycleEventArgs $args): void
+    public function postRemove(PostRemoveEventArgs $args): void
     {
-        $customer = $args->getEntity();
+        $customer = $args->getObject();
 
         if ($customer instanceof CustomerInterface) {
             $this->unregister($customer);

@@ -10,7 +10,7 @@
         <img src="https://img.shields.io/packagist/v/odiseoteam/sylius-mailchimp-plugin.svg" />
     </a>
     <a href="https://github.com/odiseoteam/SyliusMailchimpPlugin/actions" title="Build Status" target="_blank">
-        <img src="https://img.shields.io/github/workflow/status/odiseoteam/SyliusMailchimpPlugin/Build" />
+        <img src="https://img.shields.io/github/workflow/status/odiseoteam/SyliusMailchimpPlugin/build.yml" />
     </a>
     <a href="https://scrutinizer-ci.com/g/odiseoteam/SyliusMailchimpPlugin/" title="Scrutinizer" target="_blank">
         <img src="https://img.shields.io/scrutinizer/g/odiseoteam/SyliusMailchimpPlugin.svg" />

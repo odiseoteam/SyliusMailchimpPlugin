@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostPersistEventArgs;
+use Doctrine\ORM\Event\PostRemoveEventArgs;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Odiseo\SyliusMailchimpPlugin\Handler\StoreRegisterHandlerInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 
 final class StoreSubscriber implements EventSubscriber
 {
-    private StoreRegisterHandlerInterface $storeRegisterHandler;
-
-    public function __construct(StoreRegisterHandlerInterface $storeRegisterHandler)
-    {
-        $this->storeRegisterHandler = $storeRegisterHandler;
+    public function __construct(
+        private StoreRegisterHandlerInterface $storeRegisterHandler
+    ) {
     }
 
     public function getSubscribedEvents(): array
@@ -27,27 +27,27 @@ final class StoreSubscriber implements EventSubscriber
         ];
     }
 
-    public function postPersist(LifecycleEventArgs $args): void
+    public function postPersist(PostPersistEventArgs $args): void
     {
-        $channel = $args->getEntity();
+        $channel = $args->getObject();
 
         if ($channel instanceof ChannelInterface) {
             $this->register($channel);
         }
     }
 
-    public function postUpdate(LifecycleEventArgs $args): void
+    public function postUpdate(PostUpdateEventArgs $args): void
     {
-        $channel = $args->getEntity();
+        $channel = $args->getObject();
 
         if ($channel instanceof ChannelInterface) {
             $this->register($channel);
         }
     }
 
-    public function postRemove(LifecycleEventArgs $args): void
+    public function postRemove(PostRemoveEventArgs $args): void
     {
-        $channel = $args->getEntity();
+        $channel = $args->getObject();
 
         if ($channel instanceof ChannelInterface) {
             $this->unregister($channel);

@@ -11,18 +11,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterSubscriptionHandlerInterface
 {
-    private ListsInterface $listsApi;
-    private EventDispatcherInterface $eventDispatcher;
-    private bool $enabled;
-
     public function __construct(
-        ListsInterface $listsApi,
-        EventDispatcherInterface $eventDispatcher,
-        bool $enabled
+        private ListsInterface $listsApi,
+        private EventDispatcherInterface $eventDispatcher,
+        private bool $enabled
     ) {
-        $this->listsApi = $listsApi;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->enabled = $enabled;
     }
 
     public function subscribe(CustomerInterface $customer, string $listId): array
@@ -47,11 +40,8 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
         if ($isNew) {
             $event = new GenericEvent($customer, ['data' => $data]);
 
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_add');
+            /** @var array $data */
             $data = $event->getArgument('data');
 
             $response = $this->listsApi->addMember($listId, $data);
@@ -61,11 +51,8 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
                 ['data' => $data, 'existing_mailchimp_member_data' => $getMemberResponse]
             );
 
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_update');
+            /** @var array $data */
             $data = $event->getArgument('data');
 
             $response = $this->listsApi->updateMember($listId, $subscriberHash, $data);
@@ -91,10 +78,6 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
         if (!$isNew) {
             $event = new GenericEvent($customer, ['listId' => $listId]);
 
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_remove');
 
             return $this->listsApi->removeMember($listId, $subscriberHash);

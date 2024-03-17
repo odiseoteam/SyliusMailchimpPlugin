@@ -9,15 +9,11 @@ use Psr\Log\LoggerInterface;
 
 final class Lists extends MailChimp implements ListsInterface
 {
-    private LoggerInterface $logger;
-
     public function __construct(
+        private LoggerInterface $logger,
         string $api_key,
-        LoggerInterface $logger
     ) {
         parent::__construct($api_key);
-
-        $this->logger = $logger;
     }
 
     public function addMember(string $listId, array $data): array

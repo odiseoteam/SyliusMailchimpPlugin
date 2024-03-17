@@ -9,15 +9,11 @@ use Psr\Log\LoggerInterface;
 
 final class Ecommerce extends MailChimp implements EcommerceInterface
 {
-    private LoggerInterface $logger;
-
     public function __construct(
+        private LoggerInterface $logger,
         string $api_key,
-        LoggerInterface $logger
     ) {
         parent::__construct($api_key);
-
-        $this->logger = $logger;
     }
 
     public function addStore(array $data): array

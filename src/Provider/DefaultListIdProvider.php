@@ -6,11 +6,9 @@ namespace Odiseo\SyliusMailchimpPlugin\Provider;
 
 final class DefaultListIdProvider implements ListIdProviderInterface
 {
-    private string $defaultListId;
-
-    public function __construct(string $defaultListId)
-    {
-        $this->defaultListId = $defaultListId;
+    public function __construct(
+        private string $defaultListId
+    ) {
     }
 
     public function getListId(): string

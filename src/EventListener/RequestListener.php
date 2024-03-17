@@ -10,11 +10,7 @@ final class RequestListener
 {
     public function onKernelRequest(RequestEvent $event): void
     {
-        /**
-         * @psalm-suppress DeprecatedMethod
-         * @phpstan-ignore-next-line
-         */
-        $isRequest = method_exists($event, 'isMainRequest') ? $event->isMainRequest() : $event->isMasterRequest();
+        $isRequest = $event->isMainRequest();
         if (!$isRequest) {
             return;
         }

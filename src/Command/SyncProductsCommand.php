@@ -15,17 +15,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class SyncProductsCommand extends BaseSyncCommand
 {
-    private ProductRepositoryInterface $productRepository;
-    private ProductRegisterHandlerInterface $productRegisterHandler;
-
     public function __construct(
-        ProductRepositoryInterface $productRepository,
-        ProductRegisterHandlerInterface $productRegisterHandler
+        private ProductRepositoryInterface $productRepository,
+        private ProductRegisterHandlerInterface $productRegisterHandler
     ) {
         parent::__construct();
-
-        $this->productRepository = $productRepository;
-        $this->productRegisterHandler = $productRegisterHandler;
     }
 
     protected function configure(): void
@@ -55,6 +49,7 @@ final class SyncProductsCommand extends BaseSyncCommand
 
     protected function registerProducts(InputInterface $input): void
     {
+        /** @var bool $createOnly */
         $createOnly = $input->getOption('create-only');
 
         $products = $this->productRepository->findAll();

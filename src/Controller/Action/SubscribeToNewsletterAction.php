@@ -16,21 +16,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class SubscribeToNewsletterAction
 {
-    private CustomerNewsletterSubscriptionHandler $customerNewsletterSubscriptionHandler;
-    private TranslatorInterface $translator;
-    private ChannelContextInterface $channelContext;
-    private ListIdProviderInterface $listIdProvider;
-
     public function __construct(
-        CustomerNewsletterSubscriptionHandler $customerNewsletterSubscriptionHandler,
-        TranslatorInterface $translator,
-        ChannelContextInterface $channelContext,
-        ListIdProviderInterface $listIdProvider
+        private CustomerNewsletterSubscriptionHandler $customerNewsletterSubscriptionHandler,
+        private TranslatorInterface $translator,
+        private ChannelContextInterface $channelContext,
+        private ListIdProviderInterface $listIdProvider
     ) {
-        $this->customerNewsletterSubscriptionHandler = $customerNewsletterSubscriptionHandler;
-        $this->translator = $translator;
-        $this->channelContext = $channelContext;
-        $this->listIdProvider = $listIdProvider;
     }
 
     public function __invoke(Request $request): JsonResponse

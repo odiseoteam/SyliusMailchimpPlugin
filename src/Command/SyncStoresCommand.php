@@ -14,17 +14,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class SyncStoresCommand extends BaseSyncCommand
 {
-    private ChannelRepositoryInterface $channelRepository;
-    private StoreRegisterHandlerInterface $storeRegisterHandler;
-
     public function __construct(
-        ChannelRepositoryInterface $channelRepository,
-        StoreRegisterHandlerInterface $storeRegisterHandler
+        private ChannelRepositoryInterface $channelRepository,
+        private StoreRegisterHandlerInterface $storeRegisterHandler
     ) {
         parent::__construct();
-
-        $this->channelRepository = $channelRepository;
-        $this->storeRegisterHandler = $storeRegisterHandler;
     }
 
     protected function configure(): void
