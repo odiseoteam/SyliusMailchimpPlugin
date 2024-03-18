@@ -22,13 +22,13 @@ final class SyncAllCommand extends BaseSyncCommand
                 'create-only',
                 'c',
                 InputOption::VALUE_NONE,
-                'With this option the existing content will be not updated.'
+                'With this option the existing content will be not updated.',
             )
             ->addOption(
                 'purge',
                 'p',
                 InputOption::VALUE_NONE,
-                'Reset all the content and reload from scratch.'
+                'Reset all the content and reload from scratch.',
             )
         ;
     }

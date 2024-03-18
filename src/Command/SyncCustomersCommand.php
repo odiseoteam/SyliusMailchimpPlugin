@@ -16,20 +16,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class SyncCustomersCommand extends BaseSyncCommand
 {
-    private ChannelRepositoryInterface $channelRepository;
-    private CustomerRepositoryInterface $customerRepository;
-    private CustomerRegisterHandlerInterface $customerRegisterHandler;
-
     public function __construct(
-        ChannelRepositoryInterface $channelRepository,
-        CustomerRepositoryInterface $customerRepository,
-        CustomerRegisterHandlerInterface $customerRegisterHandler
+        private ChannelRepositoryInterface $channelRepository,
+        private CustomerRepositoryInterface $customerRepository,
+        private CustomerRegisterHandlerInterface $customerRegisterHandler,
     ) {
         parent::__construct();
-
-        $this->channelRepository = $channelRepository;
-        $this->customerRepository = $customerRepository;
-        $this->customerRegisterHandler = $customerRegisterHandler;
     }
 
     protected function configure(): void
@@ -41,7 +33,7 @@ final class SyncCustomersCommand extends BaseSyncCommand
                 'create-only',
                 'c',
                 InputOption::VALUE_NONE,
-                'With this option the existing customers will be not updated.'
+                'With this option the existing customers will be not updated.',
             )
         ;
     }
@@ -59,6 +51,7 @@ final class SyncCustomersCommand extends BaseSyncCommand
 
     protected function registerCustomers(InputInterface $input): void
     {
+        /** @var bool $createOnly */
         $createOnly = $input->getOption('create-only');
 
         $channels = $this->channelRepository->findAll();

@@ -14,17 +14,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class SyncCartsCommand extends BaseSyncCommand
 {
-    private EntityRepository $orderRepository;
-    private CartRegisterHandlerInterface $cartRegisterHandler;
-
     public function __construct(
-        EntityRepository $orderRepository,
-        CartRegisterHandlerInterface $cartRegisterHandler
+        private EntityRepository $orderRepository,
+        private CartRegisterHandlerInterface $cartRegisterHandler,
     ) {
         parent::__construct();
-
-        $this->orderRepository = $orderRepository;
-        $this->cartRegisterHandler = $cartRegisterHandler;
     }
 
     protected function configure(): void
@@ -36,7 +30,7 @@ final class SyncCartsCommand extends BaseSyncCommand
                 'create-only',
                 'c',
                 InputOption::VALUE_NONE,
-                'With this option the existing carts will be not updated.'
+                'With this option the existing carts will be not updated.',
             )
         ;
     }
@@ -54,8 +48,10 @@ final class SyncCartsCommand extends BaseSyncCommand
 
     protected function registerCarts(InputInterface $input): void
     {
+        /** @var bool $createOnly */
         $createOnly = $input->getOption('create-only');
 
+        /** @var array $orders */
         $orders = $this->orderRepository->createQueryBuilder('o')
             ->where('o.customer IS NOT NULL')
             ->getQuery()

@@ -11,34 +11,21 @@ use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Payment\Model\PaymentInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class OrderRegisterHandler implements OrderRegisterHandlerInterface
 {
-    private EcommerceInterface $ecommerceApi;
-    private CustomerRegisterHandlerInterface $customerRegisterHandler;
-    private RouterInterface $router;
-    private SessionInterface $session;
-    private EventDispatcherInterface $eventDispatcher;
-    private bool $enabled;
-
     public function __construct(
-        EcommerceInterface $ecommerceApi,
-        CustomerRegisterHandlerInterface $customerRegisterHandler,
-        RouterInterface $router,
-        SessionInterface $session,
-        EventDispatcherInterface $eventDispatcher,
-        bool $enabled
+        private EcommerceInterface $ecommerceApi,
+        private CustomerRegisterHandlerInterface $customerRegisterHandler,
+        private RouterInterface $router,
+        private RequestStack $requestStack,
+        private EventDispatcherInterface $eventDispatcher,
+        private bool $enabled,
     ) {
-        $this->ecommerceApi = $ecommerceApi;
-        $this->customerRegisterHandler = $customerRegisterHandler;
-        $this->router = $router;
-        $this->session = $session;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->enabled = $enabled;
     }
 
     public function register(OrderInterface $order, bool $createOnly = false): array
@@ -112,8 +99,8 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
             'lines' => [],
         ];
 
-        if ($this->session->has('campaignId')) {
-            $data['campaign_id'] = $this->session->get('campaignId');
+        if ($this->requestStack->getSession()->has('campaignId')) {
+            $data['campaign_id'] = $this->requestStack->getSession()->get('campaignId');
         }
 
         foreach ($order->getItems() as $item) {
@@ -135,22 +122,16 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
 
         $event = new GenericEvent($order, ['data' => $data]);
         if ($isNew) {
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.order.pre_add');
+            /** @var array $data */
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addOrder($storeId, $data);
 
             $this->removeCart($order);
         } else {
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.order.pre_update');
+            /** @var array $data */
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->updateOrder($storeId, $orderId, $data);
@@ -181,10 +162,6 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
         if (!$isNew) {
             $event = new GenericEvent($order);
 
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.order.pre_remove');
 
             return $this->ecommerceApi->removeOrder($storeId, $orderId);

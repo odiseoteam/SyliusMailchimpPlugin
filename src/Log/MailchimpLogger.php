@@ -9,11 +9,14 @@ use Psr\Log\LoggerInterface;
 
 final class MailchimpLogger implements LoggerAwareInterface
 {
-    private LoggerInterface $logger;
+    public function __construct(
+        private LoggerInterface $logger,
+    ) {
+    }
 
-    public function __construct(LoggerInterface $logger)
+    public function getLogger(): LoggerInterface
     {
-        $this->logger = $logger;
+        return $this->logger;
     }
 
     public function setLogger(LoggerInterface $logger): void

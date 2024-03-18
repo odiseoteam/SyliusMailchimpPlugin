@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Odiseo\SyliusMailchimpPlugin\EventListener;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostPersistEventArgs;
+use Doctrine\ORM\Event\PostRemoveEventArgs;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Odiseo\SyliusMailchimpPlugin\Handler\ProductRegisterHandlerInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 
 final class ProductSubscriber implements EventSubscriber
 {
-    private ProductRegisterHandlerInterface $productRegisterHandler;
-
-    public function __construct(ProductRegisterHandlerInterface $productRegisterHandler)
-    {
-        $this->productRegisterHandler = $productRegisterHandler;
+    public function __construct(
+        private ProductRegisterHandlerInterface $productRegisterHandler,
+    ) {
     }
 
     public function getSubscribedEvents(): array
@@ -28,27 +28,27 @@ final class ProductSubscriber implements EventSubscriber
         ];
     }
 
-    public function postPersist(LifecycleEventArgs $args): void
+    public function postPersist(PostPersistEventArgs $args): void
     {
-        $product = $args->getEntity();
+        $product = $args->getObject();
 
         if ($product instanceof ProductInterface) {
             $this->register($product);
         }
     }
 
-    public function postUpdate(LifecycleEventArgs $args): void
+    public function postUpdate(PostUpdateEventArgs $args): void
     {
-        $product = $args->getEntity();
+        $product = $args->getObject();
 
         if ($product instanceof ProductInterface) {
             $this->register($product);
         }
     }
 
-    public function postRemove(LifecycleEventArgs $args): void
+    public function postRemove(PostRemoveEventArgs $args): void
     {
-        $product = $args->getEntity();
+        $product = $args->getObject();
 
         if ($product instanceof ProductInterface) {
             $this->unregister($product);

@@ -13,7 +13,7 @@ interface CustomerRegisterHandlerInterface
         CustomerInterface $customer,
         ChannelInterface $channel,
         bool $optInStatus = false,
-        bool $createOnly = false
+        bool $createOnly = false,
     ): array;
 
     public function unregister(CustomerInterface $customer, ChannelInterface $channel): array;

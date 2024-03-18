@@ -10,40 +10,23 @@ use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\TokenAssigner\OrderTokenAssignerInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class CartRegisterHandler implements CartRegisterHandlerInterface
 {
-    private EcommerceInterface $ecommerceApi;
-    private CustomerRegisterHandlerInterface $customerRegisterHandler;
-    private RouterInterface $router;
-    private OrderTokenAssignerInterface $orderTokenAssigner;
-    private EntityManagerInterface $entityManager;
-    private SessionInterface $session;
-    private EventDispatcherInterface $eventDispatcher;
-    private bool $enabled;
-
     public function __construct(
-        EcommerceInterface $ecommerceApi,
-        CustomerRegisterHandlerInterface $customerRegisterHandler,
-        RouterInterface $router,
-        OrderTokenAssignerInterface $orderTokenAssigner,
-        EntityManagerInterface $entityManager,
-        SessionInterface $session,
-        EventDispatcherInterface $eventDispatcher,
-        bool $enabled
+        private EcommerceInterface $ecommerceApi,
+        private CustomerRegisterHandlerInterface $customerRegisterHandler,
+        private RouterInterface $router,
+        private OrderTokenAssignerInterface $orderTokenAssigner,
+        private EntityManagerInterface $entityManager,
+        private RequestStack $requestStack,
+        private EventDispatcherInterface $eventDispatcher,
+        private bool $enabled,
     ) {
-        $this->ecommerceApi = $ecommerceApi;
-        $this->router = $router;
-        $this->orderTokenAssigner = $orderTokenAssigner;
-        $this->entityManager = $entityManager;
-        $this->customerRegisterHandler = $customerRegisterHandler;
-        $this->session = $session;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->enabled = $enabled;
     }
 
     public function register(OrderInterface $order, bool $createOnly = false): array
@@ -103,8 +86,8 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
             'lines' => [],
         ];
 
-        if ($this->session->has('campaignId')) {
-            $data['campaign_id'] = $this->session->get('campaignId');
+        if ($this->requestStack->getSession()->has('campaignId')) {
+            $data['campaign_id'] = $this->requestStack->getSession()->get('campaignId');
         }
 
         foreach ($order->getItems() as $item) {
@@ -126,20 +109,14 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
 
         $event = new GenericEvent($order, ['data' => $data]);
         if ($isNew) {
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.cart.pre_add');
+            /** @var array $data */
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addCart($storeId, $data);
         } else {
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.cart.pre_update');
+            /** @var array $data */
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->updateCart($storeId, $cartId, $data);
@@ -170,10 +147,6 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         if (!$isNew) {
             $event = new GenericEvent($order);
 
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.cart.pre_remove');
 
             return $this->ecommerceApi->removeCart($storeId, $orderId);

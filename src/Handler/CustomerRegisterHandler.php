@@ -13,25 +13,18 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
 {
-    private EcommerceInterface $ecommerceApi;
-    private EventDispatcherInterface $eventDispatcher;
-    private bool $enabled;
-
     public function __construct(
-        EcommerceInterface $ecommerceApi,
-        EventDispatcherInterface $eventDispatcher,
-        bool $enabled
+        private EcommerceInterface $ecommerceApi,
+        private EventDispatcherInterface $eventDispatcher,
+        private bool $enabled,
     ) {
-        $this->ecommerceApi = $ecommerceApi;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->enabled = $enabled;
     }
 
     public function register(
         CustomerInterface $customer,
         ChannelInterface $channel,
         bool $optInStatus = false,
-        bool $createOnly = false
+        bool $createOnly = false,
     ): array {
         if (!$this->enabled) {
             return [];
@@ -74,20 +67,14 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
 
         $event = new GenericEvent($customer, ['data' => $data, 'channel' => $channel]);
         if ($isNew) {
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer.pre_add');
+            /** @var array $data */
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->addCustomer($storeId, $data);
         } else {
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer.pre_update');
+            /** @var array $data */
             $data = $event->getArgument('data');
 
             $response = $this->ecommerceApi->updateCustomer($storeId, $customerId, $data);
@@ -113,10 +100,6 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         if (!$isNew) {
             $event = new GenericEvent($customer, ['channel' => $channel]);
 
-            /**
-             * @psalm-suppress TooManyArguments
-             * @phpstan-ignore-next-line
-             */
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer.pre_remove');
 
             return $this->ecommerceApi->removeCustomer($storeId, $customerId);
