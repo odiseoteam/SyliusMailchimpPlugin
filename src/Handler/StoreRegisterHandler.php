@@ -18,7 +18,7 @@ final class StoreRegisterHandler implements StoreRegisterHandlerInterface
         private EcommerceInterface $ecommerceApi,
         private ListIdProviderInterface $listIdProvider,
         private EventDispatcherInterface $eventDispatcher,
-        private bool $enabled
+        private bool $enabled,
     ) {
     }
 

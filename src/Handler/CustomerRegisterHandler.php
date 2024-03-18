@@ -16,7 +16,7 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
     public function __construct(
         private EcommerceInterface $ecommerceApi,
         private EventDispatcherInterface $eventDispatcher,
-        private bool $enabled
+        private bool $enabled,
     ) {
     }
 
@@ -24,7 +24,7 @@ final class CustomerRegisterHandler implements CustomerRegisterHandlerInterface
         CustomerInterface $customer,
         ChannelInterface $channel,
         bool $optInStatus = false,
-        bool $createOnly = false
+        bool $createOnly = false,
     ): array {
         if (!$this->enabled) {
             return [];

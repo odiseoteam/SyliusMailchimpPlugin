@@ -24,7 +24,7 @@ final class OrderRegisterHandler implements OrderRegisterHandlerInterface
         private RouterInterface $router,
         private RequestStack $requestStack,
         private EventDispatcherInterface $eventDispatcher,
-        private bool $enabled
+        private bool $enabled,
     ) {
     }
 

@@ -14,7 +14,7 @@ use Sylius\Component\Core\Model\ChannelInterface;
 final class StoreSubscriber implements EventSubscriber
 {
     public function __construct(
-        private StoreRegisterHandlerInterface $storeRegisterHandler
+        private StoreRegisterHandlerInterface $storeRegisterHandler,
     ) {
     }
 

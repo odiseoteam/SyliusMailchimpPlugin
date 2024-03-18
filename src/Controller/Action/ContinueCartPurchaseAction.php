@@ -21,7 +21,7 @@ final class ContinueCartPurchaseAction
     public function __construct(
         private CartStorageInterface $cartStorage,
         private OrderRepositoryInterface $orderRepository,
-        private RouterInterface $router
+        private RouterInterface $router,
     ) {
     }
 

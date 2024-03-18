@@ -14,7 +14,7 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
     public function __construct(
         private ListsInterface $listsApi,
         private EventDispatcherInterface $eventDispatcher,
-        private bool $enabled
+        private bool $enabled,
     ) {
     }
 
@@ -48,7 +48,7 @@ final class CustomerNewsletterSubscriptionHandler implements CustomerNewsletterS
         } else {
             $event = new GenericEvent(
                 $customer,
-                ['data' => $data, 'existing_mailchimp_member_data' => $getMemberResponse]
+                ['data' => $data, 'existing_mailchimp_member_data' => $getMemberResponse],
             );
 
             $this->eventDispatcher->dispatch($event, 'mailchimp.customer_newsletter.pre_update');

@@ -17,7 +17,7 @@ final class SyncProductsCommand extends BaseSyncCommand
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,
-        private ProductRegisterHandlerInterface $productRegisterHandler
+        private ProductRegisterHandlerInterface $productRegisterHandler,
     ) {
         parent::__construct();
     }
@@ -31,7 +31,7 @@ final class SyncProductsCommand extends BaseSyncCommand
                 'create-only',
                 'c',
                 InputOption::VALUE_NONE,
-                'With this option the existing products will be not updated.'
+                'With this option the existing products will be not updated.',
             )
         ;
     }

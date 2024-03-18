@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Odiseo\SyliusMailchimpPlugin\Controller\Action;
 
-use Odiseo\SyliusMailchimpPlugin\Handler\CustomerNewsletterSubscriptionHandler;
 use Odiseo\SyliusMailchimpPlugin\Entity\MailchimpListIdAwareInterface;
+use Odiseo\SyliusMailchimpPlugin\Handler\CustomerNewsletterSubscriptionHandler;
 use Odiseo\SyliusMailchimpPlugin\Provider\ListIdProviderInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Model\ChannelInterface;
@@ -20,14 +20,13 @@ final class SubscribeToNewsletterAction
         private CustomerNewsletterSubscriptionHandler $customerNewsletterSubscriptionHandler,
         private TranslatorInterface $translator,
         private ChannelContextInterface $channelContext,
-        private ListIdProviderInterface $listIdProvider
+        private ListIdProviderInterface $listIdProvider,
     ) {
     }
 
     public function __invoke(Request $request): JsonResponse
     {
-        /** @var array $newsletter */
-        $newsletter = $request->request->get('newsletter');
+        $newsletter = $request->request->all('newsletter');
         /** @var string $email */
         $email = $newsletter['email'];
 

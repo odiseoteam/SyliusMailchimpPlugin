@@ -17,7 +17,7 @@ final class SyncOrdersCommand extends BaseSyncCommand
 {
     public function __construct(
         private EntityRepository $orderRepository,
-        private OrderRegisterHandlerInterface $orderRegisterHandler
+        private OrderRegisterHandlerInterface $orderRegisterHandler,
     ) {
         parent::__construct();
     }
@@ -31,7 +31,7 @@ final class SyncOrdersCommand extends BaseSyncCommand
                 'create-only',
                 'c',
                 InputOption::VALUE_NONE,
-                'With this option the existing carts will be not updated.'
+                'With this option the existing carts will be not updated.',
             )
         ;
     }

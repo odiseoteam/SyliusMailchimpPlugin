@@ -15,7 +15,7 @@ use Sylius\Component\Core\Model\ProductInterface;
 final class ProductSubscriber implements EventSubscriber
 {
     public function __construct(
-        private ProductRegisterHandlerInterface $productRegisterHandler
+        private ProductRegisterHandlerInterface $productRegisterHandler,
     ) {
     }
 

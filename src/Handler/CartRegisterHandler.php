@@ -25,7 +25,7 @@ final class CartRegisterHandler implements CartRegisterHandlerInterface
         private EntityManagerInterface $entityManager,
         private RequestStack $requestStack,
         private EventDispatcherInterface $eventDispatcher,
-        private bool $enabled
+        private bool $enabled,
     ) {
     }
 

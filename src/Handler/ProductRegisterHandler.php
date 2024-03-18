@@ -24,7 +24,7 @@ final class ProductRegisterHandler implements ProductRegisterHandlerInterface
         private RouterInterface $router,
         private CacheManager $cacheManager,
         private EventDispatcherInterface $eventDispatcher,
-        private bool $enabled
+        private bool $enabled,
     ) {
     }
 

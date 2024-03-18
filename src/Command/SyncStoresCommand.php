@@ -16,7 +16,7 @@ final class SyncStoresCommand extends BaseSyncCommand
 {
     public function __construct(
         private ChannelRepositoryInterface $channelRepository,
-        private StoreRegisterHandlerInterface $storeRegisterHandler
+        private StoreRegisterHandlerInterface $storeRegisterHandler,
     ) {
         parent::__construct();
     }
@@ -72,7 +72,7 @@ final class SyncStoresCommand extends BaseSyncCommand
 
             $this->io->write(
                 'Connecting the "' . $channelName . '" store with is_syncing = ' .
-                ($isSyncing ? 'true' : 'false') . '...'
+                ($isSyncing ? 'true' : 'false') . '...',
             );
 
             try {

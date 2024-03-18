@@ -19,7 +19,7 @@ final class SyncCustomersCommand extends BaseSyncCommand
     public function __construct(
         private ChannelRepositoryInterface $channelRepository,
         private CustomerRepositoryInterface $customerRepository,
-        private CustomerRegisterHandlerInterface $customerRegisterHandler
+        private CustomerRegisterHandlerInterface $customerRegisterHandler,
     ) {
         parent::__construct();
     }
@@ -33,7 +33,7 @@ final class SyncCustomersCommand extends BaseSyncCommand
                 'create-only',
                 'c',
                 InputOption::VALUE_NONE,
-                'With this option the existing customers will be not updated.'
+                'With this option the existing customers will be not updated.',
             )
         ;
     }

@@ -19,7 +19,7 @@ final class CustomerSubscriber implements EventSubscriber
     public function __construct(
         private ChannelRepositoryInterface $channelRepository,
         private ChannelContextInterface $channelContext,
-        private CustomerRegisterHandlerInterface $customerRegisterHandler
+        private CustomerRegisterHandlerInterface $customerRegisterHandler,
     ) {
     }
 
@@ -63,6 +63,7 @@ final class CustomerSubscriber implements EventSubscriber
     {
         /** @var ChannelInterface|null $subscribedChannel */
         $subscribedChannel = null;
+
         try {
             $subscribedChannel = $customer->isSubscribedToNewsletter() ? $this->channelContext->getChannel() : null;
         } catch (\Exception $e) {
@@ -71,7 +72,7 @@ final class CustomerSubscriber implements EventSubscriber
         $channels = $this->channelRepository->findAll();
         /** @var ChannelInterface $channel */
         foreach ($channels as $channel) {
-            $isSubscribed = !!(null !== $subscribedChannel && $subscribedChannel->getCode() == $channel->getCode());
+            $isSubscribed = (null !== $subscribedChannel && $subscribedChannel->getCode() == $channel->getCode());
             $this->customerRegisterHandler->register($customer, $channel, $isSubscribed);
         }
     }
